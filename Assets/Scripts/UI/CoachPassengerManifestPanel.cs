@@ -86,9 +86,9 @@ public sealed class CoachPassengerManifestPanel : MonoBehaviour
         destinationDropdown = AddDropdown(content, "Destination", 0, -360, 48);
         AddButton(content, "RÉSERVER ET ENCAISSER LE BILLET", 0, -418, 52, BookPassenger);
 
-        AddText(content, "EMBARQUEMENT / DESCENTE", 17, 0, -488, 36, TextAnchor.MiddleLeft, Color.white);
-        currentStopDropdown = AddDropdown(content, "Arrêt à traiter", 0, -532, 48);
-        AddButton(content, "TRAITER CET ARRÊT", 0, -588, 52, ProcessCurrentStop);
+        AddText(content, "EMBARQUEMENT AU TERMINAL DE DÉPART", 17, 0, -488, 36, TextAnchor.MiddleLeft, Color.white);
+        currentStopDropdown = AddDropdown(content, "Terminal de départ", 0, -532, 48);
+        AddButton(content, "CONFIRMER L’EMBARQUEMENT INITIAL", 0, -588, 52, ProcessCurrentStop);
 
         AddText(content, "MANIFESTE DES BILLETS", 16, 0, -656, 34, TextAnchor.MiddleLeft, Color.white);
         bookingListText = AddText(content, "Aucune réservation.", 14, 0, -694, 150,
@@ -148,11 +148,20 @@ public sealed class CoachPassengerManifestPanel : MonoBehaviour
     private void ProcessCurrentStop()
     {
         if (trip == null || passengerStops.Count == 0) return;
-        int index = Mathf.Clamp(currentStopDropdown.value, 0, passengerStops.Count - 1);
+
+        // The manifest is only allowed to perform the initial boarding at the origin.
+        // Intermediate stops, border checkpoints and the destination must be handled
+        // by RouteProgressionController in itinerary order, never from this free selector.
+        if (currentStopDropdown == null || currentStopDropdown.value != 0)
+        {
+            SetFeedback("Seul l’embarquement au terminal de départ est autorisé ici. Les autres arrêts seront traités dans l’ordre du trajet.", true);
+            return;
+        }
+
         int alighted, boarded;
         string reason;
-        bool processed = trip.TryProcessPassengerStop(passengerStops[index].Id, out alighted, out boarded, out reason);
-        SetFeedback(processed ? "Arrivées : " + alighted + " • Embarqués : " + boarded : reason, !processed);
+        bool processed = trip.TryProcessPassengerStop(passengerStops[0].Id, out alighted, out boarded, out reason);
+        SetFeedback(processed ? "Embarquement initial confirmé : " + boarded + " passager(s)." : reason, !processed);
         RefreshManifest();
     }
 
