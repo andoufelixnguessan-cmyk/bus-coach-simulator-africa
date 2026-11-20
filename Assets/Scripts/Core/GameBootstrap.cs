@@ -224,13 +224,20 @@ public sealed class GameBootstrap : MonoBehaviour
         holder.transform.localPosition = localPosition;
         var wheel = holder.AddComponent<WheelCollider>();
         wheel.radius = 0.48f;
-        wheel.mass = 65f;
+        wheel.mass = 95f;
         wheel.suspensionDistance = 0.22f;
         JointSpring spring = wheel.suspensionSpring;
-        spring.spring = 85000f;
-        spring.damper = 9500f;
-        spring.targetPosition = 0.5f;
+        spring.spring = 180000f;
+        spring.damper = 20000f;
+        spring.targetPosition = 0.48f;
         wheel.suspensionSpring = spring;
+        WheelFrictionCurve forwardGrip = wheel.forwardFriction;
+        forwardGrip.stiffness = 1.15f;
+        wheel.forwardFriction = forwardGrip;
+        WheelFrictionCurve sideGrip = wheel.sidewaysFriction;
+        sideGrip.stiffness = 1.35f;
+        wheel.sidewaysFriction = sideGrip;
+        wheel.ConfigureVehicleSubsteps(5f, 12, 15);
 
         var visual = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         visual.name = wheelName + " visual";
