@@ -174,7 +174,7 @@ public sealed class GameBootstrap : MonoBehaviour
         root.AddComponent<CoachEngineAudio>().Configure(coach, engineProfile);
         root.AddComponent<CoachCockpit3D>().Configure(root.transform, coach, engineProfile, cabinComfort);
         BuildPassengerDoor(root.transform);
-        BuildWipers(root.transform);
+        BuildWipers(root.transform, doubleDeck);
         root.AddComponent<CoachWeatherSystem>().Configure(coach);
         root.AddComponent<AfricanDayNightSystem>().Configure();
         root.AddComponent<CoachCabinLightingSystem>().Configure(
@@ -372,7 +372,7 @@ public sealed class GameBootstrap : MonoBehaviour
     }
 
 
-    private void BuildWipers(Transform coachRoot)
+    private void BuildWipers(Transform coachRoot, bool upperDeck)
     {
         CreateTransparentPart(coachRoot, "Front windshield glass", new Vector3(0f, 2.02f, 4.79f),
             new Vector3(2.24f, 1.42f, 0.035f), new Color(0.24f, 0.43f, 0.52f, 0.22f));
@@ -395,7 +395,30 @@ public sealed class GameBootstrap : MonoBehaviour
         CreatePart(rightPivot.transform, "Right wiper blade", new Vector3(-0.18f, 0.75f, 0f),
             new Vector3(0.43f, 0.045f, 0.045f), GetSharedMaterial(new Color(0.025f, 0.03f, 0.035f)));
 
-        coachRoot.gameObject.AddComponent<CoachWiperSystem>().Configure(leftPivot.transform, rightPivot.transform);
+        List<Transform> wiperPivots = new List<Transform> { leftPivot.transform, rightPivot.transform };
+        if (upperDeck)
+        {
+            GameObject upperLeftPivot = new GameObject("Upper deck left windshield wiper pivot");
+            upperLeftPivot.transform.SetParent(coachRoot, false);
+            upperLeftPivot.transform.localPosition = new Vector3(-0.42f, 2.92f, 4.83f);
+            GameObject upperLeftArm = CreatePart(upperLeftPivot.transform, "Upper deck left wiper arm",
+                new Vector3(0.02f, 0.30f, 0f), new Vector3(0.035f, 0.60f, 0.035f), GetSharedMaterial(new Color(0.045f, 0.05f, 0.055f)));
+            upperLeftArm.transform.localRotation = Quaternion.Euler(0f, 0f, -18f);
+            CreatePart(upperLeftPivot.transform, "Upper deck left wiper blade", new Vector3(0.18f, 0.60f, 0f),
+                new Vector3(0.43f, 0.045f, 0.045f), GetSharedMaterial(new Color(0.025f, 0.03f, 0.035f)));
+
+            GameObject upperRightPivot = new GameObject("Upper deck right windshield wiper pivot");
+            upperRightPivot.transform.SetParent(coachRoot, false);
+            upperRightPivot.transform.localPosition = new Vector3(0.42f, 2.92f, 4.83f);
+            GameObject upperRightArm = CreatePart(upperRightPivot.transform, "Upper deck right wiper arm",
+                new Vector3(-0.02f, 0.30f, 0f), new Vector3(0.035f, 0.60f, 0.035f), GetSharedMaterial(new Color(0.045f, 0.05f, 0.055f)));
+            upperRightArm.transform.localRotation = Quaternion.Euler(0f, 0f, 18f);
+            CreatePart(upperRightPivot.transform, "Upper deck right wiper blade", new Vector3(-0.18f, 0.60f, 0f),
+                new Vector3(0.43f, 0.045f, 0.045f), GetSharedMaterial(new Color(0.025f, 0.03f, 0.035f)));
+            wiperPivots.Add(upperLeftPivot.transform);
+            wiperPivots.Add(upperRightPivot.transform);
+        }
+        coachRoot.gameObject.AddComponent<CoachWiperSystem>().Configure(wiperPivots.ToArray());
     }
 
     private Light CreateIndicatorLight(Transform parent, string lightName, Vector3 localPosition)
