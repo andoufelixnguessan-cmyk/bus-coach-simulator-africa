@@ -111,10 +111,10 @@ public static class AfricanRoadWorldBuilder
             AddMarking(vertices, triangles, z, 7.5f, 0.14f, 0.035f);
             AddMarking(vertices, triangles, z, 7.5f, 0.14f, -0.035f);
         }
-        for (float z = 0f; z <= CorridorLength; z += 4f)
+        for (float z = 0f; z < CorridorLength; z += SegmentLength)
         {
-            AddMarking(vertices, triangles, z, 1.2f, 0.075f, -RoadHalfWidth + 0.35f);
-            AddMarking(vertices, triangles, z, 1.2f, 0.075f, RoadHalfWidth - 0.35f);
+            AddMarking(vertices, triangles, z, SegmentLength, 0.075f, -RoadHalfWidth + 0.35f);
+            AddMarking(vertices, triangles, z, SegmentLength, 0.075f, RoadHalfWidth - 0.35f);
         }
         Mesh mesh = new Mesh { name = "Reflective road markings" };
         mesh.SetVertices(vertices);
@@ -195,6 +195,18 @@ public static class AfricanRoadWorldBuilder
         board.transform.localScale = new Vector3(0.22f, 1.0f, 2.25f);
         board.GetComponent<Renderer>().sharedMaterial = MaterialFor(new Color(0.04f, 0.28f, 0.17f));
         Object.Destroy(board.GetComponent<Collider>());
+
+        GameObject signText = new GameObject("Sign lettering");
+        signText.transform.position = board.transform.position + Vector3.left * side * 0.12f;
+        signText.transform.rotation = Quaternion.Euler(0f, side > 0f ? -90f : 90f, 0f);
+        TextMesh lettering = signText.AddComponent<TextMesh>();
+        lettering.text = title + "\\n" + subtitle;
+        lettering.anchor = TextAnchor.MiddleCenter;
+        lettering.alignment = TextAlignment.Center;
+        lettering.fontSize = 48;
+        lettering.characterSize = 0.035f;
+        lettering.color = Color.white;
+        lettering.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
     }
 
     private static void BuildVegetation()
