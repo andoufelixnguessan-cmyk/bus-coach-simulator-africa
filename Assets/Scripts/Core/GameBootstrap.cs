@@ -165,8 +165,15 @@ public sealed class GameBootstrap : MonoBehaviour
             new Vector3(0.30f, 0.12f, 7.1f), GetSharedMaterial(new Color(0.12f, 0.15f, 0.18f)));
         CreatePart(coachRoot, "Right overhead luggage rack", new Vector3(0.92f, 2.34f, -0.25f),
             new Vector3(0.30f, 0.12f, 7.1f), GetSharedMaterial(new Color(0.12f, 0.15f, 0.18f)));
+
         Material fabric = GetSharedMaterial(new Color(0.055f, 0.12f, 0.22f));
         Material piping = GetSharedMaterial(new Color(0.28f, 0.36f, 0.43f));
+        GameObject temporaryCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        Mesh cubeMesh = temporaryCube.GetComponent<MeshFilter>().sharedMesh;
+        Object.Destroy(temporaryCube);
+
+        List<CombineInstance> fabricParts = new List<CombineInstance>();
+        List<CombineInstance> trimParts = new List<CombineInstance>();
         float[] seatX = { -0.82f, -0.42f, 0.42f, 0.82f };
         for (int row = 0; row < 8; row++)
         {
@@ -174,15 +181,37 @@ public sealed class GameBootstrap : MonoBehaviour
             for (int seat = 0; seat < seatX.Length; seat++)
             {
                 float x = seatX[seat];
-                string id = "Passenger seat row " + (row + 1) + " position " + (seat + 1);
-                CreatePart(coachRoot, id + " cushion", new Vector3(x, 0.88f, z),
-                    new Vector3(0.36f, 0.16f, 0.43f), fabric);
-                CreatePart(coachRoot, id + " backrest", new Vector3(x, 1.20f, z - 0.20f),
-                    new Vector3(0.36f, 0.54f, 0.13f), fabric);
-                CreatePart(coachRoot, id + " headrest", new Vector3(x, 1.55f, z - 0.20f),
-                    new Vector3(0.25f, 0.17f, 0.13f), piping);
+                AddCombinedBox(fabricParts, cubeMesh, new Vector3(x, 0.88f, z), new Vector3(0.36f, 0.16f, 0.43f));
+                AddCombinedBox(fabricParts, cubeMesh, new Vector3(x, 1.20f, z - 0.20f), new Vector3(0.36f, 0.54f, 0.13f));
+                AddCombinedBox(trimParts, cubeMesh, new Vector3(x, 1.55f, z - 0.20f), new Vector3(0.25f, 0.17f, 0.13f));
             }
         }
+
+        CreateCombinedMesh(coachRoot, "Passenger seat upholstery", fabricParts, fabric);
+        CreateCombinedMesh(coachRoot, "Passenger seat headrests", trimParts, piping);
+    }
+
+    private static void AddCombinedBox(List<CombineInstance> parts, Mesh cubeMesh, Vector3 position, Vector3 scale)
+    {
+        parts.Add(new CombineInstance
+        {
+            mesh = cubeMesh,
+            transform = Matrix4x4.TRS(position, Quaternion.identity, scale)
+        });
+    }
+
+    private static void CreateCombinedMesh(Transform parent, string objectName, List<CombineInstance> parts, Material material)
+    {
+        if (parts == null || parts.Count == 0) return;
+        Mesh combined = new Mesh();
+        combined.name = objectName + " mesh";
+        combined.CombineMeshes(parts.ToArray(), true, true);
+        combined.RecalculateBounds();
+
+        GameObject visual = new GameObject(objectName, typeof(MeshFilter), typeof(MeshRenderer));
+        visual.transform.SetParent(parent, false);
+        visual.GetComponent<MeshFilter>().sharedMesh = combined;
+        visual.GetComponent<MeshRenderer>().sharedMaterial = material;
     }
 
     private void BuildPassengerDoor(Transform coachRoot)
