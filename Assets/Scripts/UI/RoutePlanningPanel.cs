@@ -120,15 +120,15 @@ public sealed class RoutePlanningPanel : MonoBehaviour
         };
         serviceDropdown.RefreshShownValue();
 
-        routeText = AddText(contentObject.transform, "", 15, 0, -478, 132, TextAnchor.UpperLeft, Color.white);
-        AddButton(contentObject.transform, "TRAJET CONSEILLÉ : ABIDJAN → YAMOUSSOUKRO", 0, -622, 50, UseRecommendedRoute);
-        AddButton(contentObject.transform, "ANNULER LA DERNIÈRE VILLE", 0, -680, 48, RemoveLastCity);
-        AddButton(contentObject.transform, "RÉINITIALISER LE TRAJET", 0, -736, 48, ResetRoute);
-        prepareButton = AddButton(contentObject.transform, "PRÉPARER LE VOYAGE", 0, -792, 56, PrepareTrip);
-        feedbackText = AddText(contentObject.transform, "", 14, 0, -856, 64, TextAnchor.MiddleCenter,
+        routeText = AddText(contentObject.transform, "", 15, 0, -478, 166, TextAnchor.UpperLeft, Color.white);
+        AddButton(contentObject.transform, "TRAJET CONSEILLÉ : ABIDJAN → YAMOUSSOUKRO", 0, -654, 50, UseRecommendedRoute);
+        AddButton(contentObject.transform, "ANNULER LA DERNIÈRE VILLE", 0, -712, 48, RemoveLastCity);
+        AddButton(contentObject.transform, "RÉINITIALISER LE TRAJET", 0, -768, 48, ResetRoute);
+        prepareButton = AddButton(contentObject.transform, "PRÉPARER LE VOYAGE", 0, -824, 56, PrepareTrip);
+        feedbackText = AddText(contentObject.transform, "", 14, 0, -888, 64, TextAnchor.MiddleCenter,
             new Color(1f, 0.78f, 0.35f));
-        AddButton(contentObject.transform, "FERMER ET CONDUIRE", 0, -926, 52, ClosePanel);
-        contentRect.sizeDelta = new Vector2(0f, 1020f);
+        AddButton(contentObject.transform, "FERMER ET CONDUIRE", 0, -958, 52, ClosePanel);
+        contentRect.sizeDelta = new Vector2(0f, 1052f);
         RefreshCityOptions();
     }
 
@@ -251,7 +251,8 @@ public sealed class RoutePlanningPanel : MonoBehaviour
         long estimatedBorderFees = setup.AnnouncedBorderFeesXof;
         string summary = setup.Itinerary.DisplayName + "\n" +
             setup.Itinerary.EstimatedDistanceKm.ToString("N0") + " km • " +
-            FormatDuration(setup.Itinerary.EstimatedTotalMinutes) + "\n" +
+            FormatDuration(setup.Itinerary.EstimatedTotalMinutes) + " (durée dans le jeu)\n" +
+            "Temps de jeu visé : environ " + FormatPlayerSessionDuration(setup.Itinerary.EstimatedDistanceKm, setup.Itinerary.Borders == null ? 0 : setup.Itinerary.Borders.Count) + " (estimation de conception)\n" +
             "Billet : " + fare.ToString("N0") + " FCFA / passager\n" +
             "Frais frontaliers annoncés : " + estimatedBorderFees.ToString("N0") + " FCFA";
         SetFeedback("Voyage préparé.\n" + summary, false);
@@ -284,7 +285,8 @@ public sealed class RoutePlanningPanel : MonoBehaviour
             long borderFees = 0L;
             for (int i = 0; i < preview.Borders.Count; i++) borderFees += preview.Borders[i].CoachAndCompanyFeeXof;
             routeText.text += "\nDistance estimée : " + km.ToString("N0") + " km" +
-                "\nDurée estimée : " + FormatDuration(preview.EstimatedTotalMinutes) +
+                "\nDurée du voyage (dans le jeu) : " + FormatDuration(preview.EstimatedTotalMinutes) +
+                "\nTemps de jeu visé : environ " + FormatPlayerSessionDuration(preview.EstimatedDistanceKm, preview.Borders == null ? 0 : preview.Borders.Count) + " (indicatif)" +
                 "\nFrais frontière : " + borderFees.ToString("N0") + " FCFA" +
                 (fare == null ? "" : "\nTarif éco indicatif : " + fare.EconomyXof.ToString("N0") + " FCFA / passager");
         }
@@ -300,6 +302,18 @@ public sealed class RoutePlanningPanel : MonoBehaviour
     private static string FormatDuration(int minutes)
     {
         return (minutes / 60).ToString() + " h " + (minutes % 60).ToString("00") + " min";
+    }
+
+    /// <summary>
+    /// Design target for real player session length, not a real-time travel clock.
+    /// About 8 minutes for 600 km, with one extra minute per planned border crossing.
+    /// This estimate must be calibrated after the full route world and Unity playtests exist.
+    /// </summary>
+    private static string FormatPlayerSessionDuration(int distanceKm, int borderCount)
+    {
+        int drivingMinutes = Mathf.CeilToInt(Mathf.Max(1, distanceKm) / 75f);
+        int targetMinutes = Mathf.Clamp(drivingMinutes + Mathf.Max(0, borderCount), 4, 30);
+        return targetMinutes + " min";
     }
 
     private GameObject CreateUIObject(string objectName, Transform parent)
