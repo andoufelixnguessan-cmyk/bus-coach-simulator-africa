@@ -26,3 +26,8 @@ Les recettes des billets sont enregistrées au moment de leur vente dans le syst
 
 ## Limites actuelles
 La logique C# est ajoutée, mais n'est pas encore reliée à une interface Unity ni testée dans l'éditeur. La checklist est une validation de prototype : elle ne remplace pas encore les contrôles visuels/animés ni les diagnostics mécaniques du véhicule. La gestion des étapes intermédiaires, des contrôles frontaliers interactifs, des pannes, des arrêts et de la fatigue en temps réel reste à développer. Le branchement complet entre l'interface de voyage et la surcharge de clôture doit encore être réalisé et testé.
+
+
+## Préparation des voyages personnalisés
+
+`PlayerRouteTripFactory` prépare le voyage à partir des villes choisies et vérifie la possession du car, sa règle de six roues minimum et la compatibilité de la classe de service. Le gestionnaire frontalier associé doit avoir validé tous les postes avant la clôture. La surcharge de clôture qui reçoit ce gestionnaire inclut les frais effectivement payés dans le calcul de la garantie internationale.
