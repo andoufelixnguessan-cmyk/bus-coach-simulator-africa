@@ -46,6 +46,10 @@ These are code foundations only. They are not yet connected to production menus,
 
 The repository includes an expanding West and Central African city network and a player-selected itinerary planner. The player can choose a departure city, destination and ordered intermediate cities; the planner validates each road connection and builds the corresponding stops and international border checks. The first city network covers Côte d'Ivoire, Ghana, Togo, Benin, Nigeria, Burkina Faso, Mali, Guinea, Liberia, Sierra Leone, Senegal, Gambia, Niger, Cameroon and Gabon. Distances, times and fees remain provisional game-balancing values, not real navigation or official tariffs. The planner is a C# foundation and is not yet connected to an interactive map screen, a 3D road world or tested in Unity. See Docs/PLAYER_CHOSEN_AFRICAN_ROUTES.md.
 
+## Custom route fares and international guarantee
+
+Player-built itineraries can now generate a fare automatically when they are not in the curated route catalogue. The provisional distance rates are 30/40/55 XOF per km for Economy/Comfort/VIP, rounded to the nearest 500 XOF, with minimum fares of 5,000 XOF domestic and 15,000 XOF international. Border crossings or country changes automatically mark a custom itinerary as international. Passenger-trip creation accepts the itinerary directly, connecting it to the fare and the existing 500,000 XOF completed-trip guarantee calculation. These calculations are code foundations and have not yet been compiled or tested in Unity.
+
 ## Development status
 
 The repository now contains a Unity 6 project configuration, an editor-driven Android APK build entry point, a temporary drivable coach/road prototype, independent multi-touch steering and pedal controls, and saved Économie/Équilibré/Élevé graphics presets. The APK pipeline is prepared but requires a Unity Personal license secret in GitHub Actions. The prototype has not yet been compiled, installed, or tested on a phone. It is not a finished realistic simulator and no downloadable APK is claimed yet.
