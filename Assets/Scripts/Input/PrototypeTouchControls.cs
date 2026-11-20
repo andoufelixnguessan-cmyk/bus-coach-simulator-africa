@@ -244,6 +244,43 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         return panel.GetComponent<Image>();
     }
 
+
+    private static CoachHudIcon.IconType IconForSymbol(string symbol)
+    {
+        switch (symbol)
+        {
+            case "◀": case "←": return CoachHudIcon.IconType.ArrowLeft;
+            case "▶": case "→": return CoachHudIcon.IconType.ArrowRight;
+            case "⚠": return CoachHudIcon.IconType.Warning;
+            case "☼": return CoachHudIcon.IconType.Headlights;
+            case "✦": return CoachHudIcon.IconType.HighBeam;
+            case "◎": return CoachHudIcon.IconType.Camera;
+            case "⏻": return CoachHudIcon.IconType.Power;
+            case "▲": return CoachHudIcon.IconType.PedalUp;
+            case "▼": return CoachHudIcon.IconType.PedalDown;
+            case "P": return CoachHudIcon.IconType.Parking;
+            case "≋": return CoachHudIcon.IconType.Wipers;
+            case "☾": return CoachHudIcon.IconType.CabinLight;
+            default: return CoachHudIcon.IconType.Warning;
+        }
+    }
+
+    private static CoachHudIcon CreateIcon(Transform parent, CoachHudIcon.IconType iconType)
+    {
+        GameObject iconObject = new GameObject("Vector icon", typeof(RectTransform), typeof(CoachHudIcon));
+        iconObject.transform.SetParent(parent, false);
+        RectTransform rect = iconObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.18f, 0.12f);
+        rect.anchorMax = new Vector2(0.82f, 0.88f);
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+        CoachHudIcon icon = iconObject.GetComponent<CoachHudIcon>();
+        icon.color = Color.white;
+        icon.SetIcon(iconType);
+        icon.raycastTarget = false;
+        return icon;
+    }
+
     private static void SetButtonState(Image image, bool active)
     {
         if (image == null) return;
