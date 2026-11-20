@@ -12,12 +12,15 @@
 - Three camera views: cockpit, rear chase and front exterior.
 - Vector-drawn touch-control icons, live active-state colors, gear selector and mobile safe-area layout.
 - 30 FPS target across all graphics presets; final device performance remains unmeasured.
+- Speed-sensitive steering with Ackermann front-wheel geometry and anti-roll force on the front and rear axles.
+- Local company save/load for XOF balance, level, owned coaches, starting coach and finance history; financial mutations save automatically.
+- Cabin air-conditioning temperature response, accessory engine load and increased fuel use while cooling.
 
 ## Important release gates not yet passed
 
 1. Unity Editor compilation and play-mode validation.
 2. Android ARM64 build and installation test on a physical device.
-3. Physics calibration using measured mass, wheelbase, axle loads, tire data and braking data for each coach.
+3. Physics calibration using measured mass, wheelbase, axle loads, tire data and braking data for each coach; current values are game tuning, not manufacturer-validated vehicle data.
 4. Replacement of generated block geometry with finished original 3D coach, cockpit, road, scenery, passenger and traffic assets.
 5. Replacement of procedural engine tone with original/licensed per-coach engine recordings and interior/exterior audio mixing.
 6. Full route loading, AI traffic, passenger boarding, luggage, ticketing, company progression and save persistence integrated into the playable scene.
