@@ -22,6 +22,13 @@ public sealed class CoachFuelStation : MonoBehaviour
         fuel.SetStationPresence(true);
     }
 
+    private void OnDisable()
+    {
+        foreach (CoachFuelSystem fuel in overlaps.Keys)
+            if (fuel != null) fuel.SetStationPresence(false);
+        overlaps.Clear();
+    }
+
     private void OnTriggerExit(Collider other)
     {
         CoachFuelSystem fuel = other.GetComponentInParent<CoachFuelSystem>();
