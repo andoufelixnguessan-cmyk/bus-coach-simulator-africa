@@ -12,6 +12,8 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     private Text qualityText;
     private Text seatbeltText;
     private Text doorText;
+    private Image leftIndicatorImage, hazardImage, rightIndicatorImage, headlightImage, highBeamImage, engineImage;
+    private Image seatbeltPanelImage, doorPanelImage;
     private int lastHudRefreshFrame;
     private CameraFollow cameraView;
 
@@ -37,6 +39,17 @@ public sealed class PrototypeTouchControls : MonoBehaviour
             seatbeltText.text = vehicle.SeatbeltFastened ? "▤" : "▥";
         if (vehicle != null && doorText != null)
             doorText.text = vehicle.PassengerDoorOpen ? "◧" : "▣";
+        if (vehicle != null)
+        {
+            SetButtonState(leftIndicatorImage, vehicle.LeftIndicatorOn);
+            SetButtonState(hazardImage, vehicle.HazardLightsOn);
+            SetButtonState(rightIndicatorImage, vehicle.RightIndicatorOn);
+            SetButtonState(headlightImage, vehicle.HeadlightsOn);
+            SetButtonState(highBeamImage, vehicle.HighBeamOn);
+            SetButtonState(engineImage, vehicle.EngineRunning);
+            SetButtonState(seatbeltPanelImage, vehicle.SeatbeltFastened);
+            SetButtonState(doorPanelImage, vehicle.PassengerDoorOpen);
+        }
     }
 
     private void BuildCanvas()
@@ -93,13 +106,13 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         qualityButton.onClick.AddListener(CycleGraphics);
         qualityText = CreateText(qualityPanel.transform, "GRAPHISMES  ÉCONOMIE", 19, TextAnchor.MiddleCenter);
 
-        CreateUtilityButton(safeRoot, "←", new Vector2(0.5f, 1f), new Vector2(-330f, -88f), () => vehicle.ToggleLeftIndicator());
-        CreateUtilityButton(safeRoot, "⚠", new Vector2(0.5f, 1f), new Vector2(-198f, -88f), () => vehicle.ToggleHazardLights());
-        CreateUtilityButton(safeRoot, "→", new Vector2(0.5f, 1f), new Vector2(-66f, -88f), () => vehicle.ToggleRightIndicator());
-        CreateUtilityButton(safeRoot, "☼", new Vector2(0.5f, 1f), new Vector2(66f, -88f), () => vehicle.ToggleHeadlights());
-        CreateUtilityButton(safeRoot, "✦", new Vector2(0.5f, 1f), new Vector2(198f, -88f), () => vehicle.ToggleHighBeam());
+        leftIndicatorImage = CreateUtilityButton(safeRoot, "←", new Vector2(0.5f, 1f), new Vector2(-330f, -88f), () => vehicle.ToggleLeftIndicator());
+        hazardImage = CreateUtilityButton(safeRoot, "⚠", new Vector2(0.5f, 1f), new Vector2(-198f, -88f), () => vehicle.ToggleHazardLights());
+        rightIndicatorImage = CreateUtilityButton(safeRoot, "→", new Vector2(0.5f, 1f), new Vector2(-66f, -88f), () => vehicle.ToggleRightIndicator());
+        headlightImage = CreateUtilityButton(safeRoot, "☼", new Vector2(0.5f, 1f), new Vector2(66f, -88f), () => vehicle.ToggleHeadlights());
+        highBeamImage = CreateUtilityButton(safeRoot, "✦", new Vector2(0.5f, 1f), new Vector2(198f, -88f), () => vehicle.ToggleHighBeam());
         CreateUtilityButton(safeRoot, "◎", new Vector2(0.5f, 1f), new Vector2(330f, -88f), ToggleCameraView);
-        CreateUtilityButton(safeRoot, "⏻", new Vector2(0.5f, 1f), new Vector2(0f, -150f), ToggleEngine);
+        engineImage = CreateUtilityButton(safeRoot, "⏻", new Vector2(0.5f, 1f), new Vector2(0f, -150f), ToggleEngine);
         CreateSeatbeltButton(safeRoot);
         CreatePassengerDoorButton(safeRoot);
     }
@@ -112,6 +125,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         Button button = panel.AddComponent<Button>();
         button.targetGraphic = panel.GetComponent<Image>();
         button.onClick.AddListener(ToggleSeatbelt);
+        seatbeltPanelImage = panel.GetComponent<Image>();
         seatbeltText = CreateText(panel.transform, "▤", 26, TextAnchor.MiddleCenter);
         seatbeltText.resizeTextMinSize = 20;
         seatbeltText.resizeTextMaxSize = 26;
@@ -126,6 +140,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         Button button = panel.AddComponent<Button>();
         button.targetGraphic = panel.GetComponent<Image>();
         button.onClick.AddListener(TogglePassengerDoor);
+        doorPanelImage = panel.GetComponent<Image>();
         doorText = CreateText(panel.transform, "▣", 26, TextAnchor.MiddleCenter);
         doorText.resizeTextMinSize = 20;
         doorText.resizeTextMaxSize = 26;
@@ -157,7 +172,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         if (cameraView != null) cameraView.SetCockpitView(!cameraView.IsCockpitView);
     }
 
-    private void CreateUtilityButton(Transform parent, string label, Vector2 anchor, Vector2 position,
+    private Image CreateUtilityButton(Transform parent, string label, Vector2 anchor, Vector2 position,
         UnityEngine.Events.UnityAction action)
     {
         GameObject panel = CreatePanel(parent, label + " control", anchor, new Vector2(0.5f, 0.5f), position,
@@ -168,6 +183,15 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         Text text = CreateText(panel.transform, label, 15, TextAnchor.MiddleCenter);
         text.resizeTextMinSize = 9;
         text.resizeTextMaxSize = 15;
+        return panel.GetComponent<Image>();
+    }
+
+    private static void SetButtonState(Image image, bool active)
+    {
+        if (image == null) return;
+        image.color = active
+            ? new Color(0.10f, 0.42f, 0.30f, 0.98f)
+            : new Color(0.035f, 0.075f, 0.11f, 0.92f);
     }
 
     private void CycleGraphics()
