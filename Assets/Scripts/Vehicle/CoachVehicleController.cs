@@ -185,7 +185,8 @@ public sealed class CoachVehicleController : MonoBehaviour
     {
         if (!WheelsAssigned()) return;
         float speedFactor = Mathf.InverseLerp(maxSpeedKph, 0f, SpeedKph);
-        bool safetyInterlock = PassengerDoorOpen || !SeatbeltFastened;\n        float torque = EngineRunning && !safetyInterlock ? motorTorque * throttleInput * speedFactor : 0f;
+        bool safetyInterlock = PassengerDoorOpen || !SeatbeltFastened;
+        float torque = EngineRunning && !safetyInterlock ? motorTorque * throttleInput * speedFactor : 0f;
         frontLeft.steerAngle = steeringInput * maxSteerAngle;
         frontRight.steerAngle = steeringInput * maxSteerAngle;
         rearLeft.motorTorque = torque * 0.5f;
