@@ -184,6 +184,62 @@ public sealed class GameBootstrap : MonoBehaviour
 
 
 
+    private void BuildDoubleDeckUpperBody(Transform coachRoot)
+    {
+        Color bodyColor = new Color(0.83f, 0.84f, 0.82f);
+        Color windowColor = new Color(0.10f, 0.22f, 0.30f);
+        CreatePart(coachRoot, "Upper deck left body shell", new Vector3(-1.19f, 3.48f, 0f),
+            new Vector3(0.08f, 1.28f, 9.7f), bodyColor);
+        CreatePart(coachRoot, "Upper deck right body shell", new Vector3(1.19f, 3.48f, 0f),
+            new Vector3(0.08f, 1.28f, 9.7f), bodyColor);
+        CreatePart(coachRoot, "Double-decker roof", new Vector3(0f, 4.20f, 0f),
+            new Vector3(2.45f, 0.22f, 9.8f), new Color(0.78f, 0.80f, 0.79f));
+        for (int i = 0; i < 8; i++)
+        {
+            float z = 3.55f - i * 1.05f;
+            CreatePart(coachRoot, "Upper deck left window", new Vector3(-1.235f, 3.48f, z),
+                new Vector3(0.025f, 0.82f, 0.78f), windowColor);
+            CreatePart(coachRoot, "Upper deck right window", new Vector3(1.235f, 3.48f, z),
+                new Vector3(0.025f, 0.82f, 0.78f), windowColor);
+        }
+        CreatePart(coachRoot, "Upper deck front destination fascia", new Vector3(0f, 4.00f, 4.91f),
+            new Vector3(1.62f, 0.22f, 0.08f), new Color(0.045f, 0.055f, 0.065f));
+    }
+
+    private void BuildUpperDeckPassengerSeats(Transform coachRoot)
+    {
+        CreatePart(coachRoot, "Upper deck passenger floor", new Vector3(0f, 2.83f, 0f),
+            new Vector3(2.18f, 0.08f, 9.15f), new Color(0.10f, 0.12f, 0.14f));
+        CreatePart(coachRoot, "Upper deck aisle carpet", new Vector3(0f, 2.885f, -0.45f),
+            new Vector3(0.42f, 0.025f, 5.85f), new Color(0.18f, 0.20f, 0.22f));
+
+        Material fabric = GetSharedMaterial(new Color(0.055f, 0.12f, 0.22f));
+        Material piping = GetSharedMaterial(new Color(0.28f, 0.36f, 0.43f));
+        GameObject temporaryCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        Mesh cubeMesh = temporaryCube.GetComponent<MeshFilter>().sharedMesh;
+        Object.Destroy(temporaryCube);
+
+        List<CombineInstance> fabricParts = new List<CombineInstance>();
+        List<CombineInstance> trimParts = new List<CombineInstance>();
+        float[] seatX = { -0.82f, -0.42f, 0.42f, 0.82f };
+        for (int row = 0; row < 10; row++)
+        {
+            float z = 2.25f - row * 0.58f;
+            for (int seat = 0; seat < seatX.Length; seat++)
+            {
+                float x = seatX[seat];
+                AddCombinedBox(fabricParts, cubeMesh, new Vector3(x, 3.10f, z),
+                    new Vector3(0.36f, 0.16f, 0.40f));
+                AddCombinedBox(fabricParts, cubeMesh, new Vector3(x, 3.40f, z - 0.18f),
+                    new Vector3(0.36f, 0.50f, 0.13f));
+                AddCombinedBox(trimParts, cubeMesh, new Vector3(x, 3.73f, z - 0.18f),
+                    new Vector3(0.25f, 0.15f, 0.13f));
+            }
+        }
+        CreateCombinedMesh(coachRoot, "Upper deck passenger seat upholstery", fabricParts, fabric);
+        CreateCombinedMesh(coachRoot, "Upper deck passenger seat headrests", trimParts, piping);
+    }
+
     private void BuildCoachExteriorDetails(Transform coachRoot)
     {
         Material darkTrim = GetSharedMaterial(new Color(0.045f, 0.055f, 0.065f));
