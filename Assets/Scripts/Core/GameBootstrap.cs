@@ -287,7 +287,7 @@ public sealed class GameBootstrap : MonoBehaviour
         graphicsSettings = inputObject.AddComponent<MobileGraphicsSettings>();
         graphicsSettings.ApplySavedPreset();
         var touch = inputObject.AddComponent<PrototypeTouchControls>();
-        touch.Configure(coach, input, graphicsSettings, cameraFollow);
+        touch.Configure(coach, input, graphicsSettings, cameraFollow, coach.GetComponent<CoachWiperSystem>());
     }
 
     private static GameObject CreateBlock(string objectName, Vector3 position, Vector3 scale, Color color)
