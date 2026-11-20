@@ -66,3 +66,7 @@ A new `PlayerRouteTripFactory` validates the player's ordered city list, company
 ## Mobile route planning panel
 
 A first UGUI route-planning panel has been added in `Assets/Scripts/UI/RoutePlanningPanel.cs`. It lets a player build a connected city sequence, choose an owned six-wheel-or-more coach and service class, and review estimated distance, duration, fare and announced border fees before preparing a `PlayerRouteTripSetup`. It must still be connected to the company/garage scene by calling `Configure(...)`; it does not yet create a 3D route or start the driving simulation. See `Docs/ROUTE_PLANNING_PANEL.md`. This new UI code has not yet been compiled or tested in Unity or on Android.
+
+## Accessible gameplay direction
+
+The game is designed to be realistic without becoming complicated. The beginner journey should recommend a profitable first route, use automatic transmission and assisted passenger management by default, present a short safety check, and keep advanced management optional. Safety requirements remain mandatory; automation only reduces repetitive interactions. Mobile screens must scroll when needed and keep all buttons reachable. See `Docs/SIMPLE_AND_ACCESSIBLE_GAMEPLAY.md`. The route-planning panel now uses vertical scrolling so its controls can fit smaller phone screens, but the UI still needs Unity compilation and real-device testing.
