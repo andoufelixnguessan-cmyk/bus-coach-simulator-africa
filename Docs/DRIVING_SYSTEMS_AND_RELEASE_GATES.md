@@ -2,7 +2,7 @@
 
 ## Runtime systems connected in source
 
-- Six physical WheelColliders: two steerable front wheels and four driven/braked rear wheels.
+- Standard intercity coach: six physical WheelColliders. Double-decker configuration: ten physical wheels with two driven/braked rear axles and separate anti-roll/brake/torque distribution.
 - Automatic six-speed forward gearbox with Park, Reverse, Neutral and Drive selection.
 - Speed-sensitive Ackermann steering and anti-roll suspension force on the front and rear axles.
 - Engine start interlocks for stopped vehicle, closed passenger door, fastened driver belt, available fuel and Park/Neutral.
