@@ -85,3 +85,10 @@ The prototype driving HUD now uses a dedicated Android safe-area fitter so its c
 ## Orientation de jeu — paysage uniquement
 
 BUS & COACH SIMULATOR AFRICA est conçu pour jouer en format paysage sur téléphone. Le pipeline Android fixe LandscapeLeft comme orientation de départ, autorise les deux orientations horizontales (gauche et droite) et désactive les deux orientations portrait. GameBootstrap réapplique aussi ces règles au démarrage pour éviter qu'une rotation du téléphone bascule l'interface en portrait. Tous les futurs écrans (menu, garage, itinéraires, gestion et conduite) doivent conserver une mise en page paysage et respecter MobileSafeAreaFitter. Le réglage est écrit dans le projet, mais doit encore être confirmé après compilation et installation sur Android.
+
+
+## Tableau de bord, voyants et identité sonore des autocars
+
+Une première base de combiné de conduite paysage est ajoutée : vitesse, compte-tours, carburant, température moteur, pression d'huile, pression d'air, tension batterie et témoins de clignotants, feux de route, frein de stationnement, ceinture, ABS et défaut moteur. Des profils distincts existent pour les différentes catégories d'autocars. Le niveau d'amélioration moteur agit sur le couple, le régime maximal et les paramètres de la signature sonore.
+
+Le prototype utilise pour l'instant un son diesel synthétique de validation, pas un enregistrement réaliste. Les diagnostics et certains voyants restent provisoires, et les commandes des clignotants/phares ne sont pas encore raccordées. La prochaine étape de production est le vrai cockpit 3D avec cadrans propres à chaque modèle, données mécaniques fiables et sons moteur originaux ou licenciés. Rien de cela n'a encore été compilé ou testé dans Unity/Android. Voir `Docs/COCKPIT_DASHBOARD_AND_ENGINE_AUDIO.md`.
