@@ -97,129 +97,40 @@ public sealed class RouteItinerary
 /// </summary>
 public static class AfricanRouteNetwork
 {
-    private static readonly RouteItinerary[] Routes =
+    // Preset routes are built from the same road-segment planner as player-created itineraries.
+    // This guarantees that every preset receives the exact intermediate localities and border order
+    // defined for each road segment, including reverse-direction travel.
+    private static readonly RouteItinerary[] Routes = BuildRoutes();
+
+    private static RouteItinerary[] BuildRoutes()
     {
-        new RouteItinerary("abidjan-yamoussoukro", "Abidjan – Yamoussoukro", 240, 210,
-            new List<RouteStop> {
-                new RouteStop("abj-terminal", "Gare d'Abidjan", "CI", RouteStopType.Terminal, 20, true),
-                new RouteStop("tiassale-rest", "Aire de repos de Tiassalé", "CI", RouteStopType.RestStop, 15, false),
-                new RouteStop("yak-terminal", "Gare de Yamoussoukro", "CI", RouteStopType.Terminal, 20, true)
-            }, new List<BorderCheckpoint>()),
+        return new RouteItinerary[]
+        {
+            BuildRoute("abidjan-yamoussoukro", "Abidjan – Yamoussoukro", "abidjan", "yamoussoukro"),
+            BuildRoute("abidjan-bouake", "Abidjan – Bouaké", "abidjan", "yamoussoukro", "bouake"),
+            BuildRoute("abidjan-korhogo", "Abidjan – Korhogo", "abidjan", "yamoussoukro", "bouake", "korhogo"),
+            BuildRoute("abidjan-san-pedro", "Abidjan – San Pedro", "abidjan", "san-pedro"),
+            BuildRoute("abidjan-man", "Abidjan – Man", "abidjan", "man"),
+            BuildRoute("abidjan-accra", "Abidjan – Accra", "abidjan", "accra"),
+            BuildRoute("abidjan-lome", "Abidjan – Lomé", "abidjan", "accra", "lome"),
+            BuildRoute("abidjan-cotonou", "Abidjan – Cotonou", "abidjan", "accra", "lome", "cotonou"),
+            BuildRoute("abidjan-ouagadougou", "Abidjan – Ouagadougou", "abidjan", "bobo-dioulasso", "ouagadougou"),
+            BuildRoute("abidjan-bamako", "Abidjan – Bamako", "abidjan", "sikasso", "bamako"),
+            BuildRoute("abidjan-conakry", "Abidjan – Conakry", "abidjan", "man", "nzerekore", "conakry"),
+            BuildRoute("accra-lagos", "Accra – Lagos", "accra", "lome", "cotonou", "lagos")
+        };
+    }
 
-        new RouteItinerary("abidjan-bouake", "Abidjan – Bouaké", 350, 300,
-            new List<RouteStop> {
-                new RouteStop("abj-terminal", "Gare d'Abidjan", "CI", RouteStopType.Terminal, 20, true),
-                new RouteStop("yak-stop", "Yamoussoukro", "CI", RouteStopType.PassengerStop, 15, true),
-                new RouteStop("bouake-terminal", "Gare de Bouaké", "CI", RouteStopType.Terminal, 20, true)
-            }, new List<BorderCheckpoint>()),
-
-        new RouteItinerary("abidjan-korhogo", "Abidjan – Korhogo", 635, 540,
-            new List<RouteStop> {
-                new RouteStop("abj-terminal", "Gare d'Abidjan", "CI", RouteStopType.Terminal, 20, true),
-                new RouteStop("yak-stop", "Yamoussoukro", "CI", RouteStopType.PassengerStop, 15, true),
-                new RouteStop("bouake-stop", "Bouaké", "CI", RouteStopType.PassengerStop, 20, true),
-                new RouteStop("korhogo-terminal", "Gare de Korhogo", "CI", RouteStopType.Terminal, 20, true)
-            }, new List<BorderCheckpoint>()),
-
-        new RouteItinerary("abidjan-san-pedro", "Abidjan – San Pedro", 350, 330,
-            new List<RouteStop> {
-                new RouteStop("abj-terminal", "Gare d'Abidjan", "CI", RouteStopType.Terminal, 20, true),
-                new RouteStop("sassandra-rest", "Aire de repos de Sassandra", "CI", RouteStopType.RestStop, 15, false),
-                new RouteStop("sanpedro-terminal", "Gare de San Pedro", "CI", RouteStopType.Terminal, 20, true)
-            }, new List<BorderCheckpoint>()),
-
-        new RouteItinerary("abidjan-man", "Abidjan – Man", 570, 510,
-            new List<RouteStop> {
-                new RouteStop("abj-terminal", "Gare d'Abidjan", "CI", RouteStopType.Terminal, 20, true),
-                new RouteStop("daloa-stop", "Daloa", "CI", RouteStopType.PassengerStop, 20, true),
-                new RouteStop("man-terminal", "Gare de Man", "CI", RouteStopType.Terminal, 20, true)
-            }, new List<BorderCheckpoint>()),
-
-        new RouteItinerary("abidjan-accra", "Abidjan – Accra", 500, 420,
-            new List<RouteStop> {
-                new RouteStop("abj-terminal", "Gare d'Abidjan", "CI", RouteStopType.Terminal, 20, true),
-                new RouteStop("noe-border", "Poste frontière Noé – Elubo", "CI", RouteStopType.BorderCheckpoint, 0, false),
-                new RouteStop("takoradi-stop", "Takoradi", "GH", RouteStopType.PassengerStop, 20, true),
-                new RouteStop("accra-terminal", "Gare d'Accra", "GH", RouteStopType.Terminal, 20, true)
-            }, new List<BorderCheckpoint> {
-                new BorderCheckpoint("noe-elubo", "Frontière Noé – Elubo", "CI", "GH", 15000L, 60)
-            }),
-
-        new RouteItinerary("abidjan-lome", "Abidjan – Lomé", 900, 780,
-            new List<RouteStop> {
-                new RouteStop("abj-terminal", "Gare d'Abidjan", "CI", RouteStopType.Terminal, 20, true),
-                new RouteStop("noe-border", "Poste frontière Noé – Elubo", "CI", RouteStopType.BorderCheckpoint, 0, false),
-                new RouteStop("accra-stop", "Accra", "GH", RouteStopType.PassengerStop, 25, true),
-                new RouteStop("aflao-border", "Poste frontière Aflao – Kodjoviakopé", "GH", RouteStopType.BorderCheckpoint, 0, false),
-                new RouteStop("lome-terminal", "Gare de Lomé", "TG", RouteStopType.Terminal, 20, true)
-            }, new List<BorderCheckpoint> {
-                new BorderCheckpoint("noe-elubo", "Frontière Noé – Elubo", "CI", "GH", 15000L, 60),
-                new BorderCheckpoint("aflao-kodjoviakope", "Frontière Aflao – Kodjoviakopé", "GH", "TG", 15000L, 60)
-            }),
-
-        new RouteItinerary("abidjan-cotonou", "Abidjan – Cotonou", 1050, 900,
-            new List<RouteStop> {
-                new RouteStop("abj-terminal", "Gare d'Abidjan", "CI", RouteStopType.Terminal, 20, true),
-                new RouteStop("noe-border", "Poste frontière Noé – Elubo", "CI", RouteStopType.BorderCheckpoint, 0, false),
-                new RouteStop("accra-stop", "Accra", "GH", RouteStopType.PassengerStop, 25, true),
-                new RouteStop("aflao-border", "Poste frontière Aflao – Kodjoviakopé", "GH", RouteStopType.BorderCheckpoint, 0, false),
-                new RouteStop("lome-stop", "Lomé", "TG", RouteStopType.PassengerStop, 25, true),
-                new RouteStop("hillacondji-border", "Frontière Hillacondji – Sanvee Condji", "TG", RouteStopType.BorderCheckpoint, 0, false),
-                new RouteStop("cotonou-terminal", "Gare de Cotonou", "BJ", RouteStopType.Terminal, 20, true)
-            }, new List<BorderCheckpoint> {
-                new BorderCheckpoint("noe-elubo", "Frontière Noé – Elubo", "CI", "GH", 15000L, 60),
-                new BorderCheckpoint("aflao-kodjoviakope", "Frontière Aflao – Kodjoviakopé", "GH", "TG", 15000L, 60),
-                new BorderCheckpoint("hillacondji-sanvee", "Frontière Hillacondji – Sanvee Condji", "TG", "BJ", 15000L, 60)
-            }),
-
-        new RouteItinerary("abidjan-ouagadougou", "Abidjan – Ouagadougou", 1120, 1020,
-            new List<RouteStop> {
-                new RouteStop("abj-terminal", "Gare d'Abidjan", "CI", RouteStopType.Terminal, 20, true),
-                new RouteStop("korhogo-stop", "Korhogo", "CI", RouteStopType.PassengerStop, 25, true),
-                new RouteStop("pogo-border", "Frontière Pogo – Zégoua", "CI", RouteStopType.BorderCheckpoint, 0, false),
-                new RouteStop("bobo-stop", "Bobo-Dioulasso", "BF", RouteStopType.PassengerStop, 25, true),
-                new RouteStop("ouaga-terminal", "Gare de Ouagadougou", "BF", RouteStopType.Terminal, 20, true)
-            }, new List<BorderCheckpoint> {
-                new BorderCheckpoint("pogo-zegoua", "Frontière Pogo – Zégoua", "CI", "BF", 18000L, 75)
-            }),
-
-        new RouteItinerary("abidjan-bamako", "Abidjan – Bamako", 1200, 1080,
-            new List<RouteStop> {
-                new RouteStop("abj-terminal", "Gare d'Abidjan", "CI", RouteStopType.Terminal, 20, true),
-                new RouteStop("korhogo-stop", "Korhogo", "CI", RouteStopType.PassengerStop, 25, true),
-                new RouteStop("pogo-border", "Frontière Pogo – Zégoua", "CI", RouteStopType.BorderCheckpoint, 0, false),
-                new RouteStop("sikasso-stop", "Sikasso", "ML", RouteStopType.PassengerStop, 25, true),
-                new RouteStop("bamako-terminal", "Gare de Bamako", "ML", RouteStopType.Terminal, 20, true)
-            }, new List<BorderCheckpoint> {
-                new BorderCheckpoint("pogo-zegoua", "Frontière Pogo – Zégoua", "CI", "ML", 18000L, 75)
-            }),
-
-        new RouteItinerary("abidjan-conakry", "Abidjan – Conakry", 1550, 1380,
-            new List<RouteStop> {
-                new RouteStop("abj-terminal", "Gare d'Abidjan", "CI", RouteStopType.Terminal, 20, true),
-                new RouteStop("man-stop", "Man", "CI", RouteStopType.PassengerStop, 25, true),
-                new RouteStop("danane-stop", "Danané", "CI", RouteStopType.PassengerStop, 15, true),
-                new RouteStop("nzerekore-stop", "N'Zérékoré", "GN", RouteStopType.PassengerStop, 25, true),
-                new RouteStop("conakry-terminal", "Gare de Conakry", "GN", RouteStopType.Terminal, 20, true)
-            }, new List<BorderCheckpoint> {
-                new BorderCheckpoint("danane-liberia-guinea", "Contrôle frontalier régional", "CI", "GN", 20000L, 90)
-            }),
-
-        new RouteItinerary("accra-lagos", "Accra – Lagos", 460, 420,
-            new List<RouteStop> {
-                new RouteStop("accra-terminal", "Gare d'Accra", "GH", RouteStopType.Terminal, 20, true),
-                new RouteStop("aflao-border", "Poste frontière Aflao – Kodjoviakopé", "GH", RouteStopType.BorderCheckpoint, 0, false),
-                new RouteStop("lome-stop", "Lomé", "TG", RouteStopType.PassengerStop, 20, true),
-                new RouteStop("hillacondji-border", "Frontière Hillacondji – Sanvee Condji", "TG", RouteStopType.BorderCheckpoint, 0, false),
-                new RouteStop("cotonou-stop", "Cotonou", "BJ", RouteStopType.PassengerStop, 20, true),
-                new RouteStop("seme-border", "Frontière Sèmè – Krake", "BJ", RouteStopType.BorderCheckpoint, 0, false),
-                new RouteStop("lagos-terminal", "Gare de Lagos", "NG", RouteStopType.Terminal, 20, true)
-            }, new List<BorderCheckpoint> {
-                new BorderCheckpoint("aflao-kodjoviakope", "Frontière Aflao – Kodjoviakopé", "GH", "TG", 15000L, 60),
-                new BorderCheckpoint("hillacondji-sanvee", "Frontière Hillacondji – Sanvee Condji", "TG", "BJ", 15000L, 60),
-                new BorderCheckpoint("seme-krake", "Frontière Sèmè – Krake", "BJ", "NG", 18000L, 75)
-            })
-    };
+    private static RouteItinerary BuildRoute(string routeId, string displayName, params string[] cityIds)
+    {
+        RouteItinerary itinerary;
+        string reason;
+        if (!AfricanRoutePlanner.TryBuildPlayerItinerary(cityIds, out itinerary, out reason))
+            throw new InvalidOperationException("Impossible de construire le trajet prédéfini " + routeId + " : " + reason);
+        itinerary.RouteId = routeId;
+        itinerary.DisplayName = displayName;
+        return itinerary;
+    }
 
     public static IReadOnlyList<RouteItinerary> AllRoutes => Routes;
 
