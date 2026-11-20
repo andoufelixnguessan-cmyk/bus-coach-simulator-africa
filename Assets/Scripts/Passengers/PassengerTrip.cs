@@ -84,6 +84,7 @@ public sealed class PassengerTrip
     private long ticketRevenueXof;
 
     public IReadOnlyList<PassengerBooking> Bookings => bookings;
+    public IReadOnlyList<RouteStop> ItineraryStops => itineraryStops;
     public string TripId => tripId;
     public string CoachId => coachId;
     public RouteFare Route => route;
