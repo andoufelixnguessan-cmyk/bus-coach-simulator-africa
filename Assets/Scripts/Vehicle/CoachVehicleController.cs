@@ -166,7 +166,7 @@ public sealed class CoachVehicleController : MonoBehaviour
             throttleInput = 0f;
             return true;
         }
-        if (SpeedKph > 1f || fuelPercent <= 0f) return false;
+        if (SpeedKph > 1f || fuelPercent <= 0f || PassengerDoorOpen) return false;
         EngineRunning = true;
         return true;
     }
