@@ -143,15 +143,16 @@ public sealed class GameBootstrap : MonoBehaviour
             CreateReverseLight(root.transform, "Rear left reverse lamp", new Vector3(-0.55f, 0.72f, -5.0f)),
             CreateReverseLight(root.transform, "Rear right reverse lamp", new Vector3(0.55f, 0.72f, -5.0f)));
         CoachDashboardProfile engineProfile = CoachDashboardProfile.ForCoach("car-moyen");
+        CoachCabinComfortSystem cabinComfort = root.AddComponent<CoachCabinComfortSystem>();
+        cabinComfort.Configure(coach);
         root.AddComponent<CoachEngineAudio>().Configure(coach, engineProfile);
-        root.AddComponent<CoachCockpit3D>().Configure(root.transform, coach, engineProfile);
+        root.AddComponent<CoachCockpit3D>().Configure(root.transform, coach, engineProfile, cabinComfort);
         BuildPassengerDoor(root.transform);
         BuildWipers(root.transform);
         root.AddComponent<CoachCabinLightingSystem>().Configure(
             CreateCabinLight(root.transform, "Cabin ceiling light front", new Vector3(0f, 2.48f, 1.65f)),
             CreateCabinLight(root.transform, "Cabin ceiling light middle", new Vector3(0f, 2.48f, 0f)),
             CreateCabinLight(root.transform, "Cabin ceiling light rear", new Vector3(0f, 2.48f, -1.65f)));
-        root.AddComponent<CoachCabinComfortSystem>().Configure(coach);
     }
 
 
