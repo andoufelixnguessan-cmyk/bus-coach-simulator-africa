@@ -5,9 +5,8 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 
 /// <summary>
-/// Mobile-friendly route setup panel. Attach to a Canvas and call Configure from the company/garage
-/// screen with the player's company and owned coach IDs. This prepares trip data; it does not create
-/// the 3D road world or start driving.
+/// Mobile route-selection interface connected to the saved company, coach ownership and trip factory.
+/// It prepares a trip session; physical route progression is handled by the driving world.
 /// </summary>
 public sealed class RoutePlanningPanel : MonoBehaviour
 {
