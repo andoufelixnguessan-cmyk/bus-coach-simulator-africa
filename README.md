@@ -32,6 +32,8 @@ The target is a serious, immersive coach simulation experience. Bus Simulator: U
 
 A single drivable coach, a polished third-person and cockpit camera, mobile controls, a small test road, basic traffic, and a reliable Android development build.
 
-## Status
+## Development status
 
-Pre-production. The repository is the project source of truth; no playable game build is claimed yet.
+The repository now contains the first Unity project configuration, an editor-driven Android build entry point, and a temporary drivable-road prototype assembled from placeholder geometry. The Android APK pipeline is prepared but requires a Unity Personal license secret in GitHub Actions. The prototype has not yet been compiled, installed, or tested on a phone. It is not a finished realistic simulator and no downloadable APK is claimed yet.
+
+Next gates: compile the Unity project, fix all build errors, replace placeholder coach/world geometry with original quality assets, add cockpit and production touch controls, then install and profile the first Android build on the Samsung Galaxy A07 (4 GB RAM).
