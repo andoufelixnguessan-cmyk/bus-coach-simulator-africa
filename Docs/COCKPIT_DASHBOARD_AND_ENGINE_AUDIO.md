@@ -57,3 +57,10 @@ Le HUD mobile a été réparé et ses commandes ont été repositionnées avec d
 Les clignotants commandent quatre sources lumineuses extérieures (avant/arrière, gauche/droite) avec une cadence de clignotement commune. Les feux de détresse activent les deux côtés et désactivent les clignotants directionnels. Les pleins phares modifient réellement l'intensité des deux projecteurs et le témoin bleu du tableau de bord suit leur état.
 
 **Limite actuelle :** les projecteurs et indicateurs sont encore des lumières Unity de prototype, sans optiques, cabochons, réflecteurs ni matériaux lumineux de production. La vérification de compilation Unity et les essais tactiles sur Android restent à effectuer.
+
+
+## Démarrage et arrêt moteur
+
+Le moteur du prototype démarre désormais à la demande depuis le bouton « DÉMARRER / STOP ». Il ne peut être arrêté ou démarré que lorsque le car est presque immobile ; un démarrage est refusé si le réservoir est vide. Moteur arrêté, le couple moteur est nul, le régime retombe à zéro et la boucle diesel synthétique est coupée. Le régime et le bruit reprennent après démarrage.
+
+Une vérification source a aussi corrigé deux références manquantes dans le cockpit : l'entrée de direction exposée par le contrôleur et le matériau clair utilisé pour les graduations. Cela ne vaut pas compilation Unity : le projet doit encore être ouvert et testé dans l'éditeur.
