@@ -166,7 +166,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
 
     private void ToggleCameraView()
     {
-        if (cameraView != null) cameraView.SetCockpitView(!cameraView.IsCockpitView);
+        if (cameraView != null) cameraView.CycleView();
     }
 
     private Image CreateUtilityButton(Transform parent, string label, Vector2 anchor, Vector2 position,
