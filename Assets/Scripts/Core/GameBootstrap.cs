@@ -111,6 +111,9 @@ public sealed class GameBootstrap : MonoBehaviour
 
         coach = root.AddComponent<CoachVehicleController>();
         coach.Configure(fl, fr, rl, rr, 11000f, 21000f, 24f, 105f);
+        coach.ApplyEngineUpgrade(0);
+        CoachDashboardProfile engineProfile = CoachDashboardProfile.ForCoach("car-moyen");
+        root.AddComponent<CoachEngineAudio>().Configure(coach, engineProfile);
     }
 
     private WheelCollider CreateWheel(Transform parent, string wheelName, Vector3 localPosition)
