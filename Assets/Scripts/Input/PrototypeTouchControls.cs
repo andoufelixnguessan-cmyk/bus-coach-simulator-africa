@@ -156,7 +156,8 @@ public sealed class PrototypeTouchControls : MonoBehaviour
 
     private void ToggleSeatbelt()
     {
-        if (vehicle != null) vehicle.SetSeatbelt(!vehicle.SeatbeltFastened);
+        if (vehicle != null && !vehicle.SetSeatbelt(!vehicle.SeatbeltFastened))
+            Debug.Log("Ceinture : détachez-la uniquement lorsque le car est arrêté.");
         if (vehicle != null && seatbeltText != null)
             seatbeltText.text = vehicle.SeatbeltFastened ? "▤" : "▥";
     }
