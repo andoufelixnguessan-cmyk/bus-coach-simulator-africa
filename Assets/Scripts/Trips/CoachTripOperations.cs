@@ -92,6 +92,14 @@ public sealed class CoachTripOperations
         return TryComplete(company, passengers, safeDriving, safeDrivingBonusXof, 0L, out reason);
     }
 
+    /// <summary>Convenience overload that includes all border fees actually paid.</summary>
+    public bool TryComplete(CompanyProfile company, PassengerTrip passengers, bool safeDriving,
+        long safeDrivingBonusXof, InternationalBorderManager borderManager, out string reason)
+    {
+        long borderCosts = borderManager == null ? 0L : borderManager.GetTotalFeesPaidXof();
+        return TryComplete(company, passengers, safeDriving, safeDrivingBonusXof, borderCosts, out reason);
+    }
+
     /// <summary>
     /// Completes a trip while including separately paid route costs (for example, border fees)
     /// in the minimum international net-profit calculation.
