@@ -6,6 +6,7 @@ public sealed class CoachCockpit3D : MonoBehaviour
 {
     private CoachVehicleController vehicle;
     private Transform wheel, speedNeedle, rpmNeedle, fuelNeedle, tempNeedle;
+    private GameObject seatbeltVisual;
     private readonly List<Renderer> lamps = new List<Renderer>();
     private readonly List<Color> lampOn = new List<Color>();
     private TextMesh display;
@@ -52,6 +53,7 @@ public sealed class CoachCockpit3D : MonoBehaviour
         Part(root,"Center console",new Vector3(.65f,.92f,3.72f),new Vector3(.5f,.16f,.65f),dark);
         Part(root,"Radio screen",new Vector3(.65f,1.12f,3.94f),new Vector3(.28f,.12f,.04f),screenMat);
         BuildWheel(root);
+        BuildDriverSeat(root);
         BuildStalk(root);
     }
 
@@ -110,6 +112,27 @@ public sealed class CoachCockpit3D : MonoBehaviour
         }
     }
 
+
+    private void BuildDriverSeat(Transform root)
+    {
+        Part(root, "Driver seat cushion", new Vector3(-.58f, .63f, 2.70f),
+            new Vector3(.72f, .20f, .78f), dark);
+        Part(root, "Driver seat backrest", new Vector3(-.58f, 1.08f, 3.02f),
+            new Vector3(.72f, .86f, .20f), dark);
+        Part(root, "Driver seat headrest", new Vector3(-.58f, 1.58f, 3.04f),
+            new Vector3(.38f, .26f, .18f), trim);
+
+        seatbeltVisual = new GameObject("Driver three-point seatbelt");
+        seatbeltVisual.transform.SetParent(root, false);
+        GameObject strap = Part(seatbeltVisual.transform, "Seatbelt webbing",
+            new Vector3(-.36f, 1.08f, 2.82f), new Vector3(.055f, .92f, .045f), needleMat);
+        strap.transform.localRotation = Quaternion.Euler(0f, 0f, -34f);
+        Part(seatbeltVisual.transform, "Seatbelt buckle",
+            new Vector3(-.12f, .70f, 2.48f), new Vector3(.12f, .10f, .07f), trim);
+        Part(seatbeltVisual.transform, "Seatbelt anchor",
+            new Vector3(-.84f, .78f, 2.98f), new Vector3(.09f, .12f, .08f), trim);
+    }
+
     private void BuildStalk(Transform root)
     {
         GameObject stalk=GameObject.CreatePrimitive(PrimitiveType.Cylinder); stalk.name="Turn signal stalk";
@@ -122,6 +145,7 @@ public sealed class CoachCockpit3D : MonoBehaviour
     {
         if(vehicle==null)return;
         if(wheel!=null) wheel.localRotation=Quaternion.Lerp(wheel.localRotation,Quaternion.Euler(0,0,-vehicle.SteeringInput*95f),Time.deltaTime*8f);
+        if(seatbeltVisual!=null) seatbeltVisual.SetActive(vehicle.SeatbeltFastened);
         Needle(speedNeedle,Mathf.InverseLerp(0,140,vehicle.SpeedKph));
         Needle(rpmNeedle,vehicle.EngineRpmNormalized);
         Needle(fuelNeedle,vehicle.FuelPercent/100f);
