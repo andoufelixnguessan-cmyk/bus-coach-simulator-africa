@@ -86,9 +86,12 @@ public sealed class GameBootstrap : MonoBehaviour
         hull.size = new Vector3(2.45f, 2.85f, 9.8f);
         hull.center = new Vector3(0f, 1.35f, 0f);
 
-        CreatePart(root.transform, "Coach body", new Vector3(0f, 1.35f, 0f), new Vector3(2.45f, 2.7f, 9.8f), new Color(0.83f, 0.84f, 0.82f));
+        CreatePart(root.transform, "Lower coach body", new Vector3(0f, 0.55f, 0f), new Vector3(2.45f, 1.05f, 9.8f), new Color(0.83f, 0.84f, 0.82f));
+        CreatePart(root.transform, "Coach roof", new Vector3(0f, 2.72f, 0f), new Vector3(2.45f, 0.22f, 9.8f), new Color(0.78f, 0.8f, 0.79f));
+        CreatePart(root.transform, "Left coach side shell", new Vector3(-1.19f, 1.62f, 0f), new Vector3(0.08f, 1.2f, 9.7f), new Color(0.83f, 0.84f, 0.82f));
+        CreatePart(root.transform, "Right coach side shell", new Vector3(1.19f, 1.62f, 0f), new Vector3(0.08f, 1.2f, 9.7f), new Color(0.83f, 0.84f, 0.82f));
         CreatePart(root.transform, "Lower blue skirt", new Vector3(0f, 0.35f, 0f), new Vector3(2.48f, 0.55f, 9.7f), new Color(0.04f, 0.18f, 0.36f));
-        CreatePart(root.transform, "Front windscreen", new Vector3(0f, 2.25f, 4.91f), new Vector3(2.08f, 1.05f, 0.035f), new Color(0.12f, 0.22f, 0.28f));
+        // Clear front opening retained in this prototype for first-person road visibility.
         CreatePart(root.transform, "Rear window", new Vector3(0f, 2.25f, -4.91f), new Vector3(2.05f, 0.8f, 0.035f), new Color(0.12f, 0.22f, 0.28f));
 
         for (int i = 0; i < 7; i++)
@@ -114,6 +117,7 @@ public sealed class GameBootstrap : MonoBehaviour
         coach.ApplyEngineUpgrade(0);
         CoachDashboardProfile engineProfile = CoachDashboardProfile.ForCoach("car-moyen");
         root.AddComponent<CoachEngineAudio>().Configure(coach, engineProfile);
+        root.AddComponent<CoachCockpit3D>().Configure(root.transform, coach, engineProfile);
     }
 
     private WheelCollider CreateWheel(Transform parent, string wheelName, Vector3 localPosition)
@@ -176,6 +180,7 @@ public sealed class GameBootstrap : MonoBehaviour
         cameraObject.AddComponent<AudioListener>();
         cameraFollow = cameraObject.AddComponent<CameraFollow>();
         cameraFollow.SetTarget(coach.transform);
+        cameraFollow.SetCockpitView(true);
     }
 
     private void BuildTouchControls()
