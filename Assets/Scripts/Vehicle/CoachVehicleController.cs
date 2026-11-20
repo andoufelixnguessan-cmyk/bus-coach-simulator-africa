@@ -329,12 +329,12 @@ public sealed class CoachVehicleController : MonoBehaviour
         float parkBrake = gearSelection == GearSelection.Park ? handbrakeTorque * 1.4f : 0f;
         float emergencySpringBrake = airPressureBar < 1f ? handbrakeTorque * 1.4f : 0f;
         float handbrakeForce = handbrake ? handbrakeTorque : 0f;
-        frontLeft.brakeTorque = frontLeftBrake + parkBrake;
-        frontRight.brakeTorque = frontRightBrake + parkBrake;
-        rearLeft.brakeTorque = rearLeftService + handbrakeForce + parkBrake;
-        rearRight.brakeTorque = rearRightService + handbrakeForce + parkBrake;
-        rearLeftInner.brakeTorque = rearLeftInnerService + handbrakeForce + parkBrake;
-        rearRightInner.brakeTorque = rearRightInnerService + handbrakeForce + parkBrake;
+        frontLeft.brakeTorque = frontLeftBrake;
+        frontRight.brakeTorque = frontRightBrake;
+        rearLeft.brakeTorque = rearLeftService + handbrakeForce + parkBrake + emergencySpringBrake;
+        rearRight.brakeTorque = rearRightService + handbrakeForce + parkBrake + emergencySpringBrake;
+        rearLeftInner.brakeTorque = rearLeftInnerService + handbrakeForce + parkBrake + emergencySpringBrake;
+        rearRightInner.brakeTorque = rearRightInnerService + handbrakeForce + parkBrake + emergencySpringBrake;
         body.AddForce(-transform.up * downforce * body.linearVelocity.magnitude);
     }
 
