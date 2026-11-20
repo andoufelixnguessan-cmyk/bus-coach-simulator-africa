@@ -75,20 +75,37 @@ public sealed class RoutePlanningPanel : MonoBehaviour
         panelRect.offsetMin = Vector2.zero;
         panelRect.offsetMax = Vector2.zero;
 
-        AddText(panel.transform, "PLANIFIER UN VOYAGE", 24, 0, -18, 54, TextAnchor.MiddleCenter, Color.white);
-        AddText(panel.transform, "Réseau routier africain • Cars de 6 roues minimum", 13, 0, -55, 54,
+        // The form is vertically scrollable so every control remains reachable on small phones.
+        panel.AddComponent<RectMask2D>();
+        ScrollRect panelScroll = panel.AddComponent<ScrollRect>();
+        panelScroll.horizontal = false;
+        panelScroll.vertical = true;
+        panelScroll.movementType = ScrollRect.MovementType.Clamped;
+
+        GameObject contentObject = CreateUIObject("Scrollable content", panel.transform);
+        RectTransform contentRect = contentObject.GetComponent<RectTransform>();
+        contentRect.anchorMin = new Vector2(0f, 1f);
+        contentRect.anchorMax = new Vector2(1f, 1f);
+        contentRect.pivot = new Vector2(0.5f, 1f);
+        contentRect.anchoredPosition = Vector2.zero;
+        contentRect.sizeDelta = new Vector2(0f, 760f);
+        panelScroll.viewport = panelRect;
+        panelScroll.content = contentRect;
+
+        AddText(contentObject.transform, "PLANIFIER UN VOYAGE", 24, 0, -18, 54, TextAnchor.MiddleCenter, Color.white);
+        AddText(contentObject.transform, "Réseau routier africain • Cars de 6 roues minimum", 13, 0, -55, 54,
             TextAnchor.MiddleCenter, new Color(0.68f, 0.82f, 0.95f));
 
-        AddText(panel.transform, "VILLE DE DÉPART / PROCHAINE ÉTAPE", 14, 0, -94, 44,
+        AddText(contentObject.transform, "VILLE DE DÉPART / PROCHAINE ÉTAPE", 14, 0, -94, 44,
             TextAnchor.MiddleLeft, Color.white);
-        cityDropdown = AddDropdown(panel.transform, "Choisir une ville", 0, -128, 52);
+        cityDropdown = AddDropdown(contentObject.transform, "Choisir une ville", 0, -128, 52);
 
-        addCityButton = AddButton(panel.transform, "Ajouter cette ville au trajet", 0, -185, 52, AddSelectedCity);
-        AddText(panel.transform, "CAR DE VOTRE GARAGE", 14, 0, -245, 42, TextAnchor.MiddleLeft, Color.white);
-        coachDropdown = AddDropdown(panel.transform, "Choisir un car", 0, -278, 52);
+        addCityButton = AddButton(contentObject.transform, "Ajouter cette ville au trajet", 0, -185, 52, AddSelectedCity);
+        AddText(contentObject.transform, "CAR DE VOTRE GARAGE", 14, 0, -245, 42, TextAnchor.MiddleLeft, Color.white);
+        coachDropdown = AddDropdown(contentObject.transform, "Choisir un car", 0, -278, 52);
 
-        AddText(panel.transform, "CLASSE DE SERVICE", 14, 0, -338, 42, TextAnchor.MiddleLeft, Color.white);
-        serviceDropdown = AddDropdown(panel.transform, "Économique", 0, -371, 52);
+        AddText(contentObject.transform, "CLASSE DE SERVICE", 14, 0, -338, 42, TextAnchor.MiddleLeft, Color.white);
+        serviceDropdown = AddDropdown(contentObject.transform, "Économique", 0, -371, 52);
         serviceDropdown.options = new List<Dropdown.OptionData> {
             new Dropdown.OptionData("Économique"),
             new Dropdown.OptionData("Confort"),
@@ -96,10 +113,10 @@ public sealed class RoutePlanningPanel : MonoBehaviour
         };
         serviceDropdown.RefreshShownValue();
 
-        routeText = AddText(panel.transform, "", 15, 0, -448, 120, TextAnchor.UpperLeft, Color.white);
-        AddButton(panel.transform, "Recommencer le trajet", 0, -535, 48, ResetRoute);
-        prepareButton = AddButton(panel.transform, "PRÉPARER LE VOYAGE", 0, -590, 56, PrepareTrip);
-        feedbackText = AddText(panel.transform, "", 14, 0, -650, 64, TextAnchor.MiddleCenter,
+        routeText = AddText(contentObject.transform, "", 15, 0, -448, 120, TextAnchor.UpperLeft, Color.white);
+        AddButton(contentObject.transform, "Recommencer le trajet", 0, -535, 48, ResetRoute);
+        prepareButton = AddButton(contentObject.transform, "PRÉPARER LE VOYAGE", 0, -590, 56, PrepareTrip);
+        feedbackText = AddText(contentObject.transform, "", 14, 0, -650, 64, TextAnchor.MiddleCenter,
             new Color(1f, 0.78f, 0.35f));
         RefreshCityOptions();
     }
