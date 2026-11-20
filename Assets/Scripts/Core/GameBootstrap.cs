@@ -20,6 +20,8 @@ public sealed class GameBootstrap : MonoBehaviour
         return material;
     }
     private CoachVehicleController coach;
+    private CoachWeatherSystem weatherSystem;
+    private AfricanDayNightSystem dayNightSystem;
     private MobileDriveInput input;
     private CameraFollow cameraFollow;
     private MobileGraphicsSettings graphicsSettings;
@@ -93,14 +95,19 @@ public sealed class GameBootstrap : MonoBehaviour
     {
         if (ActiveCompany != null) CompanySaveSystem.Save(ActiveCompany);
         if (coach != null) ActiveCoachSaveSystem.Save(coach);
-        if (CurrentTripSession != null) ActiveTripSaveSystem.Save(CurrentTripSession);
+        if (CurrentTripSession != null) ActiveTripSaveSystem.Save(CurrentTripSession,
+            weatherSystem != null && weatherSystem.IsRaining,
+            dayNightSystem != null && dayNightSystem.IsNight);
     }
 
     private void TryRestoreActiveTrip()
     {
         PlayerTripSession restored;
         string reason;
-        if (!ActiveTripSaveSystem.TryRestore(ActiveCompany, out restored, out reason))
+        bool savedRain;
+        bool savedNight;
+        if (!ActiveTripSaveSystem.TryRestore(ActiveCompany, out restored, out reason,
+            out savedRain, out savedNight))
         {
             if (ActiveTripSaveSystem.HasActiveTripSave)
                 Debug.LogWarning("Voyage sauvegardé non repris : " + reason);
@@ -112,6 +119,8 @@ public sealed class GameBootstrap : MonoBehaviour
         if (passengerManifestPanel != null)
             passengerManifestPanel.Configure(CurrentTripSetup.Passengers, ActiveCompany, ClosePassengerManifest);
         if (drivingHud != null) drivingHud.SetRouteDisplay(CurrentTripSetup);
+        if (weatherSystem != null) weatherSystem.SetRain(savedRain);
+        if (dayNightSystem != null) dayNightSystem.SetNight(savedNight);
         Time.timeScale = 1f;
         Debug.Log("Voyage repris : " + CurrentTripSetup.Itinerary.DisplayName +
             " — prochain arrêt : " + (restored.Progression.NextStop != null
@@ -220,8 +229,10 @@ public sealed class GameBootstrap : MonoBehaviour
         root.AddComponent<CoachCockpit3D>().Configure(root.transform, coach, engineProfile, cabinComfort);
         BuildPassengerDoor(root.transform);
         BuildWipers(root.transform, doubleDeck);
-        root.AddComponent<CoachWeatherSystem>().Configure(coach);
-        root.AddComponent<AfricanDayNightSystem>().Configure();
+        weatherSystem = root.AddComponent<CoachWeatherSystem>();
+        weatherSystem.Configure(coach);
+        dayNightSystem = root.AddComponent<AfricanDayNightSystem>();
+        dayNightSystem.Configure();
         root.AddComponent<CoachCabinLightingSystem>().Configure(
             CreateCabinLight(root.transform, "Cabin ceiling light front", new Vector3(0f, 2.48f, 1.65f)),
             CreateCabinLight(root.transform, "Cabin ceiling light middle", new Vector3(0f, 2.48f, 0f)),
