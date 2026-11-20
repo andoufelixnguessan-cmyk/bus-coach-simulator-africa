@@ -4,36 +4,45 @@
 Produce a real Android APK from this Unity project and test it on the reference phone: Samsung Galaxy A07, 4 GB physical RAM.
 
 ## Current state
-The repository is being converted into a Unity project. An APK is not available until the Unity project opens, the game scene and required assets are complete, and a Unity Android build succeeds. A successful CI build is not by itself proof that the game runs smoothly on the phone.
+An APK is not available yet. The Unity project must compile and the build must complete successfully before an installable file can be shared. A successful CI build is not by itself proof that the game runs smoothly on the phone.
 
 ## Unity version
-The project is pinned to Unity **6000.0.23f1**. Use this exact editor version to avoid project-version drift. Install Android Build Support, Android SDK & NDK Tools, and OpenJDK through Unity Hub.
+The project is pinned to Unity **6000.0.23f1**. Use this exact editor version. On a Windows PC, install Unity Hub, then install this Unity Editor version with **Android Build Support**, **Android SDK & NDK Tools**, and **OpenJDK** modules.
 
-## One-time GitHub build setup
+## Important: current Unity Personal activation method
+The old GitHub workflow that tried to generate a manual .alf activation file has been removed. GameCI now recommends activating Unity Personal locally with Unity Hub, then storing the generated license and Unity account credentials as GitHub Actions secrets. Do not run an old “Request Unity Personal License File” workflow.
 
-A Unity Personal license is required for the automated GitHub build. Never commit a license file or password to the repository.
+### 1. Generate the Unity license on your Windows PC
+1. Install and open Unity Hub: https://unity.com/download
+2. Sign in to your Unity account.
+3. Open **Unity Hub → Preferences → Licenses**.
+4. Click **Add**, then choose **Get a free Personal license** and complete activation.
+5. Confirm that this file exists on Windows: `C:\ProgramData\Unity\Unity_lic.ulf`. The ProgramData folder may be hidden; paste the path into File Explorer's address bar.
+6. Open the .ulf file with Notepad and copy its complete contents. Do not send this file or its contents in chat.
 
+### 2. Add three private GitHub Actions secrets
+Open the repository:
+https://github.com/andoufelixnguessan-cmyk/bus-coach-simulator-africa
+
+Go to **Settings → Secrets and variables → Actions → New repository secret**. Create these three secrets exactly:
+
+- `UNITY_LICENSE` — complete contents of `Unity_lic.ulf`
+- `UNITY_EMAIL` — email address used to sign in to Unity
+- `UNITY_PASSWORD` — password used to sign in to Unity
+
+Save each secret privately in GitHub. Never put these values in source files, commits, screenshots, or chat messages.
+
+### 3. Build the APK
 1. Open the repository's **Actions** tab.
-2. Run **Request Unity Personal License File** using **Run workflow**.
-3. When it finishes, download the **Unity-Activation-Request** artifact and extract the .alf file.
-4. Submit that .alf file at the Unity manual activation page: https://license.unity3d.com/
-5. Download the resulting .ulf license file and open it with a text editor.
-6. In the repository, open **Settings → Secrets and variables → Actions → New repository secret**.
-7. Set the secret name to exactly UNITY_LICENSE and paste the complete contents of the .ulf file as its value. Save it. Do not send the license contents in chat or commit them.
-
-## Build an APK
-
-1. Open **Actions** in the repository.
 2. Select **Build BUS & COACH SIMULATOR AFRICA for Android**.
 3. Press **Run workflow**.
-4. Wait for the job to finish successfully.
-5. Open the completed workflow run and download the artifact **BUS-COACH-SIMULATOR-AFRICA-Android-APK**.
-6. Extract the ZIP; the APK inside can be transferred to the Samsung Galaxy A07 and installed.
+4. If the build succeeds, open that run and download **BUS-COACH-SIMULATOR-AFRICA-Android-APK**.
+5. Extract the ZIP and install the APK on the Samsung Galaxy A07.
 
-The build workflow is manual so ordinary code commits do not trigger a build before the Unity license is configured.
+If the Unity Personal license is already activated on the PC, GameCI's current instructions say to sign out of Unity Hub after copying the license file, so the Personal seat is released for CI use.
 
 ## Device testing
-Install the APK on the Galaxy A07 and test launch, touch controls, a complete driving session, frame rate, heat, memory use and crashes. Record the results before calling the game optimized or ready for release.
+Test launch, touch controls, a complete driving session, frame rate, heat, memory use and crashes on the Galaxy A07. Record results before calling the game optimized or ready for release.
 
 ## Important
-The GitHub workflows only automate building. They do not create missing 3D coach assets, realistic roads, passenger systems, or finished gameplay. The APK must contain a complete playable milestone before it is shared as a game download. Keep the project in development until those requirements are met.
+The build workflow only automates compilation. It does not create missing 3D coach assets, realistic roads, traffic, passengers, or finished gameplay. Keep the project in development until a complete playable milestone has been built and tested.
