@@ -18,7 +18,7 @@ Le réseau est une première base de jeu extensible, pas une carte routière exh
 
 ## Données calculées pour le trajet choisi
 
-Le constructeur d'itinéraire additionne les distances et durées estimées des tronçons sélectionnés, crée les arrêts voyageurs, et ajoute les contrôles frontaliers correspondants. Les frais et temps de frontière sont affichables avant le départ. La route choisie pourra ensuite alimenter l'estimation de carburant, péages, salaires, repas, temps de conduite et recettes.
+Le constructeur d'itinéraire additionne les distances et durées estimées des tronçons sélectionnés, ajoute uniquement les villes et villages connus sur chacun de ces tronçons dans leur ordre de passage, et ajoute les contrôles frontaliers correspondants. Les localités intermédiaires ne sont jamais ajoutées si elles ne se trouvent pas sur le tronçon choisi. Les frais et temps de frontière sont affichables avant le départ. La route choisie pourra ensuite alimenter l'estimation de carburant, péages, salaires, repas, temps de conduite et recettes.
 
 Les valeurs présentes dans le code sont provisoires et destinées à équilibrer le jeu. Elles ne représentent ni des temps de navigation garantis, ni des tarifs officiels, ni une recommandation de sécurité routière.
 
@@ -55,3 +55,10 @@ Le nouveau `PlayerRouteTripFactory.TryCreate(...)` regroupe les validations et l
 - expose le tarif par passager et les frais frontaliers annoncés avant le départ.
 
 Cette fabrique prépare les données du voyage. Elle ne constitue pas encore un écran graphique de planification et ne modifie pas encore la géométrie de la route 3D.
+
+
+## Arrêts de passagers sur le trajet exact
+
+Les tronçons routiers peuvent contenir une liste de localités intermédiaires. Lors de la construction de l'itinéraire, ces localités deviennent des arrêts voyageurs uniquement si le tronçon correspondant fait partie du parcours choisi. Leur ordre est inversé automatiquement lorsque le car circule dans le sens opposé. Exemple de base pour l'axe Abidjan–Yamoussoukro : Anyama, Singrobo, Tiassalé, N'Douci et Toumodi ; pour la suite vers Bouaké : Tiébissou et Djébonoua. Ces arrêts sont des données de prototype à enrichir et à vérifier sur une carte routière détaillée.
+
+`PassengerTrip` permet désormais de réserver un billet entre deux arrêts voyageurs de cet itinéraire, calcule un tarif proportionnel à la portion parcourue et fournit des opérations pour faire monter les passagers à leur arrêt de départ et descendre ceux arrivés à leur arrêt. L'interface Unity doit encore appeler ces méthodes pendant le déroulement du trajet.
