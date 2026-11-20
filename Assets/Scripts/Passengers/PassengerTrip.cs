@@ -398,6 +398,62 @@ public sealed class PassengerTrip
         return -1;
     }
 
+    public void CaptureSaveState(PassengerTripSaveData data)
+    {
+        if (data == null) throw new ArgumentNullException("data");
+        data.PassengerBookings = new PassengerBooking[bookings.Count];
+        for (int i = 0; i < bookings.Count; i++)
+        {
+            PassengerBooking source = bookings[i];
+            data.PassengerBookings[i] = new PassengerBooking(source.TicketId, source.PassengerName,
+                source.Origin, source.Destination, source.ServiceClass, source.SeatNumber,
+                source.LuggageWeightKg, source.FarePaidXof, source.OriginStopId,
+                source.DestinationStopId, source.OriginStopIndex, source.DestinationStopIndex);
+            data.PassengerBookings[i].Status = source.Status;
+        }
+        data.NextTicketNumber = nextTicketNumber;
+        data.LastProcessedPassengerStopIndex = lastProcessedPassengerStopIndex;
+        data.TicketRevenueXof = ticketRevenueXof;
+    }
+
+    public bool RestoreSaveState(PassengerTripSaveData data, out string reason)
+    {
+        reason = string.Empty;
+        if (data == null || data.PassengerBookings == null || data.NextTicketNumber < 1)
+        { reason = "La sauvegarde du manifeste passagers est invalide."; return false; }
+
+        List<PassengerBooking> restored = new List<PassengerBooking>();
+        for (int i = 0; i < data.PassengerBookings.Length; i++)
+        {
+            PassengerBooking source = data.PassengerBookings[i];
+            if (source == null || string.IsNullOrWhiteSpace(source.TicketId) ||
+                source.OriginStopIndex < 0 || source.DestinationStopIndex <= source.OriginStopIndex ||
+                source.DestinationStopIndex >= itineraryStops.Count ||
+                source.SeatNumber < 1 || source.SeatNumber > seatCapacity ||
+                source.FarePaidXof < 0L || source.LuggageWeightKg < 0f ||
+                !Enum.IsDefined(typeof(PassengerTicketStatus), source.Status))
+            { reason = "Une réservation de la sauvegarde est invalide."; return false; }
+
+            PassengerBooking copy = new PassengerBooking(source.TicketId, source.PassengerName,
+                source.Origin, source.Destination, source.ServiceClass, source.SeatNumber,
+                source.LuggageWeightKg, source.FarePaidXof, source.OriginStopId,
+                source.DestinationStopId, source.OriginStopIndex, source.DestinationStopIndex);
+            copy.Status = source.Status;
+            restored.Add(copy);
+        }
+
+        if (data.LastProcessedPassengerStopIndex < -1 ||
+            data.LastProcessedPassengerStopIndex >= itineraryStops.Count)
+        { reason = "La progression du manifeste est invalide."; return false; }
+
+        bookings.Clear();
+        bookings.AddRange(restored);
+        nextTicketNumber = data.NextTicketNumber;
+        lastProcessedPassengerStopIndex = data.LastProcessedPassengerStopIndex;
+        ticketRevenueXof = Math.Max(0L, data.TicketRevenueXof);
+        return true;
+    }
+
     private PassengerBooking FindTicket(string ticketId)
     {
         for (int i = 0; i < bookings.Count; i++)
