@@ -50,6 +50,14 @@ public sealed class CoachCockpit3D : MonoBehaviour
         gearDisplay.characterSize = .012f;
         gearDisplay.color = new Color(.3f, .95f, .85f);
         Part(root,"Passenger glovebox",new Vector3(.78f,1.16f,4.12f),new Vector3(.82f,.3f,.42f),trim);
+        Part(root,"Left air conditioning vent",new Vector3(-.82f,1.62f,4.02f),new Vector3(.24f,.08f,.035f),trim);
+        Part(root,"Right air conditioning vent",new Vector3(.82f,1.62f,4.02f),new Vector3(.24f,.08f,.035f),trim);
+        for(int vent=0;vent<3;vent++)
+        {
+            float ventY=1.60f+vent*.025f;
+            Part(root,"Left vent slat",new Vector3(-.82f,ventY,3.99f),new Vector3(.18f,.008f,.012f),white);
+            Part(root,"Right vent slat",new Vector3(.82f,ventY,3.99f),new Vector3(.18f,.008f,.012f),white);
+        }
         Part(root,"Center console",new Vector3(.65f,.92f,3.72f),new Vector3(.5f,.16f,.65f),dark);
         Part(root,"Radio screen",new Vector3(.65f,1.12f,3.94f),new Vector3(.28f,.12f,.04f),screenMat);
         BuildWheel(root);
