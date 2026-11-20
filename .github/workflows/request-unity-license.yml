@@ -1,0 +1,22 @@
+name: Request Unity Personal License File
+
+on:
+  workflow_dispatch:
+
+jobs:
+  request-activation:
+    name: Generate Unity activation request
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request manual activation file
+        id: activation
+        uses: webbertakken/unity-request-manual-activation@v2
+        with:
+          unityVersion: 6000.0.23f1
+
+      - name: Upload activation request
+        uses: actions/upload-artifact@v4
+        with:
+          name: Unity-Activation-Request
+          path: ${{ steps.activation.outputs.filePath }}
+          if-no-files-found: error
