@@ -44,3 +44,11 @@ The repository contains a manual GitHub Actions Android build workflow. The Unit
 ## Verification limits
 
 Source-level structural checks do not prove that the project compiles or runs. No APK should be described as ready until the pinned Unity Editor compiles the project, the Android build succeeds, and the APK has been installed and tested on a physical device.
+
+
+## Corrections de sécurité — manifeste et dépenses (20 novembre 2026)
+
+- Le panneau de manifeste ne peut plus déclencher librement un arrêt choisi dans une liste : il ne traite que l'embarquement initial au terminal d'origine.
+- Les arrêts intermédiaires, les postes-frontières et la destination doivent passer par `RouteProgressionController`, qui impose l'ordre de l'itinéraire et les validations documentaires.
+- `CoachTripOperations.TryDepart` recalcule désormais les cinq postes de dépenses avec une addition contrôlée (`checked`) et rejette les montants négatifs ou les dépassements avant tout débit de l'entreprise.
+- Ces corrections sont intégrées au dépôt source ; compilation Unity, tests de scène et essais sur téléphone restent à effectuer.
