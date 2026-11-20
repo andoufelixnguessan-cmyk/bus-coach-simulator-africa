@@ -22,7 +22,11 @@ public sealed class CoachEngineAudio : MonoBehaviour
         source = GetComponent<AudioSource>();
         source.playOnAwake = false;
         source.loop = true;
-        source.spatialBlend = 0f;
+        source.spatialBlend = 1f;
+        source.minDistance = 2.5f;
+        source.maxDistance = 55f;
+        source.rolloffMode = AudioRolloffMode.Logarithmic;
+        source.dopplerLevel = 0.15f;
         source.volume = profile.EngineVolume;
         source.clip = AudioClip.Create("Procedural diesel - " + profile.CoachId, SampleRate, 1, SampleRate, true, OnAudioRead);
         source.Play();
