@@ -8,6 +8,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     private CoachVehicleController vehicle;
     private CoachWiperSystem wipers;
     private CoachCabinLightingSystem cabinLights;
+    private CoachCabinComfortSystem cabinComfort;
     private MobileDriveInput input;
     private MobileGraphicsSettings graphics;
     private Text speedText;
@@ -17,16 +18,17 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     private CoachHudIcon seatbeltIcon;
     private CoachHudIcon doorIcon;
     private Image leftIndicatorImage, hazardImage, rightIndicatorImage, headlightImage, highBeamImage, engineImage;
-    private Image seatbeltPanelImage, doorPanelImage, wiperImage, cabinLightImage;
+    private Image seatbeltPanelImage, doorPanelImage, wiperImage, cabinLightImage, acImage;
     private int lastHudRefreshFrame;
     private CameraFollow cameraView;
 
     public void Configure(CoachVehicleController target, MobileDriveInput driveInput,
-        MobileGraphicsSettings graphicsSettings, CameraFollow camera, CoachWiperSystem wiperSystem, CoachCabinLightingSystem cabinLightingSystem)
+        MobileGraphicsSettings graphicsSettings, CameraFollow camera, CoachWiperSystem wiperSystem, CoachCabinLightingSystem cabinLightingSystem, CoachCabinComfortSystem cabinComfortSystem)
     {
         vehicle = target;
         wipers = wiperSystem;
         cabinLights = cabinLightingSystem;
+        cabinComfort = cabinComfortSystem;
         input = driveInput;
         graphics = graphicsSettings;
         cameraView = camera;
@@ -61,6 +63,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         }
         if (wipers != null) SetButtonState(wiperImage, wipers.IsEnabled);
         if (cabinLights != null) SetButtonState(cabinLightImage, cabinLights.IsOn);
+        if (cabinComfort != null) SetButtonState(acImage, cabinComfort.AirConditioningOn);
     }
 
     private void BuildCanvas()
@@ -129,6 +132,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         CreatePassengerDoorButton(safeRoot);
         CreateGearSelectorButton(safeRoot);
         CreateCabinLightButton(safeRoot);
+        CreateAirConditioningButton(safeRoot);
     }
 
     private void CreateSeatbeltButton(Transform parent)
@@ -191,6 +195,18 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     {
         cabinLightImage = CreateUtilityButton(parent, "☾", new Vector2(0.5f, 1f),
             new Vector2(-130f, -270f), ToggleCabinLights);
+    }
+
+
+    private void CreateAirConditioningButton(Transform parent)
+    {
+        acImage = CreateUtilityButton(parent, "❄", new Vector2(0.5f, 1f),
+            new Vector2(130f, -270f), ToggleAirConditioning);
+    }
+
+    private void ToggleAirConditioning()
+    {
+        if (cabinComfort != null) cabinComfort.ToggleAirConditioning();
     }
 
     private void ToggleCabinLights()
@@ -261,6 +277,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
             case "P": return CoachHudIcon.IconType.Parking;
             case "≋": return CoachHudIcon.IconType.Wipers;
             case "☾": return CoachHudIcon.IconType.CabinLight;
+            case "❄": return CoachHudIcon.IconType.AirConditioning;
             default: return CoachHudIcon.IconType.Warning;
         }
     }
