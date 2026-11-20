@@ -16,6 +16,7 @@ public sealed class AfricanTrafficSystem : MonoBehaviour
     }
 
     private readonly List<TrafficVehicle> vehicles = new List<TrafficVehicle>();
+    private static readonly Dictionary<Color, Material> SharedMaterials = new Dictionary<Color, Material>();
     private static readonly Color[] VehicleColors =
     {
         new Color(0.72f, 0.16f, 0.10f),
@@ -122,8 +123,12 @@ public sealed class AfricanTrafficSystem : MonoBehaviour
 
     private static Material MaterialFor(Color color)
     {
+        if (SharedMaterials.TryGetValue(color, out Material existing) && existing != null)
+            return existing;
         Shader shader = Shader.Find("Universal Render Pipeline/Lit");
         if (shader == null) shader = Shader.Find("Standard");
-        return new Material(shader) { color = color };
+        Material material = new Material(shader) { color = color };
+        SharedMaterials[color] = material;
+        return material;
     }
 }
