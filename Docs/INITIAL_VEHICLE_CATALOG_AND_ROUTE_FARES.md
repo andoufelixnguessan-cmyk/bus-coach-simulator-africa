@@ -2,7 +2,7 @@
 
 ## Décisions générales
 
-BUS & COACH SIMULATOR AFRICA est exclusivement consacré aux cars et autocars de transport de voyageurs : minicars interurbains, minibus, cars moyens, autocars standards, confort, tourisme, premium et autocars à deux étages. Aucun autobus urbain, bus articulé, camion, voiture ou moto ne fait partie du catalogue jouable.
+BUS & COACH SIMULATOR AFRICA est exclusivement consacré aux vrais cars et autocars de transport interurbain et de tourisme. **Aucun minicar à 4 roues, véhicule léger, autobus urbain, bus articulé, camion, voiture ou moto** ne fait partie du catalogue jouable. Chaque véhicule jouable possède au minimum 6 roues : 2 roues avant et au moins 4 roues arrière (roues jumelées), ou une configuration multi-essieux équivalente.
 
 Une seule monnaie existe : **FCFA (XOF)**. Elle sert à acheter les autocars, financer les voyages, payer les dépenses, améliorer et personnaliser les véhicules. Aucun système de pièces ou monnaie secondaire.
 
@@ -12,23 +12,20 @@ Tous les prix ci-dessous sont des **valeurs de jeu provisoires**, pas des prix r
 
 | Catégorie | Capacité passagers cible | Prix de jeu | Disponibilité |
 |---|---:|---:|---|
-| Minicar interurbain | 16–22 | 9 000 000 FCFA | Départ |
-| Minibus / petit car | 23–30 | 14 000 000 FCFA | Départ ou premier achat |
-| Car moyen | 31–39 | 22 000 000 FCFA | Compagnie niveau 2 |
-| Autocar standard | 40–49 | 32 000 000 FCFA | Compagnie niveau 3 |
-| Autocar confort | 45–53 | 42 000 000 FCFA | Compagnie niveau 4 |
-| Grand tourisme | 49–57 | 58 000 000 FCFA | Compagnie niveau 5 |
-| Autocar premium longue distance | 51–59 | 75 000 000 FCFA | Compagnie niveau 7 |
-| Autocar double étage | 70–83 | 95 000 000 FCFA | Compagnie niveau 9 |
+| Car interurbain 6 roues | 31–39 | 22 000 000 FCFA | Départ |
+| Autocar standard 6 roues | 40–49 | 32 000 000 FCFA | Compagnie niveau 2 |
+| Autocar confort 6 roues | 45–53 | 42 000 000 FCFA | Compagnie niveau 3 |
+| Grand tourisme 6 roues | 49–57 | 58 000 000 FCFA | Compagnie niveau 4 |
+| Autocar premium longue distance 6 roues | 51–59 | 75 000 000 FCFA | Compagnie niveau 6 |
+| Autocar double étage tourisme 10 roues | 70–83 | 95 000 000 FCFA | Compagnie niveau 8 |
 
-Les nombres indiquent les sièges passagers, hors conducteur et accompagnateur. Les variantes avec toilettes, espace bagages ou espacement supérieur peuvent réduire la capacité. Ne jamais dépasser le nombre de sièges réellement modélisés.
+Les nombres indiquent les sièges passagers, hors conducteur et accompagnateur. Le nombre minimal de roues est une règle ferme du jeu : aucun modèle à 4 roues ne peut être acheté, conduit ou débloqué. Les variantes avec toilettes, espace bagages ou espacement supérieur peuvent réduire la capacité. Ne jamais dépasser le nombre de sièges réellement modélisés.
 
 ### Marques et modèles de référence
 
 Les marques sont des références de véhicules à représenter uniquement après vérification des licences nécessaires. À défaut d'autorisation, créer des marques et carrosseries originales sans copier les logos ou dessins protégés.
 
-- Minicars/minibus : Toyota Coaster, Hyundai County, Isuzu Novo.
-- Cars moyens : Otokar Sultan, Isuzu Turquoise.
+- Cars interurbains et autocars : Otokar Sultan, Isuzu Turquoise, Yutong, Higer, Golden Dragon, MAN Lion's Intercity.
 - Autocars standards et confort : Yutong, Higer, Golden Dragon, MAN Lion's Intercity.
 - Grand tourisme : Mercedes-Benz Tourismo, MAN Lion's Coach, Scania Touring, Volvo 9700.
 - Premium : Setra ComfortClass, Irizar i6.
@@ -66,7 +63,7 @@ Le tarif VIP n'est proposé que si le car possède réellement les équipements 
 
 ## 3. Économie accessible : ne pas rendre le jeu trop difficile
 
-- Le joueur commence avec un minicar ou un minibus utilisable immédiatement, sans devoir économiser pendant des heures.
+- Le joueur commence avec un véritable car interurbain d'au moins 6 roues, 31 à 39 places, acheté grâce au capital de départ. Il peut prendre la route dès le tutoriel.
 - Le tutoriel finance le premier départ et explique les recettes et dépenses.
 - Les premières lignes sont courtes, rentables et disponibles tôt.
 - Le joueur peut partir avec un taux de remplissage raisonnable : il ne faut pas exiger 100 % des sièges pour rentabiliser un trajet.
