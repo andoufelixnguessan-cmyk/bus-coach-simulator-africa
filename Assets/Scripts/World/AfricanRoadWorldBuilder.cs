@@ -14,6 +14,21 @@ public static class AfricanRoadWorldBuilder
     private const float ShoulderWidth = 1.35f;
     private const float CorridorLength = SegmentCount * SegmentLength;
 
+    public static float BuiltCorridorLength => CorridorLength;
+
+    public static Vector3 GetLanePoint(float z, float lateralOffset)
+    {
+        return OffsetPoint(Mathf.Clamp(z, 0f, CorridorLength), lateralOffset);
+    }
+
+    public static Quaternion GetRoadRotation(float z, bool forward)
+    {
+        float sample = Mathf.Clamp(z, 2f, CorridorLength - 2f);
+        Vector3 tangent = new Vector3(CenterX(sample + 2f) - CenterX(sample - 2f), 0f, 4f).normalized;
+        if (!forward) tangent = -tangent;
+        return Quaternion.LookRotation(tangent, Vector3.up);
+    }
+
     public static void BuildStarterCorridor()
     {
         RenderSettings.ambientLight = new Color(0.62f, 0.64f, 0.67f);
