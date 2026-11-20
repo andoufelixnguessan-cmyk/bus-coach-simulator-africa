@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>
 /// Single orchestration point for preparing, departing, progressing and closing a player trip.
@@ -85,6 +87,68 @@ public sealed class PlayerTripSession
     public bool TryComplete(bool safeDriving, long safeDrivingBonusXof, out string reason)
     {
         return Progression.TryCompleteTrip(safeDriving, safeDrivingBonusXof, out reason);
+    }
+
+    public void CaptureSaveState(PlayerTripSaveData data)
+    {
+        if (data == null) throw new ArgumentNullException("data");
+        data.SaveVersion = PlayerTripSaveData.CurrentVersion;
+        data.RouteId = Setup.Itinerary.RouteId;
+        data.RouteDisplayName = Setup.Itinerary.DisplayName;
+        data.EstimatedDistanceKm = Setup.Itinerary.EstimatedDistanceKm;
+        data.EstimatedDrivingMinutes = Setup.Itinerary.EstimatedDrivingMinutes;
+        data.RouteStops = Setup.Itinerary.Stops.ToArray();
+        data.RouteBorders = Setup.Itinerary.Borders.ToArray();
+        data.ServiceClass = (int)Setup.ServiceClass;
+        data.NextStopIndex = Progression.NextStopIndex;
+        Setup.Passengers.CaptureSaveState(data);
+        Setup.Borders.CaptureSaveState(data);
+        Operations.CaptureSaveState(data);
+    }
+
+    public static bool TryRestoreFromSave(PlayerTripSaveData data, CompanyProfile company,
+        out PlayerTripSession session, out string reason)
+    {
+        session = null;
+        reason = string.Empty;
+        if (data == null || company == null || data.SaveVersion != PlayerTripSaveData.CurrentVersion ||
+            string.IsNullOrWhiteSpace(data.TripId) || string.IsNullOrWhiteSpace(data.CoachId) ||
+            !company.OwnsCoach(data.CoachId) || data.RouteStops == null || data.RouteStops.Length < 2 ||
+            data.RouteBorders == null || !Enum.IsDefined(typeof(CoachServiceClass), data.ServiceClass))
+        {
+            reason = "La sauvegarde du voyage est incomplète ou ne correspond plus à votre compagnie.";
+            return false;
+        }
+
+        try
+        {
+            RouteItinerary itinerary = new RouteItinerary(data.RouteId, data.RouteDisplayName,
+                data.EstimatedDistanceKm, data.EstimatedDrivingMinutes,
+                new List<RouteStop>(data.RouteStops), new List<BorderCheckpoint>(data.RouteBorders));
+            RouteFare fare = RouteEconomy.CreateFareForItinerary(itinerary);
+            if (fare == null) { reason = "Impossible de recalculer le tarif de l'itinéraire sauvegardé."; return false; }
+
+            CoachServiceClass serviceClass = (CoachServiceClass)data.ServiceClass;
+            PassengerTrip passengers = new PassengerTrip(data.TripId, data.CoachId, itinerary, serviceClass);
+            if (!passengers.RestoreSaveState(data, out reason)) return false;
+
+            InternationalBorderManager borders = new InternationalBorderManager(itinerary);
+            if (!borders.RestoreSaveState(data, out reason)) return false;
+
+            PlayerRouteTripSetup setup = new PlayerRouteTripSetup(itinerary, fare,
+                passengers, borders, data.CoachId, serviceClass);
+            PlayerTripSession restored = new PlayerTripSession(setup, company);
+            if (!restored.Operations.RestoreSaveState(data, out reason)) return false;
+            if (!restored.Progression.RestoreNextStopIndex(data.NextStopIndex, out reason)) return false;
+
+            session = restored;
+            return true;
+        }
+        catch (Exception exception)
+        {
+            reason = "Impossible de restaurer ce voyage : " + exception.Message;
+            return false;
+        }
     }
 
     private static bool TryCalculateCosts(TripOperatingCosts costs, out long total)
