@@ -166,11 +166,16 @@ public sealed class CoachVehicleController : MonoBehaviour
             throttleInput = 0f;
             return true;
         }
-        if (SpeedKph > 1f || fuelPercent <= 0f || PassengerDoorOpen) return false;
+        if (SpeedKph > 1f || fuelPercent <= 0f || PassengerDoorOpen || !SeatbeltFastened) return false;
         EngineRunning = true;
         return true;
     }
-    public void SetSeatbelt(bool fastened) { SeatbeltFastened = fastened; }
+    public bool SetSeatbelt(bool fastened)
+    {
+        if (!fastened && SpeedKph > 1f) return false;
+        SeatbeltFastened = fastened;
+        return true;
+    }
 
     /// <summary>Passenger doors may only be operated while the coach is fully stopped.</summary>
     public bool TogglePassengerDoor()
