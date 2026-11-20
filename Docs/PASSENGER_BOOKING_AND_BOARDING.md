@@ -36,3 +36,6 @@ PassengerTrip.TryProcessPassengerStop(...) traite un arrêt de l'itinéraire dan
 Les tarifs entre deux arrêts sont calculés en fonction du nombre de portions voyageurs réellement parcourues, sans compter les postes frontières comme des arrêts commerciaux. La capacité des sièges et des soutes tient compte du chevauchement des portions de voyage, ce qui permet de réutiliser une place plus loin sur la ligne.
 
 Ces méthodes métier sont présentes dans le code, mais elles ne sont pas encore reliées à des animations de passagers ni validées dans une scène Unity.
+
+
+Les réservations dont l'arrêt de montée est déjà dépassé sans embarquement sont automatiquement marquées « absent ». La clôture du voyage refuse désormais de s'effectuer tant qu'un passager reste à bord après son arrêt de destination prévu : le jeu ne transforme plus silencieusement un oubli d'arrêt en arrivée finale.
