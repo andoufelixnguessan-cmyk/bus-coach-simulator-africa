@@ -10,8 +10,8 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     private MobileGraphicsSettings graphics;
     private Text speedText;
     private Text qualityText;
-    private Text seatbeltText;
-    private Text doorText;
+    private CoachHudIcon seatbeltIcon;
+    private CoachHudIcon doorIcon;
     private Image leftIndicatorImage, hazardImage, rightIndicatorImage, headlightImage, highBeamImage, engineImage;
     private Image seatbeltPanelImage, doorPanelImage;
     private int lastHudRefreshFrame;
@@ -35,10 +35,10 @@ public sealed class PrototypeTouchControls : MonoBehaviour
             speedText.text = "VITESSE  " + Mathf.RoundToInt(vehicle.SpeedKph) + " km/h";
         if (graphics != null && qualityText != null)
             qualityText.text = "GRAPHISMES  " + graphics.PresetLabel;
-        if (vehicle != null && seatbeltText != null)
-            seatbeltText.text = vehicle.SeatbeltFastened ? "▤" : "▥";
-        if (vehicle != null && doorText != null)
-            doorText.text = vehicle.PassengerDoorOpen ? "◧" : "▣";
+        if (vehicle != null && seatbeltIcon != null)
+            seatbeltIcon.SetIcon(vehicle.SeatbeltFastened ? CoachHudIcon.IconType.SeatbeltOn : CoachHudIcon.IconType.SeatbeltOff);
+        if (vehicle != null && doorIcon != null)
+            doorIcon.SetIcon(vehicle.PassengerDoorOpen ? CoachHudIcon.IconType.DoorOpen : CoachHudIcon.IconType.DoorClosed);
         if (vehicle != null)
         {
             SetButtonState(leftIndicatorImage, vehicle.LeftIndicatorOn);
@@ -126,9 +126,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         button.targetGraphic = panel.GetComponent<Image>();
         button.onClick.AddListener(ToggleSeatbelt);
         seatbeltPanelImage = panel.GetComponent<Image>();
-        seatbeltText = CreateText(panel.transform, "▤", 26, TextAnchor.MiddleCenter);
-        seatbeltText.resizeTextMinSize = 20;
-        seatbeltText.resizeTextMaxSize = 26;
+        seatbeltIcon = CreateIcon(panel.transform, CoachHudIcon.IconType.SeatbeltOn);
     }
 
 
@@ -141,25 +139,23 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         button.targetGraphic = panel.GetComponent<Image>();
         button.onClick.AddListener(TogglePassengerDoor);
         doorPanelImage = panel.GetComponent<Image>();
-        doorText = CreateText(panel.transform, "▣", 26, TextAnchor.MiddleCenter);
-        doorText.resizeTextMinSize = 20;
-        doorText.resizeTextMaxSize = 26;
+        doorIcon = CreateIcon(panel.transform, CoachHudIcon.IconType.DoorClosed);
     }
 
     private void TogglePassengerDoor()
     {
         if (vehicle != null && !vehicle.TogglePassengerDoor())
             Debug.Log("Porte passagers verrouillée : arrêtez complètement le car.");
-        if (vehicle != null && doorText != null)
-            doorText.text = vehicle.PassengerDoorOpen ? "◧" : "▣";
+        if (vehicle != null && doorIcon != null)
+            doorIcon.SetIcon(vehicle.PassengerDoorOpen ? CoachHudIcon.IconType.DoorOpen : CoachHudIcon.IconType.DoorClosed);
     }
 
     private void ToggleSeatbelt()
     {
         if (vehicle != null && !vehicle.SetSeatbelt(!vehicle.SeatbeltFastened))
             Debug.Log("Ceinture : détachez-la uniquement lorsque le car est arrêté.");
-        if (vehicle != null && seatbeltText != null)
-            seatbeltText.text = vehicle.SeatbeltFastened ? "▤" : "▥";
+        if (vehicle != null && seatbeltIcon != null)
+            seatbeltIcon.SetIcon(vehicle.SeatbeltFastened ? CoachHudIcon.IconType.SeatbeltOn : CoachHudIcon.IconType.SeatbeltOff);
     }
 
     private void ToggleEngine()
@@ -181,9 +177,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         Button button = panel.AddComponent<Button>();
         button.targetGraphic = panel.GetComponent<Image>();
         button.onClick.AddListener(action);
-        Text text = CreateText(panel.transform, label, 15, TextAnchor.MiddleCenter);
-        text.resizeTextMinSize = 9;
-        text.resizeTextMaxSize = 15;
+        CreateIcon(panel.transform, IconForSymbol(label));
         return panel.GetComponent<Image>();
     }
 
@@ -210,9 +204,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
                 : new Color(0.08f, 0.22f, 0.38f, 0.94f);
         GameObject panel = CreatePanel(parent, label + " button", anchor, pivot, position, size, color);
         panel.AddComponent<MobileHoldButton>().Configure(input, action);
-        Text labelText = CreateText(panel.transform, label, 20, TextAnchor.MiddleCenter);
-        labelText.resizeTextMinSize = 14;
-        labelText.resizeTextMaxSize = 22;
+        CreateIcon(panel.transform, IconForSymbol(label));
     }
 
     private static GameObject CreatePanel(Transform parent, string objectName, Vector2 anchor, Vector2 pivot,
