@@ -278,6 +278,18 @@ public static class AfricanRoadWorldBuilder
         Object.Destroy(part.GetComponent<Collider>());
     }
 
+    private static void CreateStationPart(Transform parent, string partName, Vector3 localPosition,
+        Vector3 scale, Material material)
+    {
+        GameObject part = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        part.name = partName;
+        part.transform.SetParent(parent, false);
+        part.transform.localPosition = localPosition;
+        part.transform.localScale = scale;
+        part.GetComponent<Renderer>().sharedMaterial = material;
+        Object.Destroy(part.GetComponent<Collider>());
+    }
+
     private static void BuildVegetation()
     {
         Mesh trunkMesh = PrimitiveMesh(PrimitiveType.Cylinder);
