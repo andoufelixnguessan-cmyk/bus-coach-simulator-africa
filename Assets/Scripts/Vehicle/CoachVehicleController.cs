@@ -41,6 +41,8 @@ public sealed class CoachVehicleController : MonoBehaviour
     private float gearShiftCooldown;
     private bool absActive;
     private float accessoryLoad;
+    private float baseMotorTorque = 11000f;
+    private float baseMaxSpeedKph = 105f;
     private Light leftHeadlight, rightHeadlight;
     private Light[] indicatorLights = System.Array.Empty<Light>();
     private Light[] brakeLights = System.Array.Empty<Light>();
@@ -156,10 +158,12 @@ public sealed class CoachVehicleController : MonoBehaviour
     {
         frontLeft = fl; frontRight = fr; rearLeft = rl; rearRight = rr;
         rearLeftInner = rli; rearRightInner = rri;
-        motorTorque = Mathf.Max(0f, driveTorque);
+        baseMotorTorque = Mathf.Max(0f, driveTorque);
+        motorTorque = baseMotorTorque;
         serviceBrakeTorque = Mathf.Max(0f, brakeTorque);
         maxSteerAngle = Mathf.Clamp(steeringAngle, 5f, 45f);
-        maxSpeedKph = Mathf.Max(10f, speedLimitKph);
+        baseMaxSpeedKph = Mathf.Max(10f, speedLimitKph);
+        maxSpeedKph = baseMaxSpeedKph;
     }
 
     public void Configure(WheelCollider fl, WheelCollider fr,
@@ -181,8 +185,8 @@ public sealed class CoachVehicleController : MonoBehaviour
     public void ApplyEngineUpgrade(int level)
     {
         engineUpgradeLevel = Mathf.Clamp(level, 0, 5);
-        motorTorque = 11000f * (1f + engineUpgradeLevel * 0.07f);
-        maxSpeedKph = 105f + engineUpgradeLevel * 2f;
+        motorTorque = baseMotorTorque * (1f + engineUpgradeLevel * 0.07f);
+        maxSpeedKph = baseMaxSpeedKph + engineUpgradeLevel * 2f;
     }
 
     public void SetIndicators(bool left, bool right)
