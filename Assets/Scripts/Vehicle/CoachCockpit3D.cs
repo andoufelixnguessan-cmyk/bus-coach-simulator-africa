@@ -11,11 +11,14 @@ public sealed class CoachCockpit3D : MonoBehaviour
     private readonly List<Color> lampOn = new List<Color>();
     private TextMesh display;
     private TextMesh gearDisplay;
+    private TextMesh climateDisplay;
+    private CoachCabinComfortSystem cabinComfort;
     private Material dark, trim, face, needleMat, screenMat, white;
 
-    public void Configure(Transform root, CoachVehicleController target, CoachDashboardProfile profile)
+    public void Configure(Transform root, CoachVehicleController target, CoachDashboardProfile profile, CoachCabinComfortSystem comfort)
     {
         vehicle=target;
+        cabinComfort=comfort;
         dark=Mat(new Color(.025f,.035f,.045f)); trim=Mat(new Color(.10f,.13f,.15f));
         face=Mat(new Color(.008f,.014f,.02f)); needleMat=Mat(new Color(.95f,.12f,.06f));
         screenMat=Mat(new Color(.015f,.10f,.12f)); white=Mat(new Color(.82f,.86f,.88f));
@@ -60,6 +63,17 @@ public sealed class CoachCockpit3D : MonoBehaviour
         }
         Part(root,"Center console",new Vector3(.65f,.92f,3.72f),new Vector3(.5f,.16f,.65f),dark);
         Part(root,"Radio screen",new Vector3(.65f,1.12f,3.94f),new Vector3(.28f,.12f,.04f),screenMat);
+        Part(root,"Cabin temperature display",new Vector3(.65f,.95f,3.94f),new Vector3(.28f,.12f,.04f),screenMat);
+        GameObject climateObject = new GameObject("Cabin temperature readout");
+        climateObject.transform.SetParent(root, false);
+        climateObject.transform.localPosition = new Vector3(.65f,.95f,3.91f);
+        climateObject.transform.localRotation = Quaternion.Euler(0,180,0);
+        climateDisplay = climateObject.AddComponent<TextMesh>();
+        climateDisplay.anchor = TextAnchor.MiddleCenter;
+        climateDisplay.alignment = TextAlignment.Center;
+        climateDisplay.fontSize = 28;
+        climateDisplay.characterSize = .008f;
+        climateDisplay.color = new Color(.3f,.95f,.85f);
         BuildWheel(root);
         BuildDriverSeat(root);
         BuildStalk(root);
@@ -160,6 +174,7 @@ public sealed class CoachCockpit3D : MonoBehaviour
         Needle(tempNeedle,Mathf.InverseLerp(60,120,vehicle.CoolantTemperatureC));
         if(display!=null) display.text=Mathf.RoundToInt(vehicle.SpeedKph)+" km/h\n"+Mathf.RoundToInt(vehicle.EngineRpm)+" rpm   FUEL "+Mathf.RoundToInt(vehicle.FuelPercent)+"%";
         if(gearDisplay!=null) gearDisplay.text=vehicle.CurrentGearLabel;
+        if(climateDisplay!=null) climateDisplay.text=cabinComfort==null?"-- C":Mathf.RoundToInt(cabinComfort.CabinTemperatureC)+" C";
         bool flash=Mathf.Repeat(Time.time,.8f)<.4f;
         bool[] active={(vehicle.LeftIndicatorOn||vehicle.HazardLightsOn)&&flash,(vehicle.RightIndicatorOn||vehicle.HazardLightsOn)&&flash,vehicle.HighBeamOn&&vehicle.HeadlightsOn,vehicle.ParkingBrakeApplied,!vehicle.SeatbeltFastened,vehicle.AbsWarning,vehicle.EngineWarning,vehicle.DoorWarning,vehicle.AirPressureWarning||vehicle.FuelWarning};
         for(int i=0;i<lamps.Count;i++) lamps[i].sharedMaterial.color=active[i]?lampOn[i]:new Color(.06f,.07f,.08f);
