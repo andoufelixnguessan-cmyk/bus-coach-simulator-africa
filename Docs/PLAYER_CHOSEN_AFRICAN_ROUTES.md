@@ -22,6 +22,18 @@ Le constructeur d'itinéraire additionne les distances et durées estimées des 
 
 Les valeurs présentes dans le code sont provisoires et destinées à équilibrer le jeu. Elles ne représentent ni des temps de navigation garantis, ni des tarifs officiels, ni une recommandation de sécurité routière.
 
+## Tarification automatique des itinéraires personnalisés
+
+Tout itinéraire construit par le joueur peut maintenant produire son propre objet tarifaire :
+- les lignes déjà présentes dans le catalogue conservent leurs trois tarifs validés ;
+- les autres itinéraires utilisent une estimation provisoire selon la distance : 30 FCFA/km en Économique, 40 FCFA/km en Confort et 55 FCFA/km en VIP ;
+- les montants sont arrondis aux 500 FCFA les plus proches ; les planchers sont de 5 000 FCFA sur une ligne nationale et 15 000 FCFA sur une ligne internationale ;
+- le statut international est détecté automatiquement à partir des contrôles de frontière ou des pays traversés. Il ne dépend pas d'une case à cocher manuelle.
+
+La création d'un trajet passagers accepte directement un `RouteItinerary` et construit le tarif correspondant. Ainsi, un itinéraire personnalisé traversant une frontière est marqué international et entre dans le calcul de la garantie de bénéfice minimum de 500 000 FCFA à la fin d'un voyage admissible.
+
+Ces tarifs personnalisés sont des paramètres d'équilibrage du jeu, et non des prix de transport réels. Ils devront être ajustés après essais dans le jeu.
+
 ## API de code ajoutée
 
 - `AfricanRoutePlanner.AllCities` : villes disponibles.
