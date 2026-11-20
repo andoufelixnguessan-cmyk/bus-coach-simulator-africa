@@ -115,9 +115,28 @@ public sealed class GameBootstrap : MonoBehaviour
         coach = root.AddComponent<CoachVehicleController>();
         coach.Configure(fl, fr, rl, rr, 11000f, 21000f, 24f, 105f);
         coach.ApplyEngineUpgrade(0);
+        Light leftHeadlamp = CreateHeadlamp(root.transform, "Left headlamp", new Vector3(-0.72f, 0.92f, 4.98f));
+        Light rightHeadlamp = CreateHeadlamp(root.transform, "Right headlamp", new Vector3(0.72f, 0.92f, 4.98f));
+        coach.ConfigureHeadlights(leftHeadlamp, rightHeadlamp);
         CoachDashboardProfile engineProfile = CoachDashboardProfile.ForCoach("car-moyen");
         root.AddComponent<CoachEngineAudio>().Configure(coach, engineProfile);
         root.AddComponent<CoachCockpit3D>().Configure(root.transform, coach, engineProfile);
+    }
+
+    private Light CreateHeadlamp(Transform parent, string lightName, Vector3 localPosition)
+    {
+        var holder = new GameObject(lightName);
+        holder.transform.SetParent(parent, false);
+        holder.transform.localPosition = localPosition;
+        holder.transform.localRotation = Quaternion.identity;
+        var light = holder.AddComponent<Light>();
+        light.type = LightType.Spot;
+        light.range = 48f;
+        light.spotAngle = 48f;
+        light.intensity = 2.2f;
+        light.color = new Color(1f, 0.94f, 0.78f);
+        light.enabled = false;
+        return light;
     }
 
     private WheelCollider CreateWheel(Transform parent, string wheelName, Vector3 localPosition)
@@ -190,7 +209,7 @@ public sealed class GameBootstrap : MonoBehaviour
         graphicsSettings = inputObject.AddComponent<MobileGraphicsSettings>();
         graphicsSettings.ApplySavedPreset();
         var touch = inputObject.AddComponent<PrototypeTouchControls>();
-        touch.Configure(coach, input, graphicsSettings);
+        touch.Configure(coach, input, graphicsSettings, cameraFollow);
     }
 
     private static GameObject CreateBlock(string objectName, Vector3 position, Vector3 scale, Color color)
