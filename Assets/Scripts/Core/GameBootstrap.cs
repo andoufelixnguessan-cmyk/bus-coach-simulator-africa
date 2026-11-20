@@ -71,7 +71,6 @@ public sealed class GameBootstrap : MonoBehaviour
         body.drag = 0.04f;
         body.angularDrag = 1.8f;
         body.interpolation = RigidbodyInterpolation.Interpolate;
-        body.centerOfMass = new Vector3(0f, -0.65f, 0.15f);
         var hull = root.AddComponent<BoxCollider>();
         hull.size = new Vector3(2.45f, 2.85f, 9.8f);
         hull.center = new Vector3(0f, 1.35f, 0f);
