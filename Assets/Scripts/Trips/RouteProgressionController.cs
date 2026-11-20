@@ -46,6 +46,18 @@ public sealed class RouteProgressionController
         nextStopIndex = 1;
     }
 
+    public bool RestoreNextStopIndex(int savedIndex, out string reason)
+    {
+        reason = string.Empty;
+        if (savedIndex < 1 || savedIndex > TotalStops)
+        {
+            reason = "L'index du prochain arrêt sauvegardé est invalide.";
+            return false;
+        }
+        nextStopIndex = savedIndex;
+        return true;
+    }
+
     /// <summary>
     /// Processes exactly the next itinerary stop. A border stop cannot be passed until
     /// passenger and vehicle documents are confirmed and the announced fee is paid.
