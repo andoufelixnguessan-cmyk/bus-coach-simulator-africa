@@ -15,6 +15,7 @@ public sealed class RoutePlanningPanel : MonoBehaviour
     private readonly List<string> ownedCoachIds = new List<string>();
     private readonly List<string> selectedCityIds = new List<string>();
     private Action<PlayerRouteTripSetup> onTripPrepared;
+    private Action onClosed;
 
     private Dropdown cityDropdown;
     private Dropdown coachDropdown;
@@ -26,7 +27,7 @@ public sealed class RoutePlanningPanel : MonoBehaviour
     private Font runtimeFont;
 
     public void Configure(CompanyProfile playerCompany, IList<string> playerOwnedCoachIds,
-        Action<PlayerRouteTripSetup> tripPrepared)
+        Action<PlayerRouteTripSetup> tripPrepared, Action panelClosed = null)
     {
         company = playerCompany;
         ownedCoachIds.Clear();
@@ -42,6 +43,7 @@ public sealed class RoutePlanningPanel : MonoBehaviour
             }
         }
         onTripPrepared = tripPrepared;
+        onClosed = panelClosed;
         RefreshCoachOptions();
         RefreshRouteText();
         SetFeedback(company == null ? "Entreprise introuvable." :
@@ -125,6 +127,8 @@ public sealed class RoutePlanningPanel : MonoBehaviour
         prepareButton = AddButton(contentObject.transform, "PRÉPARER LE VOYAGE", 0, -736, 56, PrepareTrip);
         feedbackText = AddText(contentObject.transform, "", 14, 0, -800, 64, TextAnchor.MiddleCenter,
             new Color(1f, 0.78f, 0.35f));
+        AddButton(contentObject.transform, "FERMER ET CONDUIRE", 0, -870, 52, ClosePanel);
+        contentRect.sizeDelta = new Vector2(0f, 970f);
         RefreshCityOptions();
     }
 
@@ -195,6 +199,12 @@ public sealed class RoutePlanningPanel : MonoBehaviour
         RefreshCityOptions();
         RefreshRouteText();
         SetFeedback("Trajet réinitialisé. Choisissez une ville de départ.", false);
+    }
+
+    private void ClosePanel()
+    {
+        if (onClosed != null) onClosed();
+        else gameObject.SetActive(false);
     }
 
     private void PrepareTrip()
