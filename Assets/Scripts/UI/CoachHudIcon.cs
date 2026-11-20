@@ -15,6 +15,7 @@ public sealed class CoachHudIcon : Graphic
 
     public void SetIcon(IconType value)
     {
+        if (iconType == value) return;
         iconType = value;
         SetVerticesDirty();
     }
