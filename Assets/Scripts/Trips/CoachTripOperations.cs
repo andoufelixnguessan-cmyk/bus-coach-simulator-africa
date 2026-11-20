@@ -117,10 +117,32 @@ public sealed class CoachTripOperations
         reason = string.Empty;
         if (Status != CoachTripStatus.OnRoad)
         { reason = "Seul un trajet en cours peut être clôturé."; return false; }
-        if (company == null || passengers == null || passengers.TripId != TripId)
-        { reason = "Entreprise ou manifeste passagers introuvable."; return false; }
+        if (company == null || passengers == null || passengers.TripId != TripId || passengers.CoachId != CoachId)
+        { reason = "Entreprise ou manifeste passagers introuvable ou incompatible avec ce car."; return false; }
         if (safeDrivingBonusXof < 0L || additionalOperatingCostsXof < 0L)
         { reason = "La prime ou les dépenses supplémentaires indiquées sont invalides."; return false; }
+        if (ChargedOperatingCostsXof > long.MaxValue - additionalOperatingCostsXof)
+        { reason = "Le total des dépenses du voyage dépasse la limite autorisée."; return false; }
+
+        long guarantee = RouteEconomy.CalculateInternationalGuaranteeTopUp(
+            passengers.Route, passengers.GetSummary().TicketRevenueXof,
+            ChargedOperatingCostsXof + additionalOperatingCostsXof);
+        long bonus = safeDriving ? safeDrivingBonusXof : 0L;
+        if (guarantee > long.MaxValue - bonus || company.BalanceXof > long.MaxValue - guarantee - bonus)
+        { reason = "Impossible d'enregistrer les recettes de clôture : montant financier trop élevé."; return false; }
+
+        // Validate the complete passenger state before writing any financial or arrival changes.
+        for (int i = 0; i < passengers.Bookings.Count; i++)
+        {
+            PassengerBooking booking = passengers.Bookings[i];
+            if (booking == null)
+            { reason = "Le manifeste contient une réservation invalide."; return false; }
+        }
+
+        if (guarantee > 0L && !company.AddIncome(guarantee, "Garantie de bénéfice minimum voyage international - " + TripId))
+        { reason = "Impossible d'enregistrer la garantie de rentabilité internationale."; return false; }
+        if (bonus > 0L && !company.AddIncome(bonus, "Prime de conduite prudente - " + TripId))
+        { reason = "Impossible d'enregistrer la prime."; return false; }
 
         for (int i = 0; i < passengers.Bookings.Count; i++)
         {
@@ -132,16 +154,6 @@ public sealed class CoachTripOperations
                 { reason = arrivalError; return false; }
             }
         }
-
-        long guarantee = RouteEconomy.CalculateInternationalGuaranteeTopUp(
-            passengers.Route, passengers.GetSummary().TicketRevenueXof,
-            ChargedOperatingCostsXof + additionalOperatingCostsXof);
-        if (guarantee > 0L && !company.AddIncome(guarantee, "Garantie de bénéfice minimum voyage international - " + TripId))
-        { reason = "Impossible d'enregistrer la garantie de rentabilité internationale."; return false; }
-
-        long bonus = safeDriving ? safeDrivingBonusXof : 0L;
-        if (bonus > 0L && !company.AddIncome(bonus, "Prime de conduite prudente - " + TripId))
-        { reason = "Impossible d'enregistrer la prime."; return false; }
 
         InternationalProfitGuaranteeXof = guarantee;
         SafeDrivingBonusXof = bonus;
