@@ -15,6 +15,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     private Text qualityText;
     private int lastHudRefreshFrame;
     private RectTransform safeAreaRoot;
+    private CoachDashboardHUD dashboard;
 
     public void Configure(CoachVehicleController target, MobileDriveInput driveInput, MobileGraphicsSettings graphicsSettings)
     {
@@ -91,6 +92,9 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         qualityButton.targetGraphic = qualityPanel.GetComponent<Image>();
         qualityButton.onClick.AddListener(CycleGraphics);
         qualityText = CreateText(qualityPanel.transform, "GRAPHISMES  ÉCONOMIE", 19, TextAnchor.MiddleCenter);
+
+        dashboard = gameObject.AddComponent<CoachDashboardHUD>();
+        dashboard.Configure(vehicle, CoachDashboardProfile.ForCoach("car-moyen"), safeAreaRoot);
     }
 
     private void CycleGraphics()
