@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#071522"><title>BUS & COACH SIMULATOR AFRICA — Démo navigateur</title>
+<style>
+:root{--bg:#071522;--panel:#102638;--panel2:#17364b;--line:#28516a;--cyan:#39d5d0;--gold:#ffc45b;--white:#edf7fb;--muted:#9bb5c5;--red:#ff7272}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -20%,#1b4960,#071522 60%);color:var(--white);font:15px system-ui,Arial;min-height:100vh}
+header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #244357;background:#081a28eF;position:sticky;top:0;z-index:5}
+.brand{font-weight:900;letter-spacing:.06em}.brand small{display:block;color:var(--cyan);font-size:10px;letter-spacing:.18em}.pill{border:1px solid var(--line);border-radius:30px;padding:6px 10px;color:var(--muted);font-size:12px}
+main{max-width:1200px;margin:auto;padding:14px;display:grid;grid-template-columns:minmax(0,1.7fr) minmax(280px,.9fr);gap:14px}
+.panel{background:linear-gradient(145deg,#10283a,#0b1e2c);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 12px 32px #0004}
+h2{font-size:15px;margin:0 0 12px;color:#dff7ff;letter-spacing:.04em}.muted{color:var(--muted)}.tiny{font-size:11px;color:var(--muted)}
+.scene{height:330px;border-radius:12px;overflow:hidden;position:relative;background:linear-gradient(#7daeb4 0 34%,#577e59 34% 100%)}
+.sky{position:absolute;inset:0 0 65% 0;background:linear-gradient(#397b9b,#b9d4c8)}
+.sun{position:absolute;width:38px;height:38px;border-radius:50%;background:#ffe5a2;right:12%;top:12%;box-shadow:0 0 30px #ffe5a2aa}
+.hill{position:absolute;bottom:58%;width:130%;height:80px;left:-15%;background:#527e6b;border-radius:50% 50% 0 0}
+.road{position:absolute;bottom:-35px;left:22%;width:56%;height:78%;background:#343b40;clip-path:polygon(38% 0,62% 0,100% 100%,0 100%)}
+.road:before{content:"";position:absolute;left:49%;height:100%;width:4px;background:repeating-linear-gradient(to bottom,#f4e9bc 0 24px,transparent 24px 48px)}
+.road-edge{position:absolute;bottom:-35px;left:22%;width:56%;height:78%;clip-path:polygon(37% 0,63% 0,100% 100%,0 100%);border-left:5px solid #e8e0c3;border-right:5px solid #e8e0c3}
+.coach{position:absolute;bottom:13px;left:50%;transform:translateX(-50%);width:82px;height:142px;border-radius:18px 18px 10px 10px;background:linear-gradient(90deg,#b9d7df,#f4f8f5 20%,#d9e7e8 80%,#7395a3);border:3px solid #d9f4f4;box-shadow:0 10px 18px #0008;transition:transform .12s}
+.coach:before{content:"";position:absolute;top:12px;left:9px;right:9px;height:34px;background:#183b50;border-radius:9px 9px 3px 3px;border:2px solid #91bdc7}
+.coach:after{content:"";position:absolute;bottom:12px;left:12px;right:12px;height:34px;background:repeating-linear-gradient(90deg,#234d5e 0 12px,#b5d5d8 12px 15px);border-radius:3px}
+.coach .stripe{position:absolute;top:60px;left:0;right:0;height:13px;background:#e0a63f}.coach .plate{position:absolute;bottom:3px;left:25px;font-size:8px;color:#123}
+.hud{position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;gap:8px}.hud span{background:#071522c9;padding:6px 9px;border-radius:8px;font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}.stat{background:#0a1b29;border:1px solid #23465c;border-radius:10px;padding:9px}.stat b{font-size:19px;display:block}.stat small{color:var(--muted);font-size:10px}
+.controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}.control{border:1px solid #3c6578;background:linear-gradient(#1b4054,#10293a);color:white;border-radius:12px;padding:14px 8px;font-weight:800;touch-action:none;user-select:none}.control:active,.control.active{background:#23617a;border-color:var(--cyan)}.control.go{background:linear-gradient(#168d83,#126057);border-color:#4de2d0}.control.stop{background:linear-gradient(#994c42,#5d2d2d);border-color:#db8275}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}.field label{font-size:11px;color:var(--muted)}select,input{background:#091b29;color:white;border:1px solid #31546a;border-radius:9px;padding:10px;width:100%}
+button{cursor:pointer}.action{background:#1a5668;border:1px solid #3b8493;color:white;padding:10px 12px;border-radius:10px;font-weight:700}.action.primary{background:#0b8277;border-color:#45d8c8}.action.gold{background:#795a23;border-color:#d9ae56}.action:disabled{opacity:.35;cursor:not-allowed}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0}.progress{height:9px;background:#071521;border-radius:10px;overflow:hidden}.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#21a99c,#75e0c5);transition:width .2s}
+.log{max-height:130px;overflow:auto;background:#081925;border-radius:10px;padding:9px;font-size:12px;color:#b7d0dd}.log p{margin:4px 0;border-bottom:1px solid #1a3546;padding-bottom:4px}
+.modal{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;padding:16px;z-index:10}.modal.show{display:flex}.modalbox{width:min(480px,100%);background:#10283a;border:1px solid #3b7188;border-radius:16px;padding:18px}
+footer{text-align:center;padding:14px;color:#7f9aaa;font-size:11px}
+@media(max-width:800px){main{grid-template-columns:1fr;padding:9px}.scene{height:290px}.stats{grid-template-columns:repeat(4,1fr)}header{padding:10px}.brand{font-size:13px}}
+@media(max-width:390px){.stats{grid-template-columns:repeat(2,1fr)}.scene{height:260px}}
+</style>
+</head>
+<body>
+<header><div class="brand">BUS & COACH SIMULATOR AFRICA<small>PROTOYPE JOUABLE · NAVIGATEUR</small></div><span class="pill" id="saveState">● Sauvegarde locale active</span></header>
+<main>
+<section class="panel">
+<h2>CONDUITE — VUE ROUTE</h2>
+<div class="scene" id="scene"><div class="sky"></div><div class="sun"></div><div class="hill"></div><div class="road"></div><div class="road-edge"></div><div class="coach" id="coach"><div class="stripe"></div><div class="plate">ATP 2026</div></div>
+<div class="hud"><span id="weatherHud">☀️ JOUR · SEC</span><span id="gearHud">D · 1</span></div></div>
+<div class="stats">
+<div class="stat"><b id="speed">0</b><small>VITESSE km/h</small></div><div class="stat"><b id="fuel">100%</b><small>CARBURANT</small></div><div class="stat"><b id="distance">0 km</b><small>DISTANCE</small></div><div class="stat"><b id="cash">0</b><small>TRÉSORERIE FCFA</small></div>
+</div>
+<div class="row"><span class="muted" id="routeLabel">Aucun trajet en cours</span><b id="percent">0%</b></div><div class="progress"><i id="bar"></i></div>
+<div class="controls">
+<button class="control" id="left">◀ GAUCHE</button><button class="control stop" id="brake">FREIN</button><button class="control" id="right">DROITE ▶</button>
+<button class="control" id="horn">📢 KLAXON</button><button class="control go" id="accelerate">ACCÉLÉRER</button><button class="control" id="lights">💡 PHARES</button>
+</div>
+<p class="tiny">Maintiens ACCÉLÉRER pour rouler. Freine avant chaque arrêt. Le trajet se sauvegarde automatiquement sur cet appareil.</p>
+</section>
+<aside class="panel">
+<h2>COMPAGNIE & PRÉPARATION</h2>
+<div class="field"><label>CAR INTERURBAIN</label><select id="coachChoice"><option value="standard">Autocar standard · 50 places · 110 km/h</option><option value="comfort">Autocar confort · 45 places · 120 km/h</option><option value="double">Autocar double étage · 75 places · 105 km/h</option><option value="premium">Autocar premium · _delta_ · 125 km/h</option></select></div>
+<div class="grid2"><div class="field"><label>VILLE DE DÉPART</label><select id="origin"></select></div><div class="field"><label>DESTINATION</label><select id="destination"></select></div></div>
+<div class="grid2"><div class="field"><label>CLASSE DE SERVICE</label><select id="service"><option>Économique</option><option>Confort</option><option>VIP</option></select></div><div class="field"><label>TAUX DE REMPLISSAGE</label><select id="occupancy"><option value="0.65">65 %</option><option value="0.8" selected>80 %</option><option value="1">100 %</option></select></div></div>
+<div class="row"><span class="muted">Distance estimée</span><b id="routeDistance">—</b></div><div class="row"><span class="muted">Recette estimée</span><b id="routeRevenue">—</b></div><div class="row"><span class="muted">Bénéfice estimé</span><b id="routeProfit">—</b></div>
+<button class="action primary" id="depart" style="width:100%">DÉMARRER LE VOYAGE</button>
+<div class="row"><span class="muted">Prochain arrêt</span><b id="nextStop">—</b></div>
+<div class="grid2"><button class="action" id="arrive" disabled>ARRIVER À L'ARRÊT</button><button class="action gold" id="border" disabled>PASSER LA FRONTIÈRE</button></div>
+<div class="row"><span class="muted">Passagers à bord</span><b id="passengers">0</b></div><div class="row"><span class="muted">État du voyage</span><b id="tripStatus">En attente</b></div>
+<div class="row"><button class="action" id="pause">PAUSE</button><button class="action" id="newTrip">NOUVEAU TRAJET</button></div>
+<h2 style="margin-top:16px">JOURNAL DE BORD</h2><div class="log" id="log"><p>Bienvenue chauffeur. Prépare ton premier voyage.</p></div>
+</aside>
+</main>
+<div class="modal" id="modal"><div class="modalbox"><h2 id="modalTitle">Arrêt</h2><p id="modalText" class="muted"></p><div class="row"><button class="action" id="modalCancel">Retour</button><button class="action primary" id="modalConfirm">Confirmer</button></div></div></div>
+<footer>Prototype de validation des mécaniques · Données enregistrées uniquement dans le navigateur · Version 0.1</footer>
+<script>
+(()=> {
+"use strict";
+const $=id=>document.getElementById(id), fmt=n=>Math.round(n).toLocaleString("fr-FR"), cities=[
+["Abidjan","Côte d’Ivoire"],["Yamoussoukro","Côte d’Ivoire"],["Bouaké","Côte d’Ivoire"],["Korhogo","Côte d’Ivoire"],["Accra","Ghana"],["Kumasi","Ghana"],["Lomé","Togo"],["Cotonou","Bénin"],["Ouagadougou","Burkina Faso"],["Bamako","Mali"],["Conakry","Guinée"],["Dakar","Sénégal"],["Lagos","Nigeria"]
+];
+const km={
+"Abidjan|Yamoussoukro":240,"Abidjan|Bouaké":350,"Abidjan|Korhogo":635,"Abidjan|Accra":510,"Abidjan|Kumasi":420,"Abidjan|Lomé":680,"Abidjan|Cotonou":790,"Abidjan|Ouagadougou":1120,"Abidjan|Bamako":1180,"Abidjan|Conakry":1450,"Abidjan|Dakar":2400,"Abidjan|Lagos":1020,
+"Yamoussoukro|Bouaké":110,"Bouaké|Korhogo":285,"Accra|Kumasi":200,"Lomé|Cotonou":155,"Cotonou|Lagos":115,"Ouagadougou|Bamako":850,"Bamako|Dakar":1250,"Conakry|Dakar":1150
+};
+const state={balance:2500000,fuel:100,speed:0,kmDone:0,trip:null,steer:0,paused:false,lights:false,coach:"standard",lastTick:Date.now()};
+const coaches={standard:{name:"Autocar standard",seats:50,max:110,fuel:34},comfort:{name:"Autocar confort",seats:45,max:120,fuel:31},double:{name:"Autocar double étage",seats:75,max:105,fuel:42},premium:{name:"Autocar premium",seats:52,max:125,fuel:30}};
+const pair=(a,b)=>{let k=a+"|"+b;return km[k]||km[b+"|"+a]||Math.max(180,Math.round((cities.findIndex(c=>c[0]===a)-cities.findIndex(c=>c[0]===b))*165+420))};
+function log(s){let p=document.createElement("p");p.textContent=new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})+" — "+s;$("log").prepend(p)}
+function cityOptions(){for(const id of ["origin","destination"]){cities.forEach(c=>{let o=document.createElement("option");o.value=c[0];o.textContent=c[0]+" · "+c[1];$(id).append(o)})} $("destination").value="Accra"}
+function estimate(){let a=$("origin").value,b=$("destination").value;if(a===b){$("routeDistance").textContent="Choisis deux villes";return}let d=pair(a,b),coach=coaches[$("coachChoice").value],occ=+ $("occupancy").value,price=$("service").value==="VIP"?24000:$("service").value==="Confort"?17000:11000;
+let rev=Math.round(coach.seats*occ*price*(d>700?1.25:1)),cost=Math.round(d*coach.fuel/100*850+ d*140 + (d>500?90000:25000)),profit=rev-cost;
+if(d>700)profit=Math.max(500000,profit);
+$("routeDistance").textContent=fmt(d)+" km";$("routeRevenue").textContent=fmt(rev)+" FCFA";$("routeProfit").textContent=fmt(profit)+" FCFA";
+return {a,b,d,rev,cost,profit,coach:$("coachChoice").value,occ,price};
+}
+function save(){try{localStorage.setItem("bcsAfricaDemo",JSON.stringify(state));$("saveState").textContent="● Sauvegardé";}catch(e){$("saveState").textContent="Sauvegarde indisponible"}}
+function restore(){try{let s=JSON.parse(localStorage.getItem("bcsAfricaDemo")||"null");if(s&&s.trip){Object.assign(state,s);log("Voyage restauré après réouverture du jeu.");}}catch(e){}}
+function update(){let t=state.trip,c=coaches[state.coach];$("speed").textContent=Math.round(state.speed);$("fuel").textContent=Math.max(0,state.fuel).toFixed(0)+"%";$("distance").textContent=fmt(state.kmDone)+" km";$("cash").textContent=fmt(state.balance);$("coach").style.transform="translateX(calc(-50% + "+(state.steer*18)+"px)) rotate("+state.steer*2+"deg)";
+$("percent").textContent=t?Math.floor(state.kmDone/t.d*100)+"%":"0%";$("bar").style.width=t?Math.min(100,state.kmDone/t.d*100)+"%":"0%";$("routeLabel").textContent=t?t.a+" → "+t.b:"Aucun trajet en cours";$("passengers").textContent=t?t.passengers+" / "+c.seats:"0";$("tripStatus").textContent=t?(t.done?"Terminé":state.paused?"En pause":"En route"):"En attente";
+$("nextStop").textContent=t?(t.borderPending?"Poste frontière":t.stopPending?"Arrêt passagers":t.b):"—";$("arrive").disabled=!t||state.speed>1||!t.stopPending;$("border").disabled=!t||state.speed>1||!t.borderPending;
+$("gearHud").textContent=(state.speed<1?"N":"D")+" · "+Math.max(1,Math.ceil(state.speed/25));$("weatherHud").textContent=(state.lights?"💡 PHARES":"☀️ JOUR")+" · "+(state.fuel<15?"RÉSERVE":"SEC");
+}
+function start(){if(state.trip&&!state.trip.done){log("Un voyage est déjà en cours.");return}let e=estimate();if(!e)return;let c=coaches[e.coach],p=Math.max(1,Math.floor(c.seats*e.occ));state.coach=e.coach;state.fuel=100;state.kmDone=0;state.speed=0;state.paused=false;state.trip={...e,passengers:p,stopPending:true,borderPending:e.a==="Abidjan"&&e.b!=="Yamoussoukro"&&e.b!=="Bouaké"&&e.b!=="Korhogo",done:false,paid:false};$("coachChoice").disabled=true;$("origin").disabled=true;$("destination").disabled=true;$("depart").disabled=true;log("Départ : "+e.a+" vers "+e.b+". "+p+" passagers embarqués.");update();save()}
+function arrive(){let t=state.trip;if(!t||state.speed>1)return;state.speed=0;t.stopPending=false;let bonus=Math.round(t.rev*.04);state.balance+=bonus;log("Arrêt effectué : contrôle des passagers et pause. Bonus de service +"+fmt(bonus)+" FCFA.");if(t.borderPending){$("border").disabled=false;log("Frontière internationale : documents et frais à vérifier.")}else if(state.kmDone>=t.d){finish()}else{t.stopPending=false}}
+function cross(){let t=state.trip;if(!t||state.speed>1||!t.borderPending)return;openModal("Contrôle frontalier","Documents des passagers et du car vérifiés. Frais de passage : 25 000 FCFA.",()=>{state.balance-=25000;t.borderPending=false;log("Frontière franchie. Frais réglés : 25 000 FCFA.");if(state.kmDone>=t.d)finish();update();save()})}
+function finish(){let t=state.trip;if(!t||t.done)return;state.speed=0;t.done=true;if(!t.paid){state.balance+=t.rev-t.cost;t.paid=true}log("Voyage terminé ! Résultat comptable : "+fmt(t.rev-t.cost)+" FCFA.");$("coachChoice").disabled=false;$("origin").disabled=false;$("destination").disabled=false;$("depart").disabled=false;update();save()}
+function openModal(title,body,cb){$("modalTitle").textContent=title;$("modalText").textContent=body;$("modal").classList.add("show");$("modalConfirm").onclick=()=>{$("modal").classList.remove("show");cb()}}
+function tick(){let now=Date.now(),dt=Math.min(.12,(now-state.lastTick)/1000);state.lastTick=now;let t=state.trip;if(t&&!t.done&&!state.paused){let acc=$("accelerate").classList.contains("active"),br=$("brake").classList.contains("active");if(acc&&state.fuel>0)state.speed=Math.min(coaches[state.coach].max,state.speed+22*dt);else if(br)state.speed=Math.max(0,state.speed-55*dt);else state.speed=Math.max(0,state.speed-5*dt);
+let moved=state.speed*dt/3600*75;state.kmDone+=moved;state.fuel-=moved*coaches[state.coach].fuel/100;if(state.fuel<=0){state.fuel=0;state.speed=0;state.paused=true;log("Panne sèche : ravitaillement nécessaire.")}if(state.kmDone>=t.d){state.kmDone=t.d;state.speed=0;t.stopPending=true;if(!t.endNotice){t.endNotice=true;log("Destination atteinte. Immobilise le car puis termine le voyage.")}}}
+update();requestAnimationFrame(tick)}
+function hold(id){let el=$(id);el.addEventListener("pointerdown",e=>{e.preventDefault();el.classList.add("active");el.setPointerCapture(e.pointerId)});["pointerup","pointercancel","lostpointercapture"].forEach(ev=>el.addEventListener(ev,()=>el.classList.remove("active")))}
+["accelerate","brake","left","right"].forEach(hold);
+$("left").addEventListener("pointerdown",()=>state.steer=-1);$("right").addEventListener("pointerdown",()=>state.steer=1);["left","right"].forEach(id=>$(id).addEventListener("pointerup",()=>state.steer=0));
+$("horn").onclick=()=>log("Klaxon : bip bip !");$("lights").onclick=()=>{state.lights=!state.lights;log(state.lights?"Phares allumés.":"Phares éteints.");update()};
+$("depart").onclick=start;$("arrive").onclick=arrive;$("border").onclick=cross;
+$("pause").onclick=()=>{state.paused=!state.paused;state.speed=0;$("pause").textContent=state.paused?"REPRENDRE":"PAUSE";log(state.paused?"Voyage mis en pause.":"Voyage repris.");save();update()};
+$("newTrip").onclick=()=>{if(state.trip&&!state.trip.done){openModal("Abandonner le trajet ?","Le voyage en cours sera abandonné. La sauvegarde active sera effacée.",()=>{state.trip=null;state.kmDone=0;state.speed=0;state.paused=false;$("coachChoice").disabled=false;$("origin").disabled=false;$("destination").disabled=false;$("depart").disabled=false;save();update();log("Nouveau voyage prêt.")})}else{state.trip=null;state.kmDone=0;state.speed=0;save();update()}};
+$("modalCancel").onclick=()=>$("modal").classList.remove("show");
+["origin","destination","service","occupancy","coachChoice"].forEach(id=>$(id).onchange=estimate);
+document.addEventListener("visibilitychange",()=>{if(document.hidden){state.speed=0;save()}});
+window.addEventListener("pagehide",save);setInterval(save,3000);
+cityOptions();restore();if(state.trip&&!state.trip.done){$("coachChoice").disabled=true;$("origin").disabled=true;$("destination").disabled=true;$("depart").disabled=true;$("pause").textContent=state.paused?"REPRENDRE":"PAUSE"}estimate();update();tick();
+})();
+</script>
+</body></html>
