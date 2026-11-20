@@ -53,8 +53,6 @@ public sealed class PrototypeTouchControls : MonoBehaviour
             SetButtonState(doorPanelImage, vehicle.PassengerDoorOpen);
         }
         if (wipers != null) SetButtonState(wiperImage, wipers.IsEnabled);
-
-        }
     }
 
     private void BuildCanvas()
