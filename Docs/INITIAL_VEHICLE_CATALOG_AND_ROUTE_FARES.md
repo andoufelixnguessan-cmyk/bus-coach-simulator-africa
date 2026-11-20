@@ -87,7 +87,13 @@ Le calcul est effectué à la clôture du voyage :
 
 L'écran de devis doit afficher le chiffre d'affaires prévisionnel, les dépenses, le bénéfice avant garantie et le complément de garantie estimé. Le bilan final doit montrer le bénéfice net après garantie. Il s'agit d'une règle d'équilibrage du jeu (garantie commerciale/contrat de ligne), pas d'une promesse de rentabilité dans le transport réel.
 
-## 5. Calcul financier
+## 5. Tarifs des itinéraires personnalisés
+
+Les itinéraires construits librement par le joueur reçoivent automatiquement un tarif si aucune ligne identique n'existe déjà dans le catalogue. L'estimation de base utilise 30 FCFA/km en Économique, 40 FCFA/km en Confort et 55 FCFA/km en VIP, arrondis aux 500 FCFA les plus proches. Le tarif minimum est de 5 000 FCFA sur une ligne nationale et 15 000 FCFA sur une ligne internationale. Les lignes déjà tarifées dans le catalogue conservent leurs tarifs spécifiques.
+
+Le jeu détecte automatiquement le caractère international à partir des frontières et des pays traversés. Un trajet personnalisé international est donc éligible à la garantie de 500 000 FCFA selon les conditions de fin de voyage décrites ci-dessus. Tous ces tarifs restent des estimations de conception à équilibrer après tests.
+
+## 6. Calcul financier
 
 Chiffre d'affaires = somme des billets effectivement vendus.
 
@@ -95,7 +101,7 @@ Bénéfice net = chiffre d'affaires - carburant - salaires - péages/frontières
 
 Le jeu affiche les deux montants. Les places vides ne rapportent rien, mais une occupation partielle ne doit pas rendre systématiquement le voyage déficitaire.
 
-## 6. Classes de service
+## 7. Classes de service
 
 - Économique : sièges standards, services essentiels.
 - Confort : sièges plus confortables, climatisation et équipements installés.
@@ -103,6 +109,6 @@ Le jeu affiche les deux montants. Les places vides ne rapportent rien, mais une 
 
 La classe vendue doit correspondre à la configuration réellement installée dans le car.
 
-## 7. Statut
+## 8. Statut
 
 Catalogue, capacités cibles, tarifs, garantie internationale de 500 000 FCFA et principes d'équilibrage documentés. Les véhicules, concessionnaire, réservations, simulation financière et lignes ne sont pas encore implémentés dans Unity. Les prix devront être testés en jeu avant toute promesse d'équilibrage définitif.
