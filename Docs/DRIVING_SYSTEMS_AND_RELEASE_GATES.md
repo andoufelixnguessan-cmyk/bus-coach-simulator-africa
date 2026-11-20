@@ -18,13 +18,14 @@
 - Local company save/load for XOF balance, level, owned coaches, starting coach and finance history; financial mutations save automatically and app suspension/exit also saves.
 - Curved 4.32 km playable starter corridor with asphalt mesh collision, shoulders, road markings, direction signs, roadside markers and batched savannah vegetation.
 - Route planner connected to the saved company and icon-only HUD; a prepared itinerary and estimated distance appear in the driving HUD.
+- Passenger manifest panel for ticket reservations, seat assignment, luggage-weight checks, company ticket income, and manual stop-by-stop boarding/alighting processing.
 - Roadside diesel station with a trigger area; refuelling requires the engine off, a stationary coach and the parking brake, and charges the company account in XOF.
 
 ## Remaining implementation before release
 
 1. Replace the starter corridor with route-specific geometry for all selected cities, including accurate road lengths, junctions, towns, terminals, rest areas, fuel stations and border checkpoints. The current 4.32 km corridor is a playable starter environment, not a complete real-world intercity route.
-2. Connect trip progression to the actual road route, stop arrival, passenger exchange, luggage, ticketing and international border checks. The route planner currently prepares and stores trip data; it does not yet simulate the complete itinerary.
-3. Build passenger booking and boarding screens, passenger models, seat occupancy, luggage loading and service interactions.
+2. Connect trip progression to the actual road route, automatic stop arrival, and international border checks. The route planner and passenger manifest currently prepare bookings and allow manual stop processing; they do not yet simulate the complete itinerary.
+3. Add passenger 3D models, seat occupancy visuals, luggage loading animations and onboard service interactions.
 4. Add traffic AI, varied road users, day/night cycle, weather, rain response and route events.
 5. Add original production-quality exterior/interior models for every coach category and the remaining coach-specific equipment.
 6. Add original or properly licensed vehicle-brand names, logos, sounds and designs. Fictional brands remain in use until permission is obtained.
