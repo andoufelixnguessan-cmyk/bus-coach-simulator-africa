@@ -145,6 +145,30 @@ public sealed class CoachVehicleController : MonoBehaviour
         return true;
     }
 
+    /// <summary>Restores a locally saved coach position and safe stationary vehicle state.</summary>
+    public void RestoreSavedState(Vector3 worldPosition, Quaternion worldRotation,
+        Vector3 savedVelocity, float savedFuelPercent)
+    {
+        if (body == null) body = GetComponent<Rigidbody>();
+        transform.SetPositionAndRotation(worldPosition, worldRotation);
+        if (body != null)
+        {
+            body.linearVelocity = Vector3.zero;
+            body.angularVelocity = Vector3.zero;
+            body.position = worldPosition;
+            body.rotation = worldRotation;
+        }
+        fuelPercent = Mathf.Clamp(savedFuelPercent, 0f, 100f);
+        throttleInput = 0f;
+        brakeInput = 0f;
+        steeringInput = 0f;
+        smoothedSteering = 0f;
+        handbrake = true;
+        gearSelection = GearSelection.Park;
+        EngineRunning = false;
+        engineRpm = idleRpm;
+    }
+
     public void SetAccessoryLoad(float load) { accessoryLoad = Mathf.Clamp01(load); }
 
     public void SetInputs(float steering, float throttle, float brake, bool applyHandbrake = false)
