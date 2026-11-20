@@ -77,8 +77,8 @@ public sealed class CoachCockpit3D : MonoBehaviour
 
     private void BuildLamps(Transform root)
     {
-        Vector3[] p={new Vector3(-.72f,1.18f,4.02f),new Vector3(-.48f,1.18f,4.02f),new Vector3(-.24f,1.18f,4.02f),new Vector3(0,1.18f,4.02f),new Vector3(.24f,1.18f,4.02f),new Vector3(.48f,1.18f,4.02f),new Vector3(.72f,1.18f,4.02f)};
-        Color[] c={Color.green,Color.green,Color.blue,Color.red,Color.red,new Color(1,.55f,0),Color.red};
+        Vector3[] p={new Vector3(-.90f,1.18f,4.02f),new Vector3(-.68f,1.18f,4.02f),new Vector3(-.46f,1.18f,4.02f),new Vector3(-.24f,1.18f,4.02f),new Vector3(0,1.18f,4.02f),new Vector3(.24f,1.18f,4.02f),new Vector3(.46f,1.18f,4.02f),new Vector3(.68f,1.18f,4.02f),new Vector3(.90f,1.18f,4.02f)};
+        Color[] c={Color.green,Color.green,Color.blue,Color.red,Color.red,new Color(1,.55f,0),Color.red,new Color(1,.55f,0),Color.red};
         for(int i=0;i<p.Length;i++)
         {
             GameObject g=GameObject.CreatePrimitive(PrimitiveType.Sphere); g.name="Dashboard warning light "+i;
@@ -129,7 +129,7 @@ public sealed class CoachCockpit3D : MonoBehaviour
         if(display!=null) display.text=Mathf.RoundToInt(vehicle.SpeedKph)+" km/h\n"+Mathf.RoundToInt(vehicle.EngineRpm)+" rpm   FUEL "+Mathf.RoundToInt(vehicle.FuelPercent)+"%";
         if(gearDisplay!=null) gearDisplay.text=vehicle.CurrentGearLabel;
         bool flash=Mathf.Repeat(Time.time,.8f)<.4f;
-        bool[] active={(vehicle.LeftIndicatorOn||vehicle.HazardLightsOn)&&flash,(vehicle.RightIndicatorOn||vehicle.HazardLightsOn)&&flash,vehicle.HighBeamOn&&vehicle.HeadlightsOn,vehicle.ParkingBrakeApplied,!vehicle.SeatbeltFastened,vehicle.AbsWarning,vehicle.EngineWarning};
+        bool[] active={(vehicle.LeftIndicatorOn||vehicle.HazardLightsOn)&&flash,(vehicle.RightIndicatorOn||vehicle.HazardLightsOn)&&flash,vehicle.HighBeamOn&&vehicle.HeadlightsOn,vehicle.ParkingBrakeApplied,!vehicle.SeatbeltFastened,vehicle.AbsWarning,vehicle.EngineWarning,vehicle.DoorWarning,vehicle.AirPressureWarning||vehicle.FuelWarning};
         for(int i=0;i<lamps.Count;i++) lamps[i].sharedMaterial.color=active[i]?lampOn[i]:new Color(.06f,.07f,.08f);
     }
 
