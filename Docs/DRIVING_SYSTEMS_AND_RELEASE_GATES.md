@@ -70,3 +70,12 @@ Source-level structural checks do not prove that the project compiles or runs. N
 - Le planificateur distingue maintenant cette durée simulée d'un objectif indicatif de session joueur : environ 8 minutes pour 600 km, avec une minute supplémentaire par frontière prévue, et une plage de conception plafonnée entre 4 et 30 minutes.
 - Cet objectif est une règle de conception affichée pour éviter les trajets interminables. Il n'est pas encore un chronomètre ni une accélération de simulation effectivement raccordée : la durée réelle devra être mesurée et ajustée après génération des routes complètes et essais dans Unity.
 - Exemple : un itinéraire d'environ 600 km peut afficher une durée simulée d'environ 10 h, tout en visant une session de jeu de l'ordre de 8 à 10 minutes selon les contrôles frontaliers.
+
+
+## Sauvegarde automatique et reprise de conduite (20 novembre 2026)
+
+- `ActiveCoachSaveSystem` enregistre localement le point de contrôle du car dans `PlayerPrefs` : position 3D, orientation et niveau de carburant.
+- `GameBootstrap` effectue une sauvegarde périodique toutes les 3 secondes, ainsi qu'à la mise en arrière-plan et à la fermeture de l'application ; la sauvegarde financière de l'entreprise est effectuée au même moment.
+- Au prochain lancement, le car est replacé au point enregistré. Pour éviter un redémarrage dangereux, il revient immobilisé, frein de stationnement serré, boîte sur P et moteur coupé. Le joueur peut alors reprendre la conduite.
+- Limite actuelle à ne pas masquer : la position physique et le carburant sont restaurés, mais la reconstruction complète de la session de voyage (réservations/passagers, prochain arrêt, frontières déjà franchies, dépenses du voyage et météo/heure) reste à connecter et à tester. Cette fonctionnalité n'est donc pas encore une reprise intégrale du trajet.
+- Aucune compilation Unity ni vérification après fermeture forcée n'a encore été effectuée.
