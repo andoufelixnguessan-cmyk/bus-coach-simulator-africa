@@ -1,6 +1,6 @@
 import bpy
 import math
-from mathutils import Vector
+from mathutils import Vector, Euler
 
 # BUS & COACH SIMULATOR AFRICA — premier autocar procédural
 # Blender 4.x — unités en mètres — avant du car vers -Y.
@@ -172,7 +172,7 @@ for area in bpy.context.screen.areas:
     if area.type == 'VIEW_3D':
         area.spaces.active.region_3d.view_distance = 19
         area.spaces.active.region_3d.view_location = (0, 0, 1.8)
-        area.spaces.active.region_3d.view_rotation = (math.radians(68), 0, math.radians(-28)).to_quaternion()
+        area.spaces.active.region_3d.view_rotation = Euler((math.radians(68), 0, math.radians(-28)), 'XYZ').to_quaternion()
 
 print("BUS & COACH SIMULATOR AFRICA : autocar 3D de base créé.")
 print("Dimensions approximatives : 12,5 m x 2,55 m x 3,8 m — 6 roues.")
