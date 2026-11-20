@@ -8,7 +8,7 @@ Les recettes des billets et contrats alimentent la trésorerie de la compagnie. 
 
 ## 1. Achats de véhicules
 
-Tous les véhicules sont des cars et autocars de transport de voyageurs : minicar, minibus interurbain, car moyen, autocar standard, confort, grand tourisme, premium et double étage. Aucun autobus urbain, bus articulé, camion, voiture ou moto.
+Tous les véhicules sont de vrais cars et autocars interurbains/de tourisme avec au moins 6 roues. Les minicars à 4 roues et véhicules légers sont interdits dans tout le jeu. Aucun autobus urbain, bus articulé, camion, voiture ou moto.
 
 Le concessionnaire affiche pour chaque car :
 - prix en FCFA et conditions de progression ;
@@ -38,7 +38,7 @@ Les équipements essentiels de sécurité (ceintures, extincteurs, sorties de se
 
 ## 3. Progression accessible
 
-- Démarrer avec un véhicule exploitable ou un capital suffisant pour en acheter un.
+- Démarrer avec un car interurbain d'au moins 6 roues, ou un capital suffisant pour acheter immédiatement ce car.
 - Permettre de gagner de l'argent sur les premières lignes sans remplir systématiquement toutes les places.
 - Introduire les véhicules plus chers progressivement, sans blocage artificiel.
 - Afficher les revenus et dépenses estimés avant chaque voyage.
