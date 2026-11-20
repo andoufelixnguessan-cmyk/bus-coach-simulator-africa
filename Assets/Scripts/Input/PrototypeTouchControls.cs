@@ -93,6 +93,13 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         CreateUtilityButton(safeRoot, "FEUX", new Vector2(0.5f, 1f), new Vector2(66f, -88f), () => vehicle.ToggleHeadlights());
         CreateUtilityButton(safeRoot, "PLEINS PHARES", new Vector2(0.5f, 1f), new Vector2(198f, -88f), () => vehicle.ToggleHighBeam());
         CreateUtilityButton(safeRoot, "CAMÉRA", new Vector2(0.5f, 1f), new Vector2(330f, -88f), ToggleCameraView);
+        CreateUtilityButton(safeRoot, "DÉMARRER / STOP", new Vector2(0.5f, 1f), new Vector2(0f, -150f), ToggleEngine);
+    }
+
+    private void ToggleEngine()
+    {
+        if (vehicle != null && !vehicle.ToggleEngine())
+            Debug.Log("Démarrage impossible : vérifiez l'arrêt du car et le carburant.");
     }
 
     private void ToggleCameraView()
