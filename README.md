@@ -44,7 +44,7 @@ These are code foundations only. They are not yet connected to production menus,
 
 ## African route and border foundations
 
-The repository also includes an initial route network with ordered terminals, passenger stops, rest stops, estimated distances/durations, and explicit international border checkpoints with document checks and announced FCFA fees. Route values are provisional game-balancing data, not real navigation or official border tariffs. This system is not yet connected to a 3D map or tested in Unity.
+The repository includes an expanding West and Central African city network and a player-selected itinerary planner. The player can choose a departure city, destination and ordered intermediate cities; the planner validates each road connection and builds the corresponding stops and international border checks. The first city network covers Côte d'Ivoire, Ghana, Togo, Benin, Nigeria, Burkina Faso, Mali, Guinea, Liberia, Sierra Leone, Senegal, Gambia, Niger, Cameroon and Gabon. Distances, times and fees remain provisional game-balancing values, not real navigation or official tariffs. The planner is a C# foundation and is not yet connected to an interactive map screen, a 3D road world or tested in Unity. See Docs/PLAYER_CHOSEN_AFRICAN_ROUTES.md.
 
 ## Development status
 
