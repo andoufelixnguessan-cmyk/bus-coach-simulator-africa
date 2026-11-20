@@ -62,3 +62,12 @@ Cette fabrique prépare les données du voyage. Elle ne constitue pas encore un 
 Les tronçons routiers peuvent contenir une liste de localités intermédiaires. Lors de la construction de l'itinéraire, ces localités deviennent des arrêts voyageurs uniquement si le tronçon correspondant fait partie du parcours choisi. Leur ordre est inversé automatiquement lorsque le car circule dans le sens opposé. Exemple de base pour l'axe Abidjan–Yamoussoukro : Anyama, Singrobo, Tiassalé, N'Douci et Toumodi ; pour la suite vers Bouaké : Tiébissou et Djébonoua. Ces arrêts sont des données de prototype à enrichir et à vérifier sur une carte routière détaillée.
 
 `PassengerTrip` permet désormais de réserver un billet entre deux arrêts voyageurs de cet itinéraire, calcule un tarif proportionnel à la portion parcourue et fournit des opérations pour faire monter les passagers à leur arrêt de départ et descendre ceux arrivés à leur arrêt. L'interface Unity doit encore appeler ces méthodes pendant le déroulement du trajet.
+
+
+## Même règle pour les lignes prédéfinies et les lignes libres
+
+Les lignes prédéfinies du catalogue (AfricanRouteNetwork.AllRoutes) sont désormais construites à partir du même planificateur (AfricanRoutePlanner) que les itinéraires personnalisés. Il n'existe donc plus deux listes indépendantes d'arrêts : chaque tronçon apporte ses localités et ses frontières, dans le bon ordre, quel que soit le sens du trajet. Les arrêts des tronçons non sélectionnés ne sont jamais ajoutés.
+
+Pour les tronçons internationaux, la position du poste frontière est définie dans la séquence des localités. Les localités après le poste frontière portent le code du pays d'arrivée. En sens inverse, l'ordre des localités et le sens du passage frontalier sont inversés.
+
+La liste actuelle couvre les liaisons modélisées dans le prototype, pas toutes les routes ni tous les villages d'Afrique. Les noms et positions des localités doivent encore être contrôlés sur des cartes routières détaillées avant publication.
