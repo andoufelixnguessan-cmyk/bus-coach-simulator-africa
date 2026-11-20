@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -21,9 +22,10 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     private Image seatbeltPanelImage, doorPanelImage, wiperImage, cabinLightImage, acImage;
     private int lastHudRefreshFrame;
     private CameraFollow cameraView;
+    private Action openRoutePlanner;
 
     public void Configure(CoachVehicleController target, MobileDriveInput driveInput,
-        MobileGraphicsSettings graphicsSettings, CameraFollow camera, CoachWiperSystem wiperSystem, CoachCabinLightingSystem cabinLightingSystem, CoachCabinComfortSystem cabinComfortSystem)
+        MobileGraphicsSettings graphicsSettings, CameraFollow camera, CoachWiperSystem wiperSystem, CoachCabinLightingSystem cabinLightingSystem, CoachCabinComfortSystem cabinComfortSystem, Action showRoutePlanner)
     {
         vehicle = target;
         wipers = wiperSystem;
@@ -32,6 +34,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         input = driveInput;
         graphics = graphicsSettings;
         cameraView = camera;
+        openRoutePlanner = showRoutePlanner;
         BuildCanvas();
     }
 
@@ -133,6 +136,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         CreateGearSelectorButton(safeRoot);
         CreateCabinLightButton(safeRoot);
         CreateAirConditioningButton(safeRoot);
+        CreateRoutePlannerButton(safeRoot);
     }
 
     private void CreateSeatbeltButton(Transform parent)
@@ -197,6 +201,12 @@ public sealed class PrototypeTouchControls : MonoBehaviour
             new Vector2(-130f, -270f), ToggleCabinLights);
     }
 
+
+    private void CreateRoutePlannerButton(Transform parent)
+    {
+        CreateUtilityButton(parent, "⌖", new Vector2(0.5f, 1f),
+            new Vector2(460f, -88f), () => { if (openRoutePlanner != null) openRoutePlanner(); });
+    }
 
     private void CreateAirConditioningButton(Transform parent)
     {
@@ -278,6 +288,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
             case "≋": return CoachHudIcon.IconType.Wipers;
             case "☾": return CoachHudIcon.IconType.CabinLight;
             case "❄": return CoachHudIcon.IconType.AirConditioning;
+            case "⌖": return CoachHudIcon.IconType.RouteMap;
             default: return CoachHudIcon.IconType.Warning;
         }
     }
