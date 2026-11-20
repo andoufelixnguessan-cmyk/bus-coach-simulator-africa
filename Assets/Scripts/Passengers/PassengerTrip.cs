@@ -231,14 +231,18 @@ public sealed class PassengerTrip
 
     private long CalculateStopToStopFare(int originIndex, int destinationIndex)
     {
-        int totalLegs = 0;
-        int passengerLegs = 0;
-        for (int i = 0; i < itineraryStops.Count - 1; i++)
-            if (itineraryStops[i].PassengersMayBoardOrAlight &&
-                itineraryStops[i + 1].PassengersMayBoardOrAlight) totalLegs++;
-        for (int i = originIndex; i < destinationIndex; i++)
-            if (itineraryStops[i].PassengersMayBoardOrAlight &&
-                itineraryStops[i + 1].PassengersMayBoardOrAlight) passengerLegs++;
+        int totalPassengerStops = 0;
+        int originOrdinal = -1;
+        int destinationOrdinal = -1;
+        for (int i = 0; i < itineraryStops.Count; i++)
+        {
+            if (!itineraryStops[i].PassengersMayBoardOrAlight) continue;
+            if (i == originIndex) originOrdinal = totalPassengerStops;
+            if (i == destinationIndex) destinationOrdinal = totalPassengerStops;
+            totalPassengerStops++;
+        }
+        int totalLegs = totalPassengerStops - 1;
+        int passengerLegs = destinationOrdinal - originOrdinal;
         if (totalLegs <= 0 || passengerLegs <= 0) return route.GetFare(serviceClass);
         long fare = (long)Math.Round(route.GetFare(serviceClass) *
             ((double)passengerLegs / totalLegs) / 500.0) * 500L;
@@ -305,7 +309,7 @@ public sealed class PassengerTrip
             ReservedPassengers = reserved,
             BoardedPassengers = boarded,
             ArrivedPassengers = arrived,
-            AvailableSeats = Math.Max(0, seatCapacity - reserved - boarded - arrived),
+            AvailableSeats = Math.Max(0, seatCapacity - GetMaximumPassengersOnAnyLeg()),
             LuggageUsedKg = CurrentLuggageWeightKg(),
             LuggageCapacityKg = luggageCapacityKg,
             TicketRevenueXof = ticketRevenueXof
