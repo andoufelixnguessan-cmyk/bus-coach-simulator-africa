@@ -15,16 +15,18 @@ public sealed class CoachDefinition
     public string DisplayName;
     public int MinSeats;
     public int MaxSeats;
+    public int MinimumWheelCount;
     public long PurchasePriceXof;
     public int UnlockCompanyLevel;
     public CoachServiceClass HighestServiceClass;
 
-    public CoachDefinition(string id, string displayName, int minSeats, int maxSeats, long price, int level, CoachServiceClass highestClass)
+    public CoachDefinition(string id, string displayName, int minSeats, int maxSeats, int minimumWheelCount, long price, int level, CoachServiceClass highestClass)
     {
         Id = id;
         DisplayName = displayName;
         MinSeats = minSeats;
         MaxSeats = maxSeats;
+        MinimumWheelCount = Math.Max(6, minimumWheelCount);
         PurchasePriceXof = price;
         UnlockCompanyLevel = level;
         HighestServiceClass = highestClass;
@@ -39,14 +41,12 @@ public static class CoachEconomy
 
     private static readonly CoachDefinition[] Definitions =
     {
-        new CoachDefinition("minicar-interurbain", "Minicar interurbain", 16, 22, 9000000L, 1, CoachServiceClass.Economy),
-        new CoachDefinition("minibus-petit-car", "Minibus / petit car", 23, 30, 14000000L, 1, CoachServiceClass.Comfort),
-        new CoachDefinition("car-moyen", "Car moyen", 31, 39, 22000000L, 2, CoachServiceClass.Comfort),
-        new CoachDefinition("autocar-standard", "Autocar standard", 40, 49, 32000000L, 3, CoachServiceClass.Comfort),
-        new CoachDefinition("autocar-confort", "Autocar confort", 45, 53, 42000000L, 4, CoachServiceClass.Vip),
-        new CoachDefinition("grand-tourisme", "Autocar grand tourisme", 49, 57, 58000000L, 5, CoachServiceClass.Vip),
-        new CoachDefinition("autocar-premium", "Autocar premium longue distance", 51, 59, 75000000L, 7, CoachServiceClass.Vip),
-        new CoachDefinition("double-etage-tourisme", "Autocar double étage tourisme", 70, 83, 95000000L, 9, CoachServiceClass.Vip)
+        new CoachDefinition("car-moyen", "Car interurbain 6 roues", 31, 39, 6, 22000000L, 1, CoachServiceClass.Comfort),
+        new CoachDefinition("autocar-standard", "Autocar standard 6 roues", 40, 49, 6, 32000000L, 2, CoachServiceClass.Comfort),
+        new CoachDefinition("autocar-confort", "Autocar confort 6 roues", 45, 53, 6, 42000000L, 3, CoachServiceClass.Vip),
+        new CoachDefinition("grand-tourisme", "Autocar grand tourisme 6 roues", 49, 57, 6, 58000000L, 4, CoachServiceClass.Vip),
+        new CoachDefinition("autocar-premium", "Autocar premium longue distance 6 roues", 51, 59, 6, 75000000L, 6, CoachServiceClass.Vip),
+        new CoachDefinition("double-etage-tourisme", "Autocar double étage tourisme 10 roues", 70, 83, 10, 95000000L, 8, CoachServiceClass.Vip)
     };
 
     public static IReadOnlyList<CoachDefinition> AllCoaches => Definitions;
