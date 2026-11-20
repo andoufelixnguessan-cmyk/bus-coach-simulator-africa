@@ -50,12 +50,18 @@ public sealed class RouteProgressionController
     /// Processes exactly the next itinerary stop. A border stop cannot be passed until
     /// passenger and vehicle documents are confirmed and the announced fee is paid.
     /// </summary>
-    public bool TryProcessNextStop(bool passengerDocumentsValid, bool coachDocumentsValid,
+    public bool TryProcessNextStop(bool coachStopped, bool parkingBrakeApplied,
+        bool passengerDocumentsValid, bool coachDocumentsValid,
         out string summary, out string reason)
     {
         summary = string.Empty;
         reason = string.Empty;
 
+        if (!coachStopped || !parkingBrakeApplied)
+        {
+            reason = "Immobilisez complètement le car et serrez le frein de stationnement avant de traiter cet arrêt.";
+            return false;
+        }
         if (operations.Status != CoachTripStatus.OnRoad)
         {
             reason = "Le car doit être en route pour traiter le prochain arrêt.";
