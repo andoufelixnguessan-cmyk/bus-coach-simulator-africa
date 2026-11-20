@@ -136,6 +136,28 @@ public sealed class GameBootstrap : MonoBehaviour
         CoachDashboardProfile engineProfile = CoachDashboardProfile.ForCoach("car-moyen");
         root.AddComponent<CoachEngineAudio>().Configure(coach, engineProfile);
         root.AddComponent<CoachCockpit3D>().Configure(root.transform, coach, engineProfile);
+        BuildPassengerDoor(root.transform);
+    }
+
+
+    private void BuildPassengerDoor(Transform coachRoot)
+    {
+        // A distinct side-mounted door panel with a visible hinge and handle.
+        var hinge = new GameObject("Passenger door hinge");
+        hinge.transform.SetParent(coachRoot, false);
+        hinge.transform.localPosition = new Vector3(1.245f, 0.92f, 2.72f);
+        var panel = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        panel.name = "Passenger entrance door";
+        panel.transform.SetParent(hinge.transform, false);
+        panel.transform.localPosition = new Vector3(0f, 0.78f, -0.43f);
+        panel.transform.localScale = new Vector3(0.07f, 1.55f, 0.86f);
+        Object.Destroy(panel.GetComponent<Collider>());
+        panel.GetComponent<Renderer>().sharedMaterial = GetSharedMaterial(new Color(0.035f, 0.12f, 0.22f));
+        CreatePart(panel.transform, "Door window", new Vector3(0f, 0.28f, 0f),
+            new Vector3(1.02f, 0.48f, 0.72f), new Color(0.10f, 0.24f, 0.31f));
+        CreatePart(panel.transform, "Door handle", new Vector3(0.55f, -0.18f, 0.27f),
+            new Vector3(0.08f, 0.035f, 0.12f), new Color(0.72f, 0.74f, 0.76f));
+        hinge.AddComponent<CoachDoorAnimator>().Configure(coach, panel.transform);
     }
 
     private Light CreateIndicatorLight(Transform parent, string lightName, Vector3 localPosition)
