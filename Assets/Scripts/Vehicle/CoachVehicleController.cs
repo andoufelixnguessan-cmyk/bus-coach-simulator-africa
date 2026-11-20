@@ -50,6 +50,9 @@ public sealed class CoachVehicleController : MonoBehaviour
     public float CoolantTemperatureC => coolantTemperatureC;
     public float OilPressureBar => oilPressureBar;
     public float AirPressureBar => airPressureBar;
+    public bool AirPressureWarning => airPressureBar < 5.5f;
+    public bool FuelWarning => fuelPercent < 15f;
+    public bool DoorWarning => PassengerDoorOpen;
     public float BatteryVoltage => 24.2f;
     public bool EngineWarning => EngineRunning && (coolantTemperatureC >= 105f || oilPressureBar < 1.2f);
     public bool AbsWarning => absActive;
@@ -88,7 +91,9 @@ public sealed class CoachVehicleController : MonoBehaviour
         float coolingRate = EngineRunning ? 0.018f + Mathf.Clamp(SpeedKph * 0.00025f, 0f, 0.025f) : 0.008f;
         coolantTemperatureC = Mathf.Lerp(coolantTemperatureC, targetTemp, Time.deltaTime * coolingRate);
         oilPressureBar = Mathf.Lerp(oilPressureBar, EngineRunning ? 1.5f + engineRpm / 1000f : 0f, Time.deltaTime * 0.5f);
-        airPressureBar = Mathf.Lerp(airPressureBar, ParkingBrakeApplied ? 8.0f : 8.3f, Time.deltaTime * 0.4f);
+        float airSupply = EngineRunning ? 0.08f : 0f;
+        float airUse = brakeInput * 0.18f + (handbrake ? 0.025f : 0f);
+        airPressureBar = Mathf.Clamp(airPressureBar + (airSupply - airUse) * Time.deltaTime, 0f, 8.3f);
         UpdateExteriorIndicators();
         UpdateBrakeLights();
     }
@@ -272,7 +277,8 @@ public sealed class CoachVehicleController : MonoBehaviour
         rearRight.motorTorque = torque * 0.25f;
         rearLeftInner.motorTorque = torque * 0.25f;
         rearRightInner.motorTorque = torque * 0.25f;
-        float requestedBrake = brakeInput * serviceBrakeTorque;
+        float brakeAvailability = Mathf.InverseLerp(0f, 5f, airPressureBar);
+        float requestedBrake = brakeInput * serviceBrakeTorque * brakeAvailability;
         absActive = false;
         float frontLeftBrake = ApplyAbs(frontLeft, requestedBrake);
         float frontRightBrake = ApplyAbs(frontRight, requestedBrake);
