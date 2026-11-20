@@ -42,3 +42,16 @@ Ces tarifs personnalisés sont des paramètres d'équilibrage du jeu, et non des
 - `AfricanRoutePlanner.TryBuildPlayerItinerary(orderedCityIds, out itinerary, out reason)` : construit l'itinéraire dans l'ordre choisi par le joueur et explique pourquoi une liaison est invalide.
 
 Cette API constitue une fondation C# ; elle n'est pas encore reliée à un écran de carte interactif ou à une scène 3D. Les routes alternatives seront affichées dans l'interface de planification lorsque celle-ci sera développée.
+
+
+## Création d'un voyage à partir du choix du joueur
+
+Le nouveau `PlayerRouteTripFactory.TryCreate(...)` regroupe les validations et la préparation des données d'un voyage :
+- vérifie que la compagnie existe et possède le car choisi ;
+- refuse les véhicules qui ne respectent pas la règle des six roues minimum ;
+- vérifie que la classe Économique, Confort ou VIP est compatible avec le car ;
+- valide la suite de villes choisie par le joueur dans le réseau routier ;
+- construit l'itinéraire, son tarif automatique, le manifeste de passagers et le gestionnaire de contrôles frontaliers ;
+- expose le tarif par passager et les frais frontaliers annoncés avant le départ.
+
+Cette fabrique prépare les données du voyage. Elle ne constitue pas encore un écran graphique de planification et ne modifie pas encore la géométrie de la route 3D.
