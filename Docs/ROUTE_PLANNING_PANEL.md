@@ -42,3 +42,8 @@ private void OnTripPrepared(PlayerRouteTripSetup setup)
 ## Contrôles de cohérence
 
 Le panneau délègue la validation finale à `PlayerRouteTripFactory`. Le factory vérifie l'entreprise, la propriété du car, le minimum de six roues, la compatibilité de la classe de service et la continuité des liaisons routières. Les contrôles frontaliers et leurs frais sont conservés dans le setup pour les étapes ultérieures.
+
+
+## Présentation mobile et zones sûres
+
+Le panneau applique maintenant MobileSafeAreaFitter pour respecter les zones sûres Android (encoche, bords arrondis et navigation gestuelle). Le contenu garde un défilement vertical, avec une hiérarchie visuelle plus claire, un bouton de trajet conseillé distinct et une action principale mise en évidence. Les textes s'adaptent à l'espace disponible. La vérification finale reste à faire sur plusieurs tailles d'écran dans Unity et sur Android.
