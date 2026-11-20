@@ -22,13 +22,14 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     private CoachHudIcon seatbeltIcon;
     private CoachHudIcon doorIcon;
     private Image leftIndicatorImage, hazardImage, rightIndicatorImage, headlightImage, highBeamImage, engineImage;
-    private Image seatbeltPanelImage, doorPanelImage, wiperImage, cabinLightImage, acImage, fuelImage;
+    private Image seatbeltPanelImage, doorPanelImage, wiperImage, cabinLightImage, acImage, fuelImage, passengerImage;
     private int lastHudRefreshFrame;
     private CameraFollow cameraView;
     private Action openRoutePlanner;
+    private Action openPassengerManifest;
 
     public void Configure(CoachVehicleController target, MobileDriveInput driveInput,
-        MobileGraphicsSettings graphicsSettings, CameraFollow camera, CoachWiperSystem wiperSystem, CoachCabinLightingSystem cabinLightingSystem, CoachCabinComfortSystem cabinComfortSystem, CoachFuelSystem coachFuelSystem, Action showRoutePlanner)
+        MobileGraphicsSettings graphicsSettings, CameraFollow camera, CoachWiperSystem wiperSystem, CoachCabinLightingSystem cabinLightingSystem, CoachCabinComfortSystem cabinComfortSystem, CoachFuelSystem coachFuelSystem, Action showRoutePlanner, Action showPassengerManifest)
     {
         vehicle = target;
         wipers = wiperSystem;
@@ -39,6 +40,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         graphics = graphicsSettings;
         cameraView = camera;
         openRoutePlanner = showRoutePlanner;
+        openPassengerManifest = showPassengerManifest;
         BuildCanvas();
     }
 
@@ -80,11 +82,13 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         if (setup == null || setup.Itinerary == null)
         {
             routeStatusPanel.SetActive(false);
+            if (passengerImage != null) passengerImage.gameObject.SetActive(false);
             return;
         }
         routeStatusText.text = setup.Itinerary.DisplayName + " • " +
             setup.Itinerary.EstimatedDistanceKm.ToString("N0") + " km";
         routeStatusPanel.SetActive(true);
+        if (passengerImage != null) passengerImage.gameObject.SetActive(true);
     }
 
     private void BuildCanvas()
@@ -160,6 +164,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         CreateCabinLightButton(safeRoot);
         CreateAirConditioningButton(safeRoot);
         CreateRoutePlannerButton(safeRoot);
+        CreatePassengerManifestButton(safeRoot);
         CreateFuelButton(safeRoot);
     }
 
@@ -225,6 +230,13 @@ public sealed class PrototypeTouchControls : MonoBehaviour
             new Vector2(-130f, -270f), ToggleCabinLights);
     }
 
+
+    private void CreatePassengerManifestButton(Transform parent)
+    {
+        passengerImage = CreateUtilityButton(parent, "♟", new Vector2(0.5f, 1f),
+            new Vector2(-460f, -88f), () => { if (openPassengerManifest != null) openPassengerManifest(); });
+        passengerImage.gameObject.SetActive(false);
+    }
 
     private void CreateFuelButton(Transform parent)
     {
@@ -330,6 +342,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
             case "❄": return CoachHudIcon.IconType.AirConditioning;
             case "⌖": return CoachHudIcon.IconType.RouteMap;
             case "⛽": return CoachHudIcon.IconType.FuelPump;
+            case "♟": return CoachHudIcon.IconType.Passengers;
             default: return CoachHudIcon.IconType.Warning;
         }
     }
