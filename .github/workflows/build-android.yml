@@ -16,21 +16,29 @@ jobs:
         with:
           lfs: true
 
-      - name: Check Unity license secret
+      - name: Check Unity Personal license secrets
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         run: |
-          if [ -z "$UNITY_LICENSE" ]; then
-            echo "::error::The UNITY_LICENSE GitHub Actions secret is missing. Follow Docs/ANDROID_BUILD_GUIDE.md."
-            exit 1
-          fi
+          missing=0
+          for name in UNITY_LICENSE UNITY_EMAIL UNITY_PASSWORD; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Missing GitHub Actions secret: $name. Follow Docs/ANDROID_BUILD_GUIDE.md."
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then exit 1; fi
 
       - name: Build Android APK
         uses: game-ci/unity-builder@v5.0.1
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          unityVersion: auto
+          unityVersion: 6000.0.23f1
           targetPlatform: Android
           androidExportType: androidPackage
           buildName: BUS-COACH-SIMULATOR-AFRICA
