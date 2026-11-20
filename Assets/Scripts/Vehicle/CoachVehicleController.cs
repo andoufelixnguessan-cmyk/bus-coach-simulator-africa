@@ -11,6 +11,7 @@ public sealed class CoachVehicleController : MonoBehaviour
     private static readonly float[] RpmPerKphByGear = { 0f, 55f, 36f, 27f, 21f, 17f, 14f };
     [Header("Wheel colliders")]
     [SerializeField] private WheelCollider frontLeft, frontRight, rearLeft, rearRight, rearLeftInner, rearRightInner;
+    [SerializeField] private WheelCollider rearLeftSecondOuter, rearRightSecondOuter, rearLeftSecondInner, rearRightSecondInner;
     [Header("Vehicle tuning")]
     [SerializeField, Min(0f)] private float motorTorque = 4200f;
     [SerializeField, Min(0f)] private float serviceBrakeTorque = 8500f;
@@ -159,6 +160,21 @@ public sealed class CoachVehicleController : MonoBehaviour
         serviceBrakeTorque = Mathf.Max(0f, brakeTorque);
         maxSteerAngle = Mathf.Clamp(steeringAngle, 5f, 45f);
         maxSpeedKph = Mathf.Max(10f, speedLimitKph);
+    }
+
+    public void Configure(WheelCollider fl, WheelCollider fr,
+        WheelCollider rear1LeftOuter, WheelCollider rear1RightOuter,
+        WheelCollider rear1LeftInner, WheelCollider rear1RightInner,
+        WheelCollider rear2LeftOuter, WheelCollider rear2RightOuter,
+        WheelCollider rear2LeftInner, WheelCollider rear2RightInner,
+        float driveTorque, float brakeTorque, float steeringAngle, float speedLimitKph)
+    {
+        Configure(fl, fr, rear1LeftOuter, rear1RightOuter,
+            rear1LeftInner, rear1RightInner, driveTorque, brakeTorque, steeringAngle, speedLimitKph);
+        rearLeftSecondOuter = rear2LeftOuter;
+        rearRightSecondOuter = rear2RightOuter;
+        rearLeftSecondInner = rear2LeftInner;
+        rearRightSecondInner = rear2RightInner;
     }
 
     /// <summary>Engine upgrades are applied by the garage and affect response, RPM ceiling and sound.</summary>
@@ -329,10 +345,25 @@ public sealed class CoachVehicleController : MonoBehaviour
         ApplyAntiRoll(frontLeft, frontRight, frontAntiRoll);
         ApplyAntiRoll(rearLeft, rearRight, rearAntiRoll);
         ApplyAntiRoll(rearLeftInner, rearRightInner, rearAntiRoll * 0.55f);
-        rearLeft.motorTorque = torque * 0.25f;
-        rearRight.motorTorque = torque * 0.25f;
-        rearLeftInner.motorTorque = torque * 0.25f;
-        rearRightInner.motorTorque = torque * 0.25f;
+        bool hasSecondRearAxle = rearLeftSecondOuter != null && rearRightSecondOuter != null &&
+            rearLeftSecondInner != null && rearRightSecondInner != null;
+        if (hasSecondRearAxle)
+        {
+            ApplyAntiRoll(rearLeftSecondOuter, rearRightSecondOuter, rearAntiRoll);
+            ApplyAntiRoll(rearLeftSecondInner, rearRightSecondInner, rearAntiRoll * 0.55f);
+        }
+        float torquePerRearWheel = torque * (hasSecondRearAxle ? 0.125f : 0.25f);
+        rearLeft.motorTorque = torquePerRearWheel;
+        rearRight.motorTorque = torquePerRearWheel;
+        rearLeftInner.motorTorque = torquePerRearWheel;
+        rearRightInner.motorTorque = torquePerRearWheel;
+        if (hasSecondRearAxle)
+        {
+            rearLeftSecondOuter.motorTorque = torquePerRearWheel;
+            rearRightSecondOuter.motorTorque = torquePerRearWheel;
+            rearLeftSecondInner.motorTorque = torquePerRearWheel;
+            rearRightSecondInner.motorTorque = torquePerRearWheel;
+        }
         float brakeAvailability = Mathf.InverseLerp(0f, 5f, airPressureBar);
         float requestedBrake = brakeInput * serviceBrakeTorque * brakeAvailability;
         absActive = false;
@@ -342,6 +373,10 @@ public sealed class CoachVehicleController : MonoBehaviour
         float rearRightService = ApplyAbs(rearRight, requestedBrake);
         float rearLeftInnerService = ApplyAbs(rearLeftInner, requestedBrake);
         float rearRightInnerService = ApplyAbs(rearRightInner, requestedBrake);
+        float rearLeftSecondOuterService = rearLeftSecondOuter != null ? ApplyAbs(rearLeftSecondOuter, requestedBrake) : 0f;
+        float rearRightSecondOuterService = rearRightSecondOuter != null ? ApplyAbs(rearRightSecondOuter, requestedBrake) : 0f;
+        float rearLeftSecondInnerService = rearLeftSecondInner != null ? ApplyAbs(rearLeftSecondInner, requestedBrake) : 0f;
+        float rearRightSecondInnerService = rearRightSecondInner != null ? ApplyAbs(rearRightSecondInner, requestedBrake) : 0f;
         float parkBrake = gearSelection == GearSelection.Park ? handbrakeTorque * 1.4f : 0f;
         float emergencySpringBrake = airPressureBar < 1f ? handbrakeTorque * 1.4f : 0f;
         float handbrakeForce = handbrake ? handbrakeTorque : 0f;
@@ -351,6 +386,10 @@ public sealed class CoachVehicleController : MonoBehaviour
         rearRight.brakeTorque = rearRightService + handbrakeForce + parkBrake + emergencySpringBrake;
         rearLeftInner.brakeTorque = rearLeftInnerService + handbrakeForce + parkBrake + emergencySpringBrake;
         rearRightInner.brakeTorque = rearRightInnerService + handbrakeForce + parkBrake + emergencySpringBrake;
+        if (rearLeftSecondOuter != null) rearLeftSecondOuter.brakeTorque = rearLeftSecondOuterService + handbrakeForce + parkBrake + emergencySpringBrake;
+        if (rearRightSecondOuter != null) rearRightSecondOuter.brakeTorque = rearRightSecondOuterService + handbrakeForce + parkBrake + emergencySpringBrake;
+        if (rearLeftSecondInner != null) rearLeftSecondInner.brakeTorque = rearLeftSecondInnerService + handbrakeForce + parkBrake + emergencySpringBrake;
+        if (rearRightSecondInner != null) rearRightSecondInner.brakeTorque = rearRightSecondInnerService + handbrakeForce + parkBrake + emergencySpringBrake;
         body.AddForce(-transform.up * downforce * body.linearVelocity.magnitude);
     }
 
