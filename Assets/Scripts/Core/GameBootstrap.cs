@@ -156,6 +156,7 @@ public sealed class GameBootstrap : MonoBehaviour
         BuildPassengerDoor(root.transform);
         BuildWipers(root.transform);
         root.AddComponent<CoachWeatherSystem>().Configure(coach);
+        root.AddComponent<AfricanDayNightSystem>().Configure();
         root.AddComponent<CoachCabinLightingSystem>().Configure(
             CreateCabinLight(root.transform, "Cabin ceiling light front", new Vector3(0f, 2.48f, 1.65f)),
             CreateCabinLight(root.transform, "Cabin ceiling light middle", new Vector3(0f, 2.48f, 0f)),
