@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public sealed class PrototypeTouchControls : MonoBehaviour
 {
     private CoachVehicleController vehicle;
+    private CoachWiperSystem wipers;
     private MobileDriveInput input;
     private MobileGraphicsSettings graphics;
     private Text speedText;
@@ -13,14 +14,15 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     private CoachHudIcon seatbeltIcon;
     private CoachHudIcon doorIcon;
     private Image leftIndicatorImage, hazardImage, rightIndicatorImage, headlightImage, highBeamImage, engineImage;
-    private Image seatbeltPanelImage, doorPanelImage;
+    private Image seatbeltPanelImage, doorPanelImage, wiperImage;
     private int lastHudRefreshFrame;
     private CameraFollow cameraView;
 
     public void Configure(CoachVehicleController target, MobileDriveInput driveInput,
-        MobileGraphicsSettings graphicsSettings, CameraFollow camera)
+        MobileGraphicsSettings graphicsSettings, CameraFollow camera, CoachWiperSystem wiperSystem)
     {
         vehicle = target;
+        wipers = wiperSystem;
         input = driveInput;
         graphics = graphicsSettings;
         cameraView = camera;
@@ -49,6 +51,9 @@ public sealed class PrototypeTouchControls : MonoBehaviour
             SetButtonState(engineImage, vehicle.EngineRunning);
             SetButtonState(seatbeltPanelImage, vehicle.SeatbeltFastened);
             SetButtonState(doorPanelImage, vehicle.PassengerDoorOpen);
+        }
+        if (wipers != null) SetButtonState(wiperImage, wipers.IsEnabled);
+
         }
     }
 
@@ -114,13 +119,14 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         CreateUtilityButton(safeRoot, "◎", new Vector2(0.5f, 1f), new Vector2(330f, -88f), ToggleCameraView);
         engineImage = CreateUtilityButton(safeRoot, "⏻", new Vector2(0.5f, 1f), new Vector2(0f, -150f), ToggleEngine);
         CreateSeatbeltButton(safeRoot);
+        CreateWiperButton(safeRoot);
         CreatePassengerDoorButton(safeRoot);
     }
 
     private void CreateSeatbeltButton(Transform parent)
     {
         GameObject panel = CreatePanel(parent, "Seatbelt control", new Vector2(0.5f, 1f),
-            new Vector2(0.5f, 0.5f), new Vector2(-94f, -205f), new Vector2(74f, 48f),
+            new Vector2(0.5f, 0.5f), new Vector2(-130f, -205f), new Vector2(74f, 48f),
             new Color(0.035f, 0.075f, 0.11f, 0.92f));
         Button button = panel.AddComponent<Button>();
         button.targetGraphic = panel.GetComponent<Image>();
@@ -133,13 +139,25 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     private void CreatePassengerDoorButton(Transform parent)
     {
         GameObject panel = CreatePanel(parent, "Passenger door control", new Vector2(0.5f, 1f),
-            new Vector2(0.5f, 0.5f), new Vector2(94f, -205f), new Vector2(74f, 48f),
+            new Vector2(0.5f, 0.5f), new Vector2(130f, -205f), new Vector2(74f, 48f),
             new Color(0.035f, 0.075f, 0.11f, 0.92f));
         Button button = panel.AddComponent<Button>();
         button.targetGraphic = panel.GetComponent<Image>();
         button.onClick.AddListener(TogglePassengerDoor);
         doorPanelImage = panel.GetComponent<Image>();
         doorIcon = CreateIcon(panel.transform, CoachHudIcon.IconType.DoorClosed);
+    }
+
+
+    private void CreateWiperButton(Transform parent)
+    {
+        wiperImage = CreateUtilityButton(parent, "≋", new Vector2(0.5f, 1f),
+            new Vector2(0f, -205f), ToggleWipers);
+    }
+
+    private void ToggleWipers()
+    {
+        if (wipers != null) wipers.Toggle();
     }
 
     private void TogglePassengerDoor()
