@@ -42,6 +42,7 @@ Les équipements essentiels de sécurité (ceintures, extincteurs, sorties de se
 - Permettre de gagner de l'argent sur les premières lignes sans remplir systématiquement toutes les places.
 - Introduire les véhicules plus chers progressivement, sans blocage artificiel.
 - Afficher les revenus et dépenses estimés avant chaque voyage.
+- Garantir au moins 500 000 FCFA de bénéfice net à chaque voyage international terminé avec au moins un passager embarqué : un complément de garantie est versé si billets moins dépenses n'atteignent pas ce seuil. Cette ligne apparaît séparément dans la comptabilité.
 - Les réparations, amendes et frais internationaux sont proportionnés et annoncés.
 - Prévoir des contrats, missions et bonus de conduite sûre comme compléments de revenus.
 - Aucun achat réel n'est nécessaire à la progression.
