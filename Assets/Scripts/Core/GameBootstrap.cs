@@ -203,6 +203,10 @@ public sealed class GameBootstrap : MonoBehaviour
             CreatePart(coachRoot, "Upper deck right window", new Vector3(1.235f, 3.48f, z),
                 new Vector3(0.025f, 0.82f, 0.78f), windowColor);
         }
+        CreateTransparentPart(coachRoot, "Upper deck front windshield", new Vector3(0f, 3.52f, 4.79f),
+            new Vector3(2.20f, 0.92f, 0.035f), new Color(0.24f, 0.43f, 0.52f, 0.22f));
+        CreatePart(coachRoot, "Upper deck rear window", new Vector3(0f, 3.52f, -4.91f),
+            new Vector3(2.05f, 0.82f, 0.035f), new Color(0.12f, 0.22f, 0.28f));
         CreatePart(coachRoot, "Upper deck front destination fascia", new Vector3(0f, 4.00f, 4.91f),
             new Vector3(1.62f, 0.22f, 0.08f), new Color(0.045f, 0.055f, 0.065f));
     }
