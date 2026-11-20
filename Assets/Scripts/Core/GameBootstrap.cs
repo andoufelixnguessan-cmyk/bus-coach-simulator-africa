@@ -23,7 +23,7 @@ public sealed class GameBootstrap : MonoBehaviour
     private MobileDriveInput input;
     private CameraFollow cameraFollow;
     private MobileGraphicsSettings graphicsSettings;
-    private PrototypeTouchControls drivingHud;
+    private CoachDrivingHud drivingHud;
     public CompanyProfile ActiveCompany { get; private set; }
     public PlayerRouteTripSetup CurrentTripSetup { get; private set; }
     private GameObject routePlannerCanvas;
@@ -573,7 +573,7 @@ public sealed class GameBootstrap : MonoBehaviour
         input = inputObject.AddComponent<MobileDriveInput>();
         graphicsSettings = inputObject.AddComponent<MobileGraphicsSettings>();
         graphicsSettings.ApplySavedPreset();
-        drivingHud = inputObject.AddComponent<PrototypeTouchControls>();
+        drivingHud = inputObject.AddComponent<CoachDrivingHud>();
         drivingHud.Configure(coach, input, graphicsSettings, cameraFollow, coach.GetComponent<CoachWiperSystem>(), coach.GetComponent<CoachCabinLightingSystem>(), coach.GetComponent<CoachCabinComfortSystem>(), coach.GetComponent<CoachFuelSystem>(), ShowRoutePlanner, ShowPassengerManifest);
     }
 
