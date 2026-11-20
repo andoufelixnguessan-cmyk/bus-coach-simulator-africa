@@ -111,19 +111,19 @@ public static class AfricanRoutePlanner
         new RoadSegment("lagos","kano",990,900, null, null, 0L, 0, "Ibadan", "Ilorin", "Jebba", "Kaduna"),
         new RoadSegment("abidjan","bobo-dioulasso",850,780,"ci-bf-pogo","Frontière Pogo – Zégoua",18000,75, "Yamoussoukro", "Bouaké", "Katiola", "Ferkessédougou", "Niangoloko", "Banfora").ConfigureLocalities(4, "CI", "CI", "CI", "CI", "BF", "BF"),
         new RoadSegment("bobo-dioulasso","ouagadougou",360,330, null, null, 0L, 0, "Koudougou"),
-        new RoadSegment("abidjan","sikasso",900,840,"ci-ml-pogo","Corridor Côte d'Ivoire – Mali",18000,75, "Yamoussoukro", "Bouaké", "Korhogo", "Ferkessédougou"),
+        new RoadSegment("abidjan","sikasso",900,840,"ci-ml-pogo","Corridor Côte d'Ivoire – Mali",18000,75, "Yamoussoukro", "Bouaké", "Korhogo", "Ferkessédougou", "Zégoua", "Kadiolo").ConfigureLocalities(4, "CI", "CI", "CI", "CI", "ML", "ML"),
         new RoadSegment("sikasso","bamako",375,330, null, null, 0L, 0, "Bougouni", "Koumantou"),
         new RoadSegment("abidjan","monrovia",900,840,"ci-lr-border","Frontière Côte d'Ivoire – Liberia",20000,90, "Grand-Lahou", "Sassandra", "San Pedro", "Tabou", "Harper", "Greenville", "Buchanan").ConfigureLocalities(4, "CI", "CI", "CI", "CI", "LR", "LR", "LR"),
         new RoadSegment("monrovia","freetown",480,450,"lr-sl-border","Frontière Liberia – Sierra Leone",18000,80, "Gbarnga", "Ganta", "Bo Waterside", "Kenema").ConfigureLocalities(3, "LR", "LR", "LR", "SL"),
         new RoadSegment("freetown","conakry",160,150,"sl-gn-border","Frontière Sierra Leone – Guinée",18000,80, "Masiaka", "Kambia", "Forécariah").ConfigureLocalities(2, "SL", "SL", "GN"),
-        new RoadSegment("dakar","banjul",165,150,"sn-gm-border","Frontière Sénégal – Gambie",12000,50, "Kaolack", "Soma"),
+        new RoadSegment("dakar","banjul",165,150,"sn-gm-border","Frontière Sénégal – Gambie",12000,50, "Kaolack", "Soma").ConfigureLocalities(1, "SN", "GM"),
         new RoadSegment("dakar","bamako",1250,1140,"sn-ml-border","Frontière Sénégal – Mali",22000,90, "Tambacounda", "Kidira", "Kayes", "Kita").ConfigureLocalities(2, "SN", "SN", "ML", "ML"),
         new RoadSegment("ouagadougou","niamey",520,480,"bf-ne-border","Frontière Burkina Faso – Niger",18000,75, "Koupéla", "Fada N’Gourma", "Torodi").ConfigureLocalities(2, "BF", "BF", "NE"),
         new RoadSegment("ouagadougou","tamale",450,420,"bf-gh-border","Frontière Burkina Faso – Ghana",18000,75, "Paga", "Bawku").ConfigureLocalities(1, "BF", "GH"),
         new RoadSegment("niamey","kano",400,360,"ne-ng-border","Frontière Niger – Nigeria",18000,75, "Maradi", "Jibia", "Katsina").ConfigureLocalities(2, "NE", "NE", "NG"),
         new RoadSegment("lagos","douala",1700,1560,"ng-cm-border","Frontière Nigeria – Cameroun",25000,120, "Benin City", "Enugu", "Calabar", "Kumba", "Buea").ConfigureLocalities(3, "NG", "NG", "NG", "CM", "CM"),
         new RoadSegment("douala","yaounde",245,210, null, null, 0L, 0, "Edea", "Mbankomo"),
-        new RoadSegment("yaounde","libreville",680,630,"cm-ga-border","Frontière Cameroun – Gabon",22000,100, "Ebolowa", "Ambam")
+        new RoadSegment("yaounde","libreville",680,630,"cm-ga-border","Frontière Cameroun – Gabon",22000,100, "Ebolowa", "Ambam", "Bitam", "Oyem").ConfigureLocalities(2, "CM", "CM", "GA", "GA")
     };
 
     public static IReadOnlyList<City> AllCities { get { return Cities; } }
@@ -210,7 +210,7 @@ public static class AfricanRoutePlanner
                 int localityIndex = forward ? step : localities.Length - 1 - step;
                 string localityCountry = localityIndex < localityCountries.Length &&
                     !string.IsNullOrWhiteSpace(localityCountries[localityIndex])
-                    ? localityCountries[localityIndex] : selected[i].CountryCode;
+                    ? localityCountries[localityIndex] : FindCity(segment.FromCityId).CountryCode;
                 stops.Add(new RouteStop("locality-" + selected[i].Id + "-" + selected[i + 1].Id + "-" + localityIndex,
                     localities[localityIndex], localityCountry, RouteStopType.PassengerStop, 5, true));
             }
