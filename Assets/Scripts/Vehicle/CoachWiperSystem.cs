@@ -1,24 +1,30 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>Animated paired windshield wipers with a single, reliable toggle state.</summary>
+/// <summary>Animated paired windshield wipers for single- and double-decker coaches.</summary>
 public sealed class CoachWiperSystem : MonoBehaviour
 {
     [SerializeField, Min(0.1f)] private float sweepSpeed = 2.2f;
     [SerializeField, Range(10f, 65f)] private float sweepAngle = 42f;
-    private Transform leftWiper;
-    private Transform rightWiper;
-    private Quaternion leftRest;
-    private Quaternion rightRest;
+    private readonly List<Transform> wipers = new List<Transform>();
+    private readonly List<Quaternion> restRotations = new List<Quaternion>();
     private bool enabledByDriver;
 
     public bool IsEnabled => enabledByDriver;
 
-    public void Configure(Transform left, Transform right)
+    public void Configure(params Transform[] pivots)
     {
-        leftWiper = left;
-        rightWiper = right;
-        if (leftWiper != null) leftRest = leftWiper.localRotation;
-        if (rightWiper != null) rightRest = rightWiper.localRotation;
+        wipers.Clear();
+        restRotations.Clear();
+        if (pivots != null)
+        {
+            for (int i = 0; i < pivots.Length; i++)
+            {
+                if (pivots[i] == null) continue;
+                wipers.Add(pivots[i]);
+                restRotations.Add(pivots[i].localRotation);
+            }
+        }
         ApplyRestPose();
     }
 
@@ -32,15 +38,16 @@ public sealed class CoachWiperSystem : MonoBehaviour
     {
         if (!enabledByDriver) return;
         float sweep = Mathf.Sin(Time.time * sweepSpeed * Mathf.PI * 2f) * sweepAngle;
-        if (leftWiper != null)
-            leftWiper.localRotation = leftRest * Quaternion.Euler(0f, 0f, sweep);
-        if (rightWiper != null)
-            rightWiper.localRotation = rightRest * Quaternion.Euler(0f, 0f, -sweep);
+        for (int i = 0; i < wipers.Count; i++)
+        {
+            float direction = i % 2 == 0 ? 1f : -1f;
+            wipers[i].localRotation = restRotations[i] * Quaternion.Euler(0f, 0f, sweep * direction);
+        }
     }
 
     private void ApplyRestPose()
     {
-        if (leftWiper != null) leftWiper.localRotation = leftRest;
-        if (rightWiper != null) rightWiper.localRotation = rightRest;
+        for (int i = 0; i < wipers.Count; i++)
+            if (wipers[i] != null) wipers[i].localRotation = restRotations[i];
     }
 }
