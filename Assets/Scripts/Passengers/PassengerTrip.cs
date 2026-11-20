@@ -18,6 +18,10 @@ public sealed class PassengerBooking
     public string PassengerName;
     public string Origin;
     public string Destination;
+    public string OriginStopId;
+    public string DestinationStopId;
+    public int OriginStopIndex;
+    public int DestinationStopIndex;
     public CoachServiceClass ServiceClass;
     public int SeatNumber;
     public float LuggageWeightKg;
@@ -25,13 +29,18 @@ public sealed class PassengerBooking
     public PassengerTicketStatus Status;
 
     public PassengerBooking(string ticketId, string passengerName, string origin, string destination,
-        CoachServiceClass serviceClass, int seatNumber, float luggageWeightKg, long farePaidXof)
+        CoachServiceClass serviceClass, int seatNumber, float luggageWeightKg, long farePaidXof,
+        string originStopId = null, string destinationStopId = null, int originStopIndex = 0, int destinationStopIndex = 0)
     {
         TicketId = ticketId;
         PassengerName = passengerName;
         Origin = origin;
         Destination = destination;
-        ServiceClass = serviceClass;
+        OriginStopId = originStopId;
+        DestinationStopId = destinationStopId;
+        OriginStopIndex = originStopIndex;
+        DestinationStopIndex = destinationStopIndex;
+ = serviceClass;
         SeatNumber = seatNumber;
         LuggageWeightKg = luggageWeightKg;
         FarePaidXof = farePaidXof;
@@ -68,6 +77,7 @@ public sealed class PassengerTrip
     private readonly CoachServiceClass serviceClass;
     private readonly int seatCapacity;
     private readonly float luggageCapacityKg;
+    private readonly List<RouteStop> itineraryStops = new List<RouteStop>();
     private readonly List<PassengerBooking> bookings = new List<PassengerBooking>();
     private int nextTicketNumber = 1;
     private long ticketRevenueXof;
@@ -86,6 +96,7 @@ public sealed class PassengerTrip
     public PassengerTrip(string tripId, string coachId, RouteItinerary itinerary, CoachServiceClass serviceClass)
         : this(tripId, coachId, RouteEconomy.CreateFareForItinerary(itinerary), serviceClass)
     {
+        if (itinerary != null && itinerary.Stops != null) itineraryStops.AddRange(itinerary.Stops);
     }
 
     public PassengerTrip(string tripId, string coachId, RouteFare route, CoachServiceClass serviceClass)
@@ -107,9 +118,22 @@ public sealed class PassengerTrip
     public bool TryBookPassenger(string passengerName, CompanyProfile company, float luggageWeightKg,
         out PassengerBooking booking, out string reason)
     {
+        string originId = FindFirstPassengerStopId();
+        string destinationId = FindLastPassengerStopId();
+        return TryBookPassenger(passengerName, company, luggageWeightKg, originId, destinationId,
+            out booking, out reason);
+    }
+
+    /// <summary>Books a passenger only between boarding/alighting stops on the selected itinerary.</summary>
+    public bool TryBookPassenger(string passengerName, CompanyProfile company, float luggageWeightKg,
+        string originStopId, string destinationStopId, out PassengerBooking booking, out string reason)
+    {
         booking = null;
         reason = string.Empty;
-
+        int originIndex = FindPassengerStopIndex(originStopId);
+        int destinationIndex = FindPassengerStopIndex(destinationStopId);
+        if (originIndex < 0 || destinationIndex <= originIndex)
+        { reason = "Choisissez deux arrêts présents sur ce trajet, dans le bon ordre."; return false; }
         if (company == null) { reason = "Entreprise introuvable."; return false; }
         if (string.IsNullOrWhiteSpace(passengerName)) { reason = "Nom du passager obligatoire."; return false; }
         if (luggageWeightKg < 0f || luggageWeightKg > MaximumSingleBagKg)
@@ -119,19 +143,89 @@ public sealed class PassengerTrip
         if (CurrentLuggageWeightKg() + luggageWeightKg > luggageCapacityKg)
         { reason = "La capacité totale des soutes est atteinte."; return false; }
 
-        int seat = FindFreeSeat();
-        long fare = route.GetFare(serviceClass);
-        if (!company.AddIncome(fare, "Billet " + route.DisplayName + " - " + passengerName))
+        long fare = CalculateStopToStopFare(originIndex, destinationIndex);
+        if (fare <= 0L) { reason = "Impossible de calculer le prix de ce billet."; return false; }
+        if (!company.AddIncome(fare, "Billet " + itineraryStops[originIndex].Name + " – " +
+            itineraryStops[destinationIndex].Name + " - " + passengerName))
         { reason = "Impossible d'enregistrer le paiement du billet."; return false; }
 
         string ticketId = tripId + "-" + nextTicketNumber.ToString("0000");
         nextTicketNumber++;
-        booking = new PassengerBooking(ticketId, passengerName.Trim(), route.DisplayName.Split('–')[0].Trim(),
-            route.DisplayName.Split('–').Length > 1 ? route.DisplayName.Split('–')[1].Trim() : route.DisplayName,
-            serviceClass, seat, luggageWeightKg, fare);
+        booking = new PassengerBooking(ticketId, passengerName.Trim(),
+            itineraryStops[originIndex].Name, itineraryStops[destinationIndex].Name,
+            serviceClass, FindFreeSeat(), luggageWeightKg, fare,
+            itineraryStops[originIndex].Id, itineraryStops[destinationIndex].Id,
+            originIndex, destinationIndex);
         bookings.Add(booking);
         ticketRevenueXof += fare;
         return true;
+    }
+
+    /// <summary>Boards all reserved passengers whose origin is the current stop.</summary>
+    public int TryBoardPassengersAtStop(string stopId)
+    {
+        int count = 0;
+        for (int i = 0; i < bookings.Count; i++)
+        {
+            PassengerBooking p = bookings[i];
+            if (p.Status == PassengerTicketStatus.Reserved &&
+                string.Equals(p.OriginStopId, stopId, StringComparison.Ordinal))
+            { p.Status = PassengerTicketStatus.Boarded; count++; }
+        }
+        return count;
+    }
+
+    /// <summary>Lets passengers leave the coach at their own destination stop.</summary>
+    public int TryAlightPassengersAtStop(string stopId)
+    {
+        int count = 0;
+        for (int i = 0; i < bookings.Count; i++)
+        {
+            PassengerBooking p = bookings[i];
+            if (p.Status == PassengerTicketStatus.Boarded &&
+                string.Equals(p.DestinationStopId, stopId, StringComparison.Ordinal))
+            { p.Status = PassengerTicketStatus.Arrived; count++; }
+        }
+        return count;
+    }
+
+    private int FindPassengerStopIndex(string stopId)
+    {
+        if (string.IsNullOrWhiteSpace(stopId)) return -1;
+        for (int i = 0; i < itineraryStops.Count; i++)
+            if (itineraryStops[i].PassengersMayBoardOrAlight &&
+                string.Equals(itineraryStops[i].Id, stopId, StringComparison.Ordinal)) return i;
+        return -1;
+    }
+
+    private string FindFirstPassengerStopId()
+    {
+        for (int i = 0; i < itineraryStops.Count; i++)
+            if (itineraryStops[i].PassengersMayBoardOrAlight) return itineraryStops[i].Id;
+        return null;
+    }
+
+    private string FindLastPassengerStopId()
+    {
+        for (int i = itineraryStops.Count - 1; i >= 0; i--)
+            if (itineraryStops[i].PassengersMayBoardOrAlight) return itineraryStops[i].Id;
+        return null;
+    }
+
+    private long CalculateStopToStopFare(int originIndex, int destinationIndex)
+    {
+        int totalLegs = 0;
+        int passengerLegs = 0;
+        for (int i = 0; i < itineraryStops.Count - 1; i++)
+            if (itineraryStops[i].PassengersMayBoardOrAlight &&
+                itineraryStops[i + 1].PassengersMayBoardOrAlight) totalLegs++;
+        for (int i = originIndex; i < destinationIndex; i++)
+            if (itineraryStops[i].PassengersMayBoardOrAlight &&
+                itineraryStops[i + 1].PassengersMayBoardOrAlight) passengerLegs++;
+        if (totalLegs <= 0 || passengerLegs <= 0) return route.GetFare(serviceClass);
+        long fare = (long)Math.Round(route.GetFare(serviceClass) *
+            ((double)passengerLegs / totalLegs) / 500.0) * 500L;
+        return Math.Max(500L, fare);
     }
 
     public bool TryBoardPassenger(string ticketId, out string reason)
