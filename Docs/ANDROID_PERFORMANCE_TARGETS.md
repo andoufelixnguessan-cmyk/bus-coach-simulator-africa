@@ -66,3 +66,8 @@ Only after this milestone performs acceptably on the reference phone should traf
 
 ## Honesty about status
 This document defines targets and tests. It does not mean the game is already optimized or playable. Performance can only be confirmed after a Unity Android build has been profiled and tested on the target phone. The current reference configuration is Samsung Galaxy A07 with 4 GB RAM.
+
+
+## Safe-area and touch presentation
+
+The driving HUD and route-planning panel use a shared MobileSafeAreaFitter based on Screen.safeArea. This keeps interactive controls away from Android display cutouts and system gesture/navigation areas. Driving controls have distinct colors and pointer-down visual feedback. This reduces layout risk but does not replace physical-device testing across aspect ratios and Android navigation modes.
