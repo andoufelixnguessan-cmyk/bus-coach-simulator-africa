@@ -200,7 +200,7 @@ public static class AfricanRoadWorldBuilder
         signText.transform.position = board.transform.position + Vector3.left * side * 0.12f;
         signText.transform.rotation = Quaternion.Euler(0f, side > 0f ? -90f : 90f, 0f);
         TextMesh lettering = signText.AddComponent<TextMesh>();
-        lettering.text = title + "\\n" + subtitle;
+        lettering.text = title + "\n" + subtitle;
         lettering.anchor = TextAnchor.MiddleCenter;
         lettering.alignment = TextAlignment.Center;
         lettering.fontSize = 48;
