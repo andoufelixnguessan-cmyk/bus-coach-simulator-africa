@@ -172,6 +172,14 @@ public sealed class PassengerTrip
         { reason = "Cet arrêt ne permet pas l'échange de passagers sur cet itinéraire."; return false; }
         if (stopIndex <= lastProcessedPassengerStopIndex)
         { reason = "Cet arrêt a déjà été traité ou n'est pas dans le bon ordre."; return false; }
+        // Reservations whose boarding stop has already been passed become no-shows.
+        for (int i = 0; i < bookings.Count; i++)
+        {
+            PassengerBooking passenger = bookings[i];
+            if (passenger.Status == PassengerTicketStatus.Reserved &&
+                passenger.OriginStopIndex < stopIndex)
+                passenger.Status = PassengerTicketStatus.NoShow;
+        }
         alighted = TryAlightPassengersAtStop(stopId);
         boarded = TryBoardPassengersAtStop(stopId);
         lastProcessedPassengerStopIndex = stopIndex;
