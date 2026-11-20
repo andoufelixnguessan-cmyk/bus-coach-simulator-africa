@@ -57,3 +57,8 @@ The repository now contains a Unity 6 project configuration, an editor-driven An
 Next gates: compile the Unity project, fix all build errors, replace placeholder coach/world geometry with original quality assets, add cockpit and production touch controls, then install and profile the first Android build on the Samsung Galaxy A07 (4 GB RAM).
 
 International completed trips have a minimum net-profit target of 500,000 XOF: the trip quote estimates a transparent commercial guarantee top-up, and trip completion records any required top-up separately in company finances. It applies only to completed international trips with at least one paid passenger; it is a game-balancing rule, not a real-world earnings claim. The starting company capital is set to 24,000,000 XOF so it can purchase the 22,000,000 XOF six-wheel starter coach.
+
+
+## Player-selected trip setup
+
+A new `PlayerRouteTripFactory` validates the player's ordered city list, company ownership of the selected coach, the six-wheel minimum and service-class compatibility. It then creates the itinerary, fare, passenger manifest and border manager as one data-level trip setup. Border-aware trip completion now refuses to close a journey while any required border checkpoint remains uncleared and includes actually paid border fees in the international guarantee calculation. A graphical route-planning screen and 3D route-world integration are still pending.
