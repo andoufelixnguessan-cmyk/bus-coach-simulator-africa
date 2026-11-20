@@ -52,3 +52,13 @@ Source-level structural checks do not prove that the project compiles or runs. N
 - Les arrêts intermédiaires, les postes-frontières et la destination doivent passer par `RouteProgressionController`, qui impose l'ordre de l'itinéraire et les validations documentaires.
 - `CoachTripOperations.TryDepart` recalcule désormais les cinq postes de dépenses avec une addition contrôlée (`checked`) et rejette les montants négatifs ou les dépassements avant tout débit de l'entreprise.
 - Ces corrections sont intégrées au dépôt source ; compilation Unity, tests de scène et essais sur téléphone restent à effectuer.
+
+
+## Écran de préparation avant départ (20 novembre 2026)
+
+- Nouveau composant `CoachDeparturePreparationPanel` : écran paysage avec dix validations obligatoires (pneus, freins, éclairage, visibilité, portes/évacuations, ceintures, extincteur, trousse de secours, bagages, repos du conducteur).
+- Le panneau affiche une estimation des dépenses en FCFA (carburant, personnel, péages/frontières, restauration et réserve d'entretien), ainsi que la trésorerie disponible.
+- Le flux de préparation est relié au planificateur : après création d'un itinéraire, le manifeste s'ouvre pour réserver et confirmer l'embarquement au terminal d'origine ; sa fermeture ouvre l'écran de préparation.
+- Le départ ne peut être validé que si la checklist est complète, si au moins un passager est embarqué et si l'entreprise peut payer les dépenses calculées. Le statut du trajet passe alors à `OnRoad`.
+- Les coûts affichés sont des estimations provisoires d'équilibrage du jeu, pas des tarifs réels. Le traitement interactif des arrêts successifs et des contrôles frontaliers dans le HUD reste à intégrer.
+- Compilation Unity et tests sur appareil non effectués à ce stade.
