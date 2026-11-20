@@ -218,6 +218,56 @@ public static class RouteEconomy
 
     public static IReadOnlyList<RouteFare> AllRoutes => Fares;
 
+    /// <summary>
+    /// Creates a fare for a player-built itinerary. Known catalogue routes keep their curated fares;
+    /// all other routes receive a distance-based provisional fare. International status is derived
+    /// from border crossings and country changes, never from a user-supplied flag.
+    /// </summary>
+    public static RouteFare CreateFareForItinerary(RouteItinerary itinerary)
+    {
+        if (itinerary == null || string.IsNullOrWhiteSpace(itinerary.RouteId))
+            return null;
+
+        RouteFare catalogueFare = FindRoute(itinerary.RouteId);
+        if (catalogueFare != null) return catalogueFare;
+
+        bool international = IsInternationalItinerary(itinerary);
+        long distanceKm = Math.Max(1L, itinerary.EstimatedDistanceKm);
+        long minimumFare = international ? 15000L : 5000L;
+
+        // Provisional game-balancing rates: 30 / 40 / 55 XOF per km.
+        // Round to the nearest 500 XOF to keep station prices readable.
+        long economy = Math.Max(minimumFare, RoundFare(distanceKm * 30L));
+        long comfort = Math.Max(economy, Math.Max(minimumFare, RoundFare(distanceKm * 40L)));
+        long vip = Math.Max(comfort, Math.Max(minimumFare, RoundFare(distanceKm * 55L)));
+
+        return new RouteFare(itinerary.RouteId, itinerary.DisplayName,
+            economy, comfort, vip, international);
+    }
+
+    public static bool IsInternationalItinerary(RouteItinerary itinerary)
+    {
+        if (itinerary == null) return false;
+        if (itinerary.Borders != null && itinerary.Borders.Count > 0) return true;
+
+        if (itinerary.Stops == null || itinerary.Stops.Count < 2) return false;
+        string firstCountry = null;
+        for (int i = 0; i < itinerary.Stops.Count; i++)
+        {
+            string country = itinerary.Stops[i].CountryCode;
+            if (string.IsNullOrWhiteSpace(country)) continue;
+            if (firstCountry == null) firstCountry = country;
+            else if (!string.Equals(firstCountry, country, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+        return false;
+    }
+
+    private static long RoundFare(long amount)
+    {
+        return ((amount + 250L) / 500L) * 500L;
+    }
+
     public static RouteFare FindRoute(string routeId)
     {
         if (string.IsNullOrEmpty(routeId)) return null;
