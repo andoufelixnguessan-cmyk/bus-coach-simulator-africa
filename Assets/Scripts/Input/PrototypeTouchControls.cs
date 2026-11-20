@@ -10,6 +10,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     private CoachWiperSystem wipers;
     private CoachCabinLightingSystem cabinLights;
     private CoachCabinComfortSystem cabinComfort;
+    private CoachFuelSystem fuelSystem;
     private MobileDriveInput input;
     private MobileGraphicsSettings graphics;
     private Text speedText;
@@ -19,18 +20,19 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     private CoachHudIcon seatbeltIcon;
     private CoachHudIcon doorIcon;
     private Image leftIndicatorImage, hazardImage, rightIndicatorImage, headlightImage, highBeamImage, engineImage;
-    private Image seatbeltPanelImage, doorPanelImage, wiperImage, cabinLightImage, acImage;
+    private Image seatbeltPanelImage, doorPanelImage, wiperImage, cabinLightImage, acImage, fuelImage;
     private int lastHudRefreshFrame;
     private CameraFollow cameraView;
     private Action openRoutePlanner;
 
     public void Configure(CoachVehicleController target, MobileDriveInput driveInput,
-        MobileGraphicsSettings graphicsSettings, CameraFollow camera, CoachWiperSystem wiperSystem, CoachCabinLightingSystem cabinLightingSystem, CoachCabinComfortSystem cabinComfortSystem, Action showRoutePlanner)
+        MobileGraphicsSettings graphicsSettings, CameraFollow camera, CoachWiperSystem wiperSystem, CoachCabinLightingSystem cabinLightingSystem, CoachCabinComfortSystem cabinComfortSystem, CoachFuelSystem coachFuelSystem, Action showRoutePlanner)
     {
         vehicle = target;
         wipers = wiperSystem;
         cabinLights = cabinLightingSystem;
         cabinComfort = cabinComfortSystem;
+        fuelSystem = coachFuelSystem;
         input = driveInput;
         graphics = graphicsSettings;
         cameraView = camera;
@@ -67,6 +69,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         if (wipers != null) SetButtonState(wiperImage, wipers.IsEnabled);
         if (cabinLights != null) SetButtonState(cabinLightImage, cabinLights.IsOn);
         if (cabinComfort != null) SetButtonState(acImage, cabinComfort.AirConditioningOn);
+        if (fuelImage != null) fuelImage.gameObject.SetActive(fuelSystem != null && fuelSystem.AtFuelStation);
     }
 
     private void BuildCanvas()
@@ -137,6 +140,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         CreateCabinLightButton(safeRoot);
         CreateAirConditioningButton(safeRoot);
         CreateRoutePlannerButton(safeRoot);
+        CreateFuelButton(safeRoot);
     }
 
     private void CreateSeatbeltButton(Transform parent)
@@ -201,6 +205,22 @@ public sealed class PrototypeTouchControls : MonoBehaviour
             new Vector2(-130f, -270f), ToggleCabinLights);
     }
 
+
+    private void CreateFuelButton(Transform parent)
+    {
+        fuelImage = CreateUtilityButton(parent, "⛽", new Vector2(0.5f, 1f),
+            new Vector2(460f, -150f), RefuelAtStation);
+        fuelImage.gameObject.SetActive(false);
+    }
+
+    private void RefuelAtStation()
+    {
+        if (fuelSystem == null) return;
+        string reason;
+        bool success = fuelSystem.TryRefuelToFull(out reason);
+        Debug.Log(reason);
+        if (success) SetButtonState(fuelImage, false);
+    }
 
     private void CreateRoutePlannerButton(Transform parent)
     {
@@ -289,6 +309,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
             case "☾": return CoachHudIcon.IconType.CabinLight;
             case "❄": return CoachHudIcon.IconType.AirConditioning;
             case "⌖": return CoachHudIcon.IconType.RouteMap;
+            case "⛽": return CoachHudIcon.IconType.FuelPump;
             default: return CoachHudIcon.IconType.Warning;
         }
     }
