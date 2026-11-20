@@ -80,3 +80,8 @@ All preset routes and player-created itineraries share the same road-segment loc
 ## Mobile interface presentation pass
 
 The prototype driving HUD now uses a dedicated Android safe-area fitter so its controls stay inside the usable screen area around display cutouts and system gesture/navigation zones. The landscape HUD has a clearer hierarchy: speed at upper left, game identity centered, graphics preset at upper right, steering at lower left and pedals at lower right. Throttle, brake and steering controls use distinct visual colors and show immediate pressed-state feedback. The route-planning panel now uses the same safe-area protection, a clearer heading and section hierarchy, scroll tuning and differentiated recommended/primary actions. These are interface code changes only; actual screen sizing, readability and touch comfort still require Unity and Android device testing.
+
+
+## Orientation de jeu — paysage uniquement
+
+BUS & COACH SIMULATOR AFRICA est conçu pour jouer en format paysage sur téléphone. Le pipeline Android fixe LandscapeLeft comme orientation de départ, autorise les deux orientations horizontales (gauche et droite) et désactive les deux orientations portrait. GameBootstrap réapplique aussi ces règles au démarrage pour éviter qu'une rotation du téléphone bascule l'interface en portrait. Tous les futurs écrans (menu, garage, itinéraires, gestion et conduite) doivent conserver une mise en page paysage et respecter MobileSafeAreaFitter. Le réglage est écrit dans le projet, mais doit encore être confirmé après compilation et installation sur Android.
