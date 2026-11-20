@@ -14,6 +14,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     private Text speedText;
     private Text qualityText;
     private int lastHudRefreshFrame;
+    private RectTransform safeAreaRoot;
 
     public void Configure(CoachVehicleController target, MobileDriveInput driveInput, MobileGraphicsSettings graphicsSettings)
     {
@@ -42,6 +43,14 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 20;
 
+        GameObject safeAreaObject = new GameObject("Safe Area", typeof(RectTransform), typeof(MobileSafeAreaFitter));
+        safeAreaObject.transform.SetParent(canvas.transform, false);
+        safeAreaRoot = safeAreaObject.GetComponent<RectTransform>();
+        safeAreaRoot.anchorMin = Vector2.zero;
+        safeAreaRoot.anchorMax = Vector2.one;
+        safeAreaRoot.offsetMin = Vector2.zero;
+        safeAreaRoot.offsetMax = Vector2.zero;
+
         var scaler = canvasObject.GetComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1600f, 720f);
@@ -50,31 +59,37 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         if (EventSystem.current == null)
             new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
 
-        CreateHoldButton(canvas.transform, "◀", MobileHoldButton.ActionType.SteerLeft,
-            new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(42f, 42f), new Vector2(142f, 112f));
-        CreateHoldButton(canvas.transform, "▶", MobileHoldButton.ActionType.SteerRight,
-            new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(196f, 42f), new Vector2(142f, 112f));
-        CreateHoldButton(canvas.transform, "FREIN", MobileHoldButton.ActionType.Brake,
-            new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-344f, 42f), new Vector2(142f, 112f));
-        CreateHoldButton(canvas.transform, "ACCELERER", MobileHoldButton.ActionType.Throttle,
-            new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-190f, 42f), new Vector2(160f, 112f));
-        CreateHoldButton(canvas.transform, "FREIN PARK", MobileHoldButton.ActionType.Handbrake,
-            new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-190f, 174f), new Vector2(160f, 78f));
+        CreateHoldButton(safeAreaRoot, "◀", MobileHoldButton.ActionType.SteerLeft,
+            new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(28f, 26f), new Vector2(116f, 92f));
+        CreateHoldButton(safeAreaRoot, "▶", MobileHoldButton.ActionType.SteerRight,
+            new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(154f, 26f), new Vector2(116f, 92f));
+        CreateHoldButton(safeAreaRoot, "FREIN", MobileHoldButton.ActionType.Brake,
+            new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-286f, 26f), new Vector2(116f, 92f));
+        CreateHoldButton(safeAreaRoot, "ACCÉLÉRER", MobileHoldButton.ActionType.Throttle,
+            new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-152f, 26f), new Vector2(128f, 92f));
+        CreateHoldButton(safeAreaRoot, "FREIN PARK", MobileHoldButton.ActionType.Handbrake,
+            new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-152f, 132f), new Vector2(128f, 66f));
 
-        var speedPanel = CreatePanel(canvas.transform, "Speed panel",
-            new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(42f, -38f), new Vector2(310f, 70f),
-            new Color(0.025f, 0.055f, 0.09f, 0.78f));
-        speedText = CreateText(speedPanel.transform, "VITESSE  0 km/h", 28, TextAnchor.MiddleLeft);
-        speedText.rectTransform.offsetMin = new Vector2(18f, 0f);
+        var speedPanel = CreatePanel(safeAreaRoot, "Speed panel",
+            new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(28f, -24f), new Vector2(286f, 62f),
+            new Color(0.025f, 0.055f, 0.09f, 0.9f));
+        speedText = CreateText(speedPanel.transform, "VITESSE  0 km/h", 25, TextAnchor.MiddleLeft);
+        speedText.rectTransform.offsetMin = new Vector2(16f, 0f);
         speedText.rectTransform.offsetMax = new Vector2(-8f, 0f);
 
-        var qualityPanel = CreatePanel(canvas.transform, "Graphics preset button",
-            new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-42f, -38f), new Vector2(330f, 70f),
-            new Color(0.025f, 0.055f, 0.09f, 0.78f));
+        var titlePanel = CreatePanel(safeAreaRoot, "Game title",
+            new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(430f, 48f),
+            new Color(0.025f, 0.055f, 0.09f, 0.72f));
+        Text title = CreateText(titlePanel.transform, "BUS & COACH SIMULATOR AFRICA", 18, TextAnchor.MiddleCenter);
+        title.color = new Color(0.88f, 0.93f, 1f);
+
+        var qualityPanel = CreatePanel(safeAreaRoot, "Graphics preset button",
+            new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-28f, -24f), new Vector2(286f, 62f),
+            new Color(0.025f, 0.055f, 0.09f, 0.9f));
         var qualityButton = qualityPanel.AddComponent<Button>();
         qualityButton.targetGraphic = qualityPanel.GetComponent<Image>();
         qualityButton.onClick.AddListener(CycleGraphics);
-        qualityText = CreateText(qualityPanel.transform, "GRAPHISMES  ÉCONOMIE", 23, TextAnchor.MiddleCenter);
+        qualityText = CreateText(qualityPanel.transform, "GRAPHISMES  ÉCONOMIE", 19, TextAnchor.MiddleCenter);
     }
 
     private void CycleGraphics()
@@ -86,9 +101,16 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         Vector2 anchor, Vector2 pivot, Vector2 position, Vector2 size)
     {
         var panel = CreatePanel(parent, label + " button", anchor, pivot, position, size,
-            new Color(0.025f, 0.055f, 0.09f, 0.72f));
+            action == MobileHoldButton.ActionType.Throttle
+                ? new Color(0.04f, 0.34f, 0.27f, 0.94f)
+                : action == MobileHoldButton.ActionType.Brake || action == MobileHoldButton.ActionType.Handbrake
+                    ? new Color(0.48f, 0.16f, 0.13f, 0.94f)
+                    : new Color(0.08f, 0.22f, 0.38f, 0.94f));
         panel.AddComponent<MobileHoldButton>().Configure(input, action);
-        CreateText(panel.transform, label, 25, TextAnchor.MiddleCenter);
+        Text labelText = CreateText(panel.transform, label, 20, TextAnchor.MiddleCenter);
+        labelText.resizeTextForBestFit = true;
+        labelText.resizeTextMinSize = 14;
+        labelText.resizeTextMaxSize = 22;
     }
 
     private static GameObject CreatePanel(Transform parent, string objectName,
@@ -117,6 +139,9 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         text.text = value;
         text.fontSize = fontSize;
         text.fontStyle = FontStyle.Bold;
+        text.resizeTextForBestFit = true;
+        text.resizeTextMinSize = 13;
+        text.resizeTextMaxSize = fontSize;
         text.color = Color.white;
         text.alignment = alignment;
         text.raycastTarget = false;
