@@ -88,7 +88,7 @@ public sealed class RoutePlanningPanel : MonoBehaviour
         contentRect.anchorMax = new Vector2(1f, 1f);
         contentRect.pivot = new Vector2(0.5f, 1f);
         contentRect.anchoredPosition = Vector2.zero;
-        contentRect.sizeDelta = new Vector2(0f, 760f);
+        contentRect.sizeDelta = new Vector2(0f, 860f);
         panelScroll.viewport = panelRect;
         panelScroll.content = contentRect;
 
@@ -114,9 +114,10 @@ public sealed class RoutePlanningPanel : MonoBehaviour
         serviceDropdown.RefreshShownValue();
 
         routeText = AddText(contentObject.transform, "", 15, 0, -448, 120, TextAnchor.UpperLeft, Color.white);
-        AddButton(contentObject.transform, "Recommencer le trajet", 0, -535, 48, ResetRoute);
-        prepareButton = AddButton(contentObject.transform, "PRÉPARER LE VOYAGE", 0, -590, 56, PrepareTrip);
-        feedbackText = AddText(contentObject.transform, "", 14, 0, -650, 64, TextAnchor.MiddleCenter,
+        AddButton(contentObject.transform, "TRAJET CONSEILLÉ : ABIDJAN → YAMOUSSOUKRO", 0, -580, 50, UseRecommendedRoute);
+        AddButton(contentObject.transform, "Recommencer le trajet", 0, -638, 48, ResetRoute);
+        prepareButton = AddButton(contentObject.transform, "PRÉPARER LE VOYAGE", 0, -696, 56, PrepareTrip);
+        feedbackText = AddText(contentObject.transform, "", 14, 0, -758, 64, TextAnchor.MiddleCenter,
             new Color(1f, 0.78f, 0.35f));
         RefreshCityOptions();
     }
@@ -170,6 +171,16 @@ public sealed class RoutePlanningPanel : MonoBehaviour
         RefreshRouteText();
         SetFeedback(selectedCityIds.Count < 2 ? "Départ enregistré. Ajoutez maintenant une destination." :
             "Étape ajoutée. Vous pouvez continuer ou préparer le voyage.", false);
+    }
+
+    private void UseRecommendedRoute()
+    {
+        selectedCityIds.Clear();
+        selectedCityIds.Add("abidjan");
+        selectedCityIds.Add("yamoussoukro");
+        RefreshCityOptions();
+        RefreshRouteText();
+        SetFeedback("Trajet conseillé sélectionné. Vérifiez votre car et préparez le voyage.", false);
     }
 
     private void ResetRoute()
