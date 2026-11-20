@@ -27,6 +27,8 @@ public sealed class GameBootstrap : MonoBehaviour
     public CompanyProfile ActiveCompany { get; private set; }
     public PlayerRouteTripSetup CurrentTripSetup { get; private set; }
     private GameObject routePlannerCanvas;
+    private GameObject passengerManifestCanvas;
+    private CoachPassengerManifestPanel passengerManifestPanel;
 
     private void Awake()
     {
@@ -50,6 +52,7 @@ public sealed class GameBootstrap : MonoBehaviour
         BuildCoach();
         BuildCamera();
         BuildRoutePlanning();
+        BuildPassengerManifest();
         BuildTouchControls();
     }
 
@@ -507,12 +510,51 @@ public sealed class GameBootstrap : MonoBehaviour
     private void HandleTripPrepared(PlayerRouteTripSetup setup)
     {
         CurrentTripSetup = setup;
+        if (passengerManifestPanel != null && setup != null)
+            passengerManifestPanel.Configure(setup.Passengers, ActiveCompany, ClosePassengerManifest);
         if (drivingHud != null) drivingHud.SetRouteDisplay(setup);
         CloseRoutePlanner();
         if (setup != null && setup.Itinerary != null)
             Debug.Log("Voyage prêt : " + setup.Itinerary.DisplayName + " | " +
                 setup.Itinerary.EstimatedDistanceKm + " km | " +
                 setup.GetPassengerFareXof().ToString("N0") + " FCFA par passager.");
+    }
+
+    private void BuildPassengerManifest()
+    {
+        passengerManifestCanvas = new GameObject("Passenger Manifest Canvas", typeof(RectTransform),
+            typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+        Canvas canvas = passengerManifestCanvas.GetComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 31;
+        CanvasScaler scaler = passengerManifestCanvas.GetComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1600f, 720f);
+        scaler.matchWidthOrHeight = 0.5f;
+
+        GameObject panel = new GameObject("Passenger Manifest Panel", typeof(RectTransform));
+        panel.transform.SetParent(passengerManifestCanvas.transform, false);
+        RectTransform rect = panel.GetComponent<RectTransform>();
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+        passengerManifestPanel = panel.AddComponent<CoachPassengerManifestPanel>();
+        passengerManifestPanel.Configure(null, ActiveCompany, ClosePassengerManifest);
+        passengerManifestCanvas.SetActive(false);
+    }
+
+    private void ShowPassengerManifest()
+    {
+        if (passengerManifestCanvas == null || CurrentTripSetup == null) return;
+        passengerManifestCanvas.SetActive(true);
+        Time.timeScale = 0f;
+    }
+
+    private void ClosePassengerManifest()
+    {
+        if (passengerManifestCanvas != null) passengerManifestCanvas.SetActive(false);
+        Time.timeScale = 1f;
     }
 
     private void BuildTouchControls()
@@ -522,7 +564,7 @@ public sealed class GameBootstrap : MonoBehaviour
         graphicsSettings = inputObject.AddComponent<MobileGraphicsSettings>();
         graphicsSettings.ApplySavedPreset();
         drivingHud = inputObject.AddComponent<PrototypeTouchControls>();
-        drivingHud.Configure(coach, input, graphicsSettings, cameraFollow, coach.GetComponent<CoachWiperSystem>(), coach.GetComponent<CoachCabinLightingSystem>(), coach.GetComponent<CoachCabinComfortSystem>(), coach.GetComponent<CoachFuelSystem>(), ShowRoutePlanner);
+        drivingHud.Configure(coach, input, graphicsSettings, cameraFollow, coach.GetComponent<CoachWiperSystem>(), coach.GetComponent<CoachCabinLightingSystem>(), coach.GetComponent<CoachCabinComfortSystem>(), coach.GetComponent<CoachFuelSystem>(), ShowRoutePlanner, ShowPassengerManifest);
     }
 
     private static GameObject CreateBlock(string objectName, Vector3 position, Vector3 scale, Color color)
