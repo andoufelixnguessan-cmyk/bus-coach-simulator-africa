@@ -1,0 +1,45 @@
+name: Build BUS & COACH SIMULATOR AFRICA for Android
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Check Unity license secret
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        run: |
+          if [ -z "$UNITY_LICENSE" ]; then
+            echo "::error::The UNITY_LICENSE GitHub Actions secret is missing. Follow Docs/ANDROID_BUILD_GUIDE.md."
+            exit 1
+          fi
+
+      - name: Build Android APK
+        uses: game-ci/unity-builder@v5.0.1
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          unityVersion: auto
+          targetPlatform: Android
+          androidExportType: androidPackage
+          buildName: BUS-COACH-SIMULATOR-AFRICA
+          versioning: Semantic
+
+      - name: Upload installable APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: BUS-COACH-SIMULATOR-AFRICA-Android-APK
+          path: build/Android/**/*.apk
+          if-no-files-found: error
+          retention-days: 30
