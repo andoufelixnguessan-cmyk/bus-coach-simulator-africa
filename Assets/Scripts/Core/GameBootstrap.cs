@@ -25,6 +25,7 @@ public sealed class GameBootstrap : MonoBehaviour
     private MobileDriveInput input;
     private CameraFollow cameraFollow;
     private MobileGraphicsSettings graphicsSettings;
+    private CompanyProfile activeCompany;
 
     private void Awake()
     {
@@ -38,6 +39,7 @@ public sealed class GameBootstrap : MonoBehaviour
 
     private void Start()
     {
+        activeCompany = CoachEconomy.LoadOrCreateCompany();
         Application.targetFrameRate = 30;
         QualitySettings.vSyncCount = 0;
         QualitySettings.shadows = ShadowQuality.Disable;
@@ -142,7 +144,9 @@ public sealed class GameBootstrap : MonoBehaviour
         coach.ConfigureReverseLights(
             CreateReverseLight(root.transform, "Rear left reverse lamp", new Vector3(-0.55f, 0.72f, -5.0f)),
             CreateReverseLight(root.transform, "Rear right reverse lamp", new Vector3(0.55f, 0.72f, -5.0f)));
-        CoachDashboardProfile engineProfile = CoachDashboardProfile.ForCoach("car-moyen");
+        string activeCoachId = activeCompany != null && activeCompany.OwnedCoachIds != null &&
+            activeCompany.OwnedCoachIds.Count > 0 ? activeCompany.OwnedCoachIds[0] : CoachEconomy.StartingCoachId;
+        CoachDashboardProfile engineProfile = CoachDashboardProfile.ForCoach(activeCoachId);
         CoachCabinComfortSystem cabinComfort = root.AddComponent<CoachCabinComfortSystem>();
         cabinComfort.Configure(coach);
         root.AddComponent<CoachEngineAudio>().Configure(coach, engineProfile);
