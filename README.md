@@ -48,7 +48,7 @@ The repository includes an expanding West and Central African city network and a
 
 ## Custom route fares and international guarantee
 
-Player-built itineraries can now generate a fare automatically when they are not in the curated route catalogue. The provisional distance rates are 30/40/55 XOF per km for Economy/Comfort/VIP, rounded to the nearest 500 XOF, with minimum fares of 5,000 XOF domestic and 15,000 XOF international. Border crossings or country changes automatically mark a custom itinerary as international. Passenger-trip creation accepts the itinerary directly, connecting it to the fare and the existing 500,000 XOF completed-trip guarantee calculation. These calculations are code foundations and have not yet been compiled or tested in Unity.
+Player-built itineraries can now generate a fare automatically when they are not in the curated route catalogue. The provisional distance rates are 30/40/55 XOF per km for Economy/Comfort/VIP, rounded to the nearest 500 XOF, with minimum fares of 5,000 XOF domestic and 15,000 XOF international. Border crossings or country changes automatically mark a custom itinerary as international. Passenger-trip creation accepts the itinerary directly, connecting it to the fare and the existing 500,000 XOF completed-trip guarantee calculation. Border managers expose the total fees actually paid, and trip settlement has an overload to include them in the guarantee calculation. The route UI still needs to call this border-aware overload. These calculations are code foundations and have not yet been compiled or tested in Unity.
 
 ## Development status
 
