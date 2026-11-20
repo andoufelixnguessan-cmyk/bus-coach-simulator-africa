@@ -152,6 +152,7 @@ public static class AfricanRoadWorldBuilder
         CreateRoadSign("ABIDJAN", "YAMOUSSOUKRO", 820f, 1f);
         CreateRoadSign("GARE ROUTIÈRE", "AIRE DE REPOS", 1880f, -1f);
         CreateRoadSign("RALENTIR", "ZONE HABITÉE", 3060f, 1f);
+        BuildFuelStation(2440f);
 
         for (int i = 0; i < 3; i++)
         {
@@ -207,6 +208,59 @@ public static class AfricanRoadWorldBuilder
         lettering.characterSize = 0.035f;
         lettering.color = Color.white;
         lettering.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+    }
+
+    private static void BuildFuelStation(float z)
+    {
+        Vector3 center = OffsetPoint(z, RoadHalfWidth + ShoulderWidth + 9.5f);
+        Vector3 tangent = new Vector3(CenterX(z + 2f) - CenterX(z - 2f), 0f, 4f).normalized;
+        Quaternion rotation = Quaternion.LookRotation(tangent, Vector3.up);
+        GameObject station = new GameObject("Roadside diesel station");
+        station.transform.SetPositionAndRotation(center, rotation);
+
+        CreateStationPart(station.transform, "Fuel station forecourt", new Vector3(0f, 0.04f, 0f),
+            new Vector3(18f, 0.18f, 27f), new Color(0.36f, 0.37f, 0.34f));
+        Material concrete = MaterialFor(new Color(0.52f, 0.51f, 0.46f));
+        Material canopy = MaterialFor(new Color(0.83f, 0.84f, 0.82f));
+        Material brand = MaterialFor(new Color(0.04f, 0.23f, 0.43f));
+        for (int x = -1; x <= 1; x += 2)
+        {
+            for (int dz = -1; dz <= 1; dz += 2)
+                CreateStationPart(station.transform, "Canopy support", new Vector3(x * 6.7f, 2.1f, dz * 7.4f),
+                    new Vector3(0.28f, 4.2f, 0.28f), concrete);
+        }
+        CreateStationPart(station.transform, "Diesel station canopy", new Vector3(0f, 4.25f, 0f),
+            new Vector3(15.2f, 0.42f, 18f), canopy);
+        CreateStationPart(station.transform, "Canopy fascia", new Vector3(0f, 4.02f, 8.95f),
+            new Vector3(15.2f, 0.42f, 0.28f), brand);
+        for (int pump = -1; pump <= 1; pump++)
+        {
+            CreateStationPart(station.transform, "Diesel dispenser", new Vector3(pump * 4.5f, 0.82f, 1.5f),
+                new Vector3(0.72f, 1.64f, 0.68f), brand);
+            CreateStationPart(station.transform, "Dispenser display", new Vector3(pump * 4.5f, 1.18f, 1.86f),
+                new Vector3(0.46f, 0.32f, 0.035f), Color.black);
+        }
+
+        GameObject serviceArea = new GameObject("Diesel refuelling area");
+        serviceArea.transform.SetParent(station.transform, false);
+        serviceArea.transform.localPosition = new Vector3(0f, 1.8f, 0f);
+        BoxCollider trigger = serviceArea.AddComponent<BoxCollider>();
+        trigger.isTrigger = true;
+        trigger.size = new Vector3(17f, 4f, 24f);
+        serviceArea.AddComponent<CoachFuelStation>();
+    }
+
+    private static void CreateStationPart(Transform parent, string partName, Vector3 localPosition,
+        Vector3 scale, Color color)
+    {
+        GameObject part = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        part.name = partName;
+        part.transform.SetParent(parent, false);
+        part.transform.localPosition = localPosition;
+        part.transform.localScale = scale;
+        part.GetComponent<Renderer>().sharedMaterial = color == Color.black
+            ? MaterialFor(Color.black) : MaterialFor(color);
+        Object.Destroy(part.GetComponent<Collider>());
     }
 
     private static void BuildVegetation()
