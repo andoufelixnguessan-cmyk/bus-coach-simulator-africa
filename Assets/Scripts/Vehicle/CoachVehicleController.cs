@@ -31,6 +31,8 @@ public sealed class CoachVehicleController : MonoBehaviour
     private float smoothedSteering;
     private bool handbrake;
     private float engineRpm = 650f;
+    private float idleRpm = 650f;
+    private float baseRedlineRpm = 2400f;
     private float fuelPercent = 86f;
     private float coolantTemperatureC = 82f;
     private float oilPressureBar = 4.2f;
@@ -56,7 +58,7 @@ public sealed class CoachVehicleController : MonoBehaviour
     public float SteeringInput => steeringInput;
     public float SpeedKph => body == null ? 0f : body.linearVelocity.magnitude * 3.6f;
     public float EngineRpm => engineRpm;
-    public float EngineRpmNormalized => Mathf.InverseLerp(600f, GetMaximumRpm(), engineRpm);
+    public float EngineRpmNormalized => Mathf.InverseLerp(idleRpm, GetMaximumRpm(), engineRpm);
     public float FuelPercent => fuelPercent;
     public float AccessoryLoad => accessoryLoad;
     public float CoolantTemperatureC => coolantTemperatureC;
@@ -93,10 +95,10 @@ public sealed class CoachVehicleController : MonoBehaviour
             ? RpmPerKphByGear[Mathf.Clamp(automaticGear, 1, 6)]
             : gearSelection == GearSelection.Reverse ? 30f : 0f;
         float targetRpm = EngineRunning
-            ? 650f + Mathf.Clamp(SpeedKph * rpmFactor, 0f, 1500f) + throttleInput * 520f
+            ? idleRpm + Mathf.Clamp(SpeedKph * rpmFactor, 0f, 1500f) + throttleInput * 520f
             : 0f;
-        if (EngineRunning && SpeedKph < 1f && throttleInput < 0.05f) targetRpm = 650f;
-        engineRpm = Mathf.Lerp(engineRpm, EngineRunning ? Mathf.Clamp(targetRpm, 600f, GetMaximumRpm()) : 0f, Time.deltaTime * 2.4f);
+        if (EngineRunning && SpeedKph < 1f && throttleInput < 0.05f) targetRpm = idleRpm;
+        engineRpm = Mathf.Lerp(engineRpm, EngineRunning ? Mathf.Clamp(targetRpm, idleRpm, GetMaximumRpm()) : 0f, Time.deltaTime * 2.4f);
         if (EngineRunning)
         {
             float fuelRate = 0.00012f + throttleInput * 0.0013f +
@@ -326,7 +328,14 @@ public sealed class CoachVehicleController : MonoBehaviour
         PassengerDoorOpen = !PassengerDoorOpen;
         return true;
     }
-    public float GetMaximumRpm() { return 2400f + engineUpgradeLevel * 100f; }
+    public float GetMaximumRpm() { return baseRedlineRpm + engineUpgradeLevel * 100f; }
+
+    public void ConfigureEngineProfile(float idle, float redline)
+    {
+        idleRpm = Mathf.Clamp(idle, 450f, 1000f);
+        baseRedlineRpm = Mathf.Max(idleRpm + 700f, redline);
+        if (!EngineRunning) engineRpm = idleRpm;
+    }
 
     private void FixedUpdate()
     {
@@ -337,7 +346,7 @@ public sealed class CoachVehicleController : MonoBehaviour
         float ratio = gearSelection == GearSelection.Drive
             ? GearTorqueMultipliers[Mathf.Clamp(automaticGear, 1, 6)]
             : gearSelection == GearSelection.Reverse ? 1.45f : 0f;
-        float rpmFraction = Mathf.InverseLerp(600f, GetMaximumRpm(), engineRpm);
+        float rpmFraction = Mathf.InverseLerp(idleRpm, GetMaximumRpm(), engineRpm);
         float torqueCurve = Mathf.Lerp(0.78f, 1.08f, Mathf.InverseLerp(0.05f, 0.58f, rpmFraction));
         if (rpmFraction > 0.88f) torqueCurve *= Mathf.Lerp(1f, 0.78f, Mathf.InverseLerp(0.88f, 1f, rpmFraction));
         torqueCurve *= 1f - accessoryLoad * 0.08f;
