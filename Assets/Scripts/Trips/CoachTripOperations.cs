@@ -89,13 +89,23 @@ public sealed class CoachTripOperations
     public bool TryComplete(CompanyProfile company, PassengerTrip passengers, bool safeDriving,
         long safeDrivingBonusXof, out string reason)
     {
+        return TryComplete(company, passengers, safeDriving, safeDrivingBonusXof, 0L, out reason);
+    }
+
+    /// <summary>
+    /// Completes a trip while including separately paid route costs (for example, border fees)
+    /// in the minimum international net-profit calculation.
+    /// </summary>
+    public bool TryComplete(CompanyProfile company, PassengerTrip passengers, bool safeDriving,
+        long safeDrivingBonusXof, long additionalOperatingCostsXof, out string reason)
+    {
         reason = string.Empty;
         if (Status != CoachTripStatus.OnRoad)
         { reason = "Seul un trajet en cours peut être clôturé."; return false; }
         if (company == null || passengers == null || passengers.TripId != TripId)
         { reason = "Entreprise ou manifeste passagers introuvable."; return false; }
-        if (safeDrivingBonusXof < 0L)
-        { reason = "La prime indiquée est invalide."; return false; }
+        if (safeDrivingBonusXof < 0L || additionalOperatingCostsXof < 0L)
+        { reason = "La prime ou les dépenses supplémentaires indiquées sont invalides."; return false; }
 
         for (int i = 0; i < passengers.Bookings.Count; i++)
         {
@@ -109,7 +119,8 @@ public sealed class CoachTripOperations
         }
 
         long guarantee = RouteEconomy.CalculateInternationalGuaranteeTopUp(
-            passengers.Route, passengers.GetSummary().TicketRevenueXof, ChargedOperatingCostsXof);
+            passengers.Route, passengers.GetSummary().TicketRevenueXof,
+            ChargedOperatingCostsXof + additionalOperatingCostsXof);
         if (guarantee > 0L && !company.AddIncome(guarantee, "Garantie de bénéfice minimum voyage international - " + TripId))
         { reason = "Impossible d'enregistrer la garantie de rentabilité internationale."; return false; }
 
