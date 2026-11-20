@@ -25,7 +25,7 @@ public sealed class GameBootstrap : MonoBehaviour
     private MobileDriveInput input;
     private CameraFollow cameraFollow;
     private MobileGraphicsSettings graphicsSettings;
-    private CompanyProfile activeCompany;
+    public CompanyProfile ActiveCompany { get; private set; }
 
     private void Awake()
     {
@@ -39,7 +39,7 @@ public sealed class GameBootstrap : MonoBehaviour
 
     private void Start()
     {
-        activeCompany = CoachEconomy.LoadOrCreateCompany();
+        ActiveCompany = CoachEconomy.LoadOrCreateCompany();
         Application.targetFrameRate = 30;
         QualitySettings.vSyncCount = 0;
         QualitySettings.shadows = ShadowQuality.Disable;
@@ -56,6 +56,16 @@ public sealed class GameBootstrap : MonoBehaviour
         // Bridge simultaneous mobile touch input to the active coach physics controller.
         if (coach != null && input != null)
             coach.SetInputs(input.Steering, input.Throttle, input.Brake, input.Handbrake);
+    }
+
+    private void OnApplicationPause(bool paused)
+    {
+        if (paused && ActiveCompany != null) CompanySaveSystem.Save(ActiveCompany);
+    }
+
+    private void OnApplicationQuit()
+    {
+        if (ActiveCompany != null) CompanySaveSystem.Save(ActiveCompany);
     }
 
     private void BuildTestRoad()
@@ -144,8 +154,8 @@ public sealed class GameBootstrap : MonoBehaviour
         coach.ConfigureReverseLights(
             CreateReverseLight(root.transform, "Rear left reverse lamp", new Vector3(-0.55f, 0.72f, -5.0f)),
             CreateReverseLight(root.transform, "Rear right reverse lamp", new Vector3(0.55f, 0.72f, -5.0f)));
-        string activeCoachId = activeCompany != null && activeCompany.OwnedCoachIds != null &&
-            activeCompany.OwnedCoachIds.Count > 0 ? activeCompany.OwnedCoachIds[0] : CoachEconomy.StartingCoachId;
+        string activeCoachId = ActiveCompany != null && ActiveCompany.OwnedCoachIds != null &&
+            ActiveCompany.OwnedCoachIds.Count > 0 ? ActiveCompany.OwnedCoachIds[0] : CoachEconomy.StartingCoachId;
         CoachDashboardProfile engineProfile = CoachDashboardProfile.ForCoach(activeCoachId);
         CoachCabinComfortSystem cabinComfort = root.AddComponent<CoachCabinComfortSystem>();
         cabinComfort.Configure(coach);
