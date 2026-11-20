@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 /// <summary>
 /// Validated setup for one player-selected coach journey. This joins the open African route planner,
@@ -45,7 +46,7 @@ public sealed class PlayerRouteTripSetup
 /// </summary>
 public static class PlayerRouteTripFactory
 {
-    public static bool TryCreate(string tripId, IListCityIds selectedCities,
+    public static bool TryCreate(string tripId, IList<string> selectedCityIds,
         CompanyProfile company, string coachId, CoachServiceClass serviceClass,
         out PlayerRouteTripSetup setup, out string reason)
     {
@@ -83,14 +84,14 @@ public static class PlayerRouteTripFactory
             return false;
         }
 
-        if (selectedCities == null)
+        if (selectedCityIds == null)
         {
             reason = "Choisissez une ville de départ et une destination.";
             return false;
         }
 
         RouteItinerary itinerary;
-        if (!AfricanRoutePlanner.TryBuildPlayerItinerary(selectedCities.ToList(), out itinerary, out reason))
+        if (!AfricanRoutePlanner.TryBuildPlayerItinerary(selectedCityIds, out itinerary, out reason))
             return false;
 
         RouteFare fare = RouteEconomy.CreateFareForItinerary(itinerary);
@@ -115,11 +116,3 @@ public static class PlayerRouteTripFactory
     }
 }
 
-/// <summary>
-/// Small adapter contract to keep this factory independent of a particular UI collection type.
-/// Implement it in a UI adapter or use the overload accepting a ListCityIds.
-/// </summary>
-public interface IListCityIds
-{
-    System.Collections.Generic.List<string> ToList();
-}
