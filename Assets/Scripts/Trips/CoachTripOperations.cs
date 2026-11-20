@@ -42,6 +42,7 @@ public sealed class CoachTripOperations
     public CoachTripStatus Status { get; private set; }
     public long ChargedOperatingCostsXof { get; private set; }
     public long SafeDrivingBonusXof { get; private set; }
+    public long InternationalProfitGuaranteeXof { get; private set; }
 
     public CoachTripOperations(string tripId, string coachId)
     {
@@ -107,10 +108,16 @@ public sealed class CoachTripOperations
             }
         }
 
+        long guarantee = RouteEconomy.CalculateInternationalGuaranteeTopUp(
+            passengers.Route, passengers.GetSummary().TicketRevenueXof, ChargedOperatingCostsXof);
+        if (guarantee > 0L && !company.AddIncome(guarantee, "Garantie de bénéfice minimum voyage international - " + TripId))
+        { reason = "Impossible d'enregistrer la garantie de rentabilité internationale."; return false; }
+
         long bonus = safeDriving ? safeDrivingBonusXof : 0L;
         if (bonus > 0L && !company.AddIncome(bonus, "Prime de conduite prudente - " + TripId))
         { reason = "Impossible d'enregistrer la prime."; return false; }
 
+        InternationalProfitGuaranteeXof = guarantee;
         SafeDrivingBonusXof = bonus;
         Status = CoachTripStatus.Completed;
         return true;
