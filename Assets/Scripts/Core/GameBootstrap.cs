@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>Initializes the playable mobile driving session and the owned long-distance coach.</summary>
 public sealed class GameBootstrap : MonoBehaviour
@@ -23,6 +24,8 @@ public sealed class GameBootstrap : MonoBehaviour
     private CameraFollow cameraFollow;
     private MobileGraphicsSettings graphicsSettings;
     public CompanyProfile ActiveCompany { get; private set; }
+    public PlayerRouteTripSetup CurrentTripSetup { get; private set; }
+    private GameObject routePlannerCanvas;
 
     private void Awake()
     {
@@ -45,6 +48,7 @@ public sealed class GameBootstrap : MonoBehaviour
         AfricanRoadWorldBuilder.BuildStarterCorridor();
         BuildCoach();
         BuildCamera();
+        BuildRoutePlanning();
         BuildTouchControls();
     }
 
@@ -411,6 +415,55 @@ public sealed class GameBootstrap : MonoBehaviour
         cameraFollow.SetCockpitView(true);
     }
 
+    private void BuildRoutePlanning()
+    {
+        routePlannerCanvas = new GameObject("Route Planner Canvas", typeof(RectTransform),
+            typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+        Canvas canvas = routePlannerCanvas.GetComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 30;
+        CanvasScaler scaler = routePlannerCanvas.GetComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1600f, 720f);
+        scaler.matchWidthOrHeight = 0.5f;
+
+        GameObject panel = new GameObject("Route Planning Panel", typeof(RectTransform));
+        panel.transform.SetParent(routePlannerCanvas.transform, false);
+        RectTransform rect = panel.GetComponent<RectTransform>();
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+
+        RoutePlanningPanel planner = panel.AddComponent<RoutePlanningPanel>();
+        planner.Configure(ActiveCompany, ActiveCompany != null ? ActiveCompany.OwnedCoachIds : null,
+            HandleTripPrepared, CloseRoutePlanner);
+        routePlannerCanvas.SetActive(false);
+    }
+
+    private void ShowRoutePlanner()
+    {
+        if (routePlannerCanvas == null) return;
+        routePlannerCanvas.SetActive(true);
+        Time.timeScale = 0f;
+    }
+
+    private void CloseRoutePlanner()
+    {
+        if (routePlannerCanvas != null) routePlannerCanvas.SetActive(false);
+        Time.timeScale = 1f;
+    }
+
+    private void HandleTripPrepared(PlayerRouteTripSetup setup)
+    {
+        CurrentTripSetup = setup;
+        CloseRoutePlanner();
+        if (setup != null && setup.Itinerary != null)
+            Debug.Log("Voyage prêt : " + setup.Itinerary.DisplayName + " | " +
+                setup.Itinerary.EstimatedDistanceKm + " km | " +
+                setup.GetPassengerFareXof().ToString("N0") + " FCFA par passager.");
+    }
+
     private void BuildTouchControls()
     {
         var inputObject = new GameObject("Mobile Drive Input");
@@ -418,7 +471,7 @@ public sealed class GameBootstrap : MonoBehaviour
         graphicsSettings = inputObject.AddComponent<MobileGraphicsSettings>();
         graphicsSettings.ApplySavedPreset();
         var touch = inputObject.AddComponent<PrototypeTouchControls>();
-        touch.Configure(coach, input, graphicsSettings, cameraFollow, coach.GetComponent<CoachWiperSystem>(), coach.GetComponent<CoachCabinLightingSystem>(), coach.GetComponent<CoachCabinComfortSystem>());
+        touch.Configure(coach, input, graphicsSettings, cameraFollow, coach.GetComponent<CoachWiperSystem>(), coach.GetComponent<CoachCabinLightingSystem>(), coach.GetComponent<CoachCabinComfortSystem>(), ShowRoutePlanner);
     }
 
     private static GameObject CreateBlock(string objectName, Vector3 position, Vector3 scale, Color color)
