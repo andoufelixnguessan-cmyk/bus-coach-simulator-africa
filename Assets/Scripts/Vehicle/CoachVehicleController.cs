@@ -272,6 +272,13 @@ public sealed class CoachVehicleController : MonoBehaviour
         if (leftHeadlight != null) leftHeadlight.intensity = intensity;
         if (rightHeadlight != null) rightHeadlight.intensity = intensity;
     }
+    public bool RefillFuelToFull()
+    {
+        if (EngineRunning || SpeedKph > 1f) return false;
+        fuelPercent = 100f;
+        return true;
+    }
+
     public bool ToggleEngine()
     {
         if (EngineRunning)
