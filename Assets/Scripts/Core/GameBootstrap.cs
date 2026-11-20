@@ -99,6 +99,7 @@ public sealed class GameBootstrap : MonoBehaviour
             CreatePart(root.transform, "Right passenger window", new Vector3(1.235f, 2.05f, z), new Vector3(0.025f, 0.82f, 0.78f), new Color(0.13f, 0.25f, 0.31f));
         }
         BuildPassengerSeats(root.transform);
+        BuildCoachExteriorDetails(root.transform);
 
         CreatePart(root.transform, "Front bumper", new Vector3(0f, 0.55f, 4.98f), new Vector3(2.4f, 0.25f, 0.18f), new Color(0.08f, 0.09f, 0.1f));
         CreatePart(root.transform, "Rear bumper", new Vector3(0f, 0.55f, -4.98f), new Vector3(2.4f, 0.25f, 0.18f), new Color(0.08f, 0.09f, 0.1f));
@@ -150,6 +151,53 @@ public sealed class GameBootstrap : MonoBehaviour
     }
 
 
+
+    private void BuildCoachExteriorDetails(Transform coachRoot)
+    {
+        Material darkTrim = GetSharedMaterial(new Color(0.045f, 0.055f, 0.065f));
+        Material metalTrim = GetSharedMaterial(new Color(0.42f, 0.46f, 0.49f));
+        Material glass = GetSharedMaterial(new Color(0.12f, 0.24f, 0.31f));
+
+        CreatePart(coachRoot, "Front destination display housing", new Vector3(0f, 2.70f, 4.91f),
+            new Vector3(1.62f, 0.25f, 0.08f), darkTrim);
+        CreatePart(coachRoot, "Front lower grille", new Vector3(0f, 0.91f, 4.96f),
+            new Vector3(0.88f, 0.34f, 0.06f), darkTrim);
+        CreatePart(coachRoot, "Front grille upper trim", new Vector3(0f, 1.10f, 4.98f),
+            new Vector3(0.92f, 0.035f, 0.07f), metalTrim);
+        CreatePart(coachRoot, "Front left headlamp bezel", new Vector3(-0.72f, 0.92f, 4.97f),
+            new Vector3(0.40f, 0.24f, 0.08f), darkTrim);
+        CreatePart(coachRoot, "Front right headlamp bezel", new Vector3(0.72f, 0.92f, 4.97f),
+            new Vector3(0.40f, 0.24f, 0.08f), darkTrim);
+
+        for (int side = -1; side <= 1; side += 2)
+        {
+            float x = side * 1.24f;
+            for (int bay = 0; bay < 4; bay++)
+            {
+                float z = 1.10f - bay * 1.05f;
+                CreatePart(coachRoot, "Luggage compartment door", new Vector3(x, 0.68f, z),
+                    new Vector3(0.035f, 0.39f, 0.88f), GetSharedMaterial(new Color(0.055f, 0.20f, 0.37f)));
+                CreatePart(coachRoot, "Luggage bay handle", new Vector3(x + side * 0.025f, 0.69f, z + 0.28f),
+                    new Vector3(0.025f, 0.045f, 0.12f), metalTrim);
+            }
+
+            CreatePart(coachRoot, "Mirror support arm", new Vector3(side * 1.39f, 2.12f, 4.02f),
+                new Vector3(0.36f, 0.07f, 0.08f), darkTrim);
+            CreatePart(coachRoot, "Exterior side mirror housing", new Vector3(side * 1.56f, 2.23f, 4.05f),
+                new Vector3(0.14f, 0.42f, 0.30f), darkTrim);
+            CreatePart(coachRoot, "Exterior side mirror glass", new Vector3(side * 1.64f, 2.23f, 4.05f),
+                new Vector3(0.025f, 0.31f, 0.22f), glass);
+            CreatePart(coachRoot, "Rear luggage hatch", new Vector3(side * 1.24f, 0.72f, -4.45f),
+                new Vector3(0.035f, 0.52f, 0.66f), darkTrim);
+        }
+
+        CreatePart(coachRoot, "Roof air intake", new Vector3(0f, 2.89f, -0.6f),
+            new Vector3(0.78f, 0.12f, 1.35f), darkTrim);
+        CreatePart(coachRoot, "Rear engine ventilation grille", new Vector3(0f, 1.62f, -4.94f),
+            new Vector3(1.25f, 0.48f, 0.06f), darkTrim);
+        CreatePart(coachRoot, "Rear tow cover", new Vector3(0f, 0.72f, -4.99f),
+            new Vector3(0.38f, 0.22f, 0.08f), metalTrim);
+    }
 
     private void BuildPassengerSeats(Transform coachRoot)
     {
