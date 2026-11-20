@@ -135,6 +135,12 @@ public sealed class GameBootstrap : MonoBehaviour
         coach.ConfigureBrakeLights(
             CreateBrakeLight(root.transform, "Rear left brake lamp", new Vector3(-0.78f, 0.92f, -5.0f)),
             CreateBrakeLight(root.transform, "Rear right brake lamp", new Vector3(0.78f, 0.92f, -5.0f)));
+        coach.ConfigureTailLights(
+            CreateTailLight(root.transform, "Rear left tail lamp", new Vector3(-0.92f, 0.82f, -5.0f)),
+            CreateTailLight(root.transform, "Rear right tail lamp", new Vector3(0.92f, 0.82f, -5.0f)));
+        coach.ConfigureReverseLights(
+            CreateReverseLight(root.transform, "Rear left reverse lamp", new Vector3(-0.55f, 0.72f, -5.0f)),
+            CreateReverseLight(root.transform, "Rear right reverse lamp", new Vector3(0.55f, 0.72f, -5.0f)));
         CoachDashboardProfile engineProfile = CoachDashboardProfile.ForCoach("car-moyen");
         root.AddComponent<CoachEngineAudio>().Configure(coach, engineProfile);
         root.AddComponent<CoachCockpit3D>().Configure(root.transform, coach, engineProfile);
@@ -204,6 +210,35 @@ public sealed class GameBootstrap : MonoBehaviour
         return light;
     }
 
+
+
+    private Light CreateTailLight(Transform parent, string lightName, Vector3 localPosition)
+    {
+        GameObject holder = new GameObject(lightName);
+        holder.transform.SetParent(parent, false);
+        holder.transform.localPosition = localPosition;
+        Light lamp = holder.AddComponent<Light>();
+        lamp.type = LightType.Point;
+        lamp.range = 3.2f;
+        lamp.intensity = 0.45f;
+        lamp.color = new Color(1f, 0.02f, 0.015f);
+        lamp.enabled = false;
+        return lamp;
+    }
+
+    private Light CreateReverseLight(Transform parent, string lightName, Vector3 localPosition)
+    {
+        GameObject holder = new GameObject(lightName);
+        holder.transform.SetParent(parent, false);
+        holder.transform.localPosition = localPosition;
+        Light lamp = holder.AddComponent<Light>();
+        lamp.type = LightType.Point;
+        lamp.range = 3.5f;
+        lamp.intensity = 1.4f;
+        lamp.color = new Color(0.92f, 0.95f, 1f);
+        lamp.enabled = false;
+        return lamp;
+    }
 
     private Light CreateBrakeLight(Transform parent, string lightName, Vector3 localPosition)
     {
