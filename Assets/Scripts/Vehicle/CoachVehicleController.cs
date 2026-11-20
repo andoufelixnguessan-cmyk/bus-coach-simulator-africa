@@ -274,7 +274,7 @@ public sealed class CoachVehicleController : MonoBehaviour
     }
     public bool RefillFuelToFull()
     {
-        if (EngineRunning || SpeedKph > 1f) return false;
+        if (EngineRunning || SpeedKph > 1f || !ParkingBrakeApplied) return false;
         fuelPercent = 100f;
         return true;
     }
