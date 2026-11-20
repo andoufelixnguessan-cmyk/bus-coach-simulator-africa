@@ -58,7 +58,7 @@ public sealed class CoachVehicleController : MonoBehaviour
     public float BatteryVoltage => 24.2f;
     public bool EngineWarning => EngineRunning && (coolantTemperatureC >= 105f || oilPressureBar < 1.2f);
     public bool AbsWarning => absActive;
-    public bool ParkingBrakeApplied => handbrake || gearSelection == GearSelection.Park;
+    public bool ParkingBrakeApplied => handbrake || gearSelection == GearSelection.Park || airPressureBar < 1f;
     public GearSelection SelectedGear => gearSelection;
     public int AutomaticGear => automaticGear;
     public string CurrentGearLabel => gearSelection == GearSelection.Drive ? "D" + automaticGear : gearSelection == GearSelection.Reverse ? "R" : gearSelection == GearSelection.Neutral ? "N" : "P";
@@ -195,7 +195,7 @@ public sealed class CoachVehicleController : MonoBehaviour
 
     private void UpdateBrakeLights()
     {
-        bool braking = brakeInput > 0.05f || handbrake;
+        bool braking = brakeInput > 0.05f || handbrake || gearSelection == GearSelection.Park || airPressureBar < 1f;
         for (int i = 0; i < brakeLights.Length; i++)
             if (brakeLights[i] != null) brakeLights[i].enabled = braking;
     }
@@ -317,6 +317,7 @@ public sealed class CoachVehicleController : MonoBehaviour
         float rearLeftInnerService = ApplyAbs(rearLeftInner, requestedBrake);
         float rearRightInnerService = ApplyAbs(rearRightInner, requestedBrake);
         float parkBrake = gearSelection == GearSelection.Park ? handbrakeTorque * 1.4f : 0f;
+        float emergencySpringBrake = airPressureBar < 1f ? handbrakeTorque * 1.4f : 0f;
         float handbrakeForce = handbrake ? handbrakeTorque : 0f;
         frontLeft.brakeTorque = frontLeftBrake + parkBrake;
         frontRight.brakeTorque = frontRightBrake + parkBrake;
