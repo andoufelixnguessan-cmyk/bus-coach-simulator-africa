@@ -1,104 +1,98 @@
-# Catalogue initial des véhicules et tarifs des trajets
+# Catalogue des autocars, tarifs et équilibre économique
 
-## Statut et unité
+## Décisions générales
 
-Ce catalogue constitue une **proposition de valeurs de départ pour le jeu**, à équilibrer pendant les tests. Ce ne sont pas des tarifs officiels de compagnies réelles.
+BUS & COACH SIMULATOR AFRICA est exclusivement consacré aux cars et autocars de transport de voyageurs : minicars interurbains, minibus, cars moyens, autocars standards, confort, tourisme, premium et autocars à deux étages. Aucun autobus urbain, bus articulé, camion, voiture ou moto ne fait partie du catalogue jouable.
 
-Le jeu distingue deux économies :
-- **Pièces (PC)** : progression du joueur, achat et déblocage des véhicules et options.
-- **Francs CFA (FCFA / XOF)** : argent de la compagnie, vente des billets, dépenses d'exploitation et bénéfices.
+Une seule monnaie existe : **FCFA (XOF)**. Elle sert à acheter les autocars, financer les voyages, payer les dépenses, améliorer et personnaliser les véhicules. Aucun système de pièces ou monnaie secondaire.
 
-Les pièces ne remplacent pas les recettes de la compagnie. Les billets vendus aux passagers sont comptabilisés en FCFA.
+Tous les prix ci-dessous sont des **valeurs de jeu provisoires**, pas des prix réels de concessionnaires. Les capacités sont des configurations indicatives : chaque version exacte doit respecter le plan de sièges du modèle représenté.
 
-## 1. Catalogue de départ des véhicules
+## 1. Catalogue des véhicules et prix accessibles
 
-Les noms ci-dessous sont des désignations de travail. Les marques et modèles réels ne seront utilisés qu'avec les autorisations nécessaires.
-
-| Catégorie | Capacité indicative | Prix indicatif | Déblocage |
+| Catégorie | Capacité passagers cible | Prix de jeu | Disponibilité |
 |---|---:|---:|---|
-| Minibus interurbain | 18–22 passagers | 2 500 PC | Disponible après le tutoriel |
-| Autocar standard |  cinquantaines de places (45–50) | 6 000 PC | Niveau compagnie 2 |
-| Autocar confort | 45–50 passagers | 9 000 PC | Niveau compagnie 4 |
-| Grand tourisme | 44– cinquantaine de passagers (44–50) | 14 000 PC | Niveau compagnie 6 et réputation requise |
-| Autocar premium longue distance | 40–46 passagers | 20 000 PC | Niveau compagnie 8 et contrat longue distance |
-| Autocar double étage (contenu avancé) | selon homologation du modèle | 30 000 PC | Niveau compagnie 12 et flotte développée |
+| Minicar interurbain | 16–22 | 9 000 000 FCFA | Départ |
+| Minibus / petit car | 23–30 | 14 000 000 FCFA | Départ ou premier achat |
+| Car moyen | 31–39 | 22 000 000 FCFA | Compagnie niveau 2 |
+| Autocar standard | 40–49 | 32 000 000 FCFA | Compagnie niveau 3 |
+| Autocar confort | 45–53 | 42 000 000 FCFA | Compagnie niveau 4 |
+| Grand tourisme | 49–57 | 58 000 000 FCFA | Compagnie niveau 5 |
+| Autocar premium longue distance | 51–59 | 75 000 000 FCFA | Compagnie niveau 7 |
+| Autocar double étage | 70–83 | 95 000 000 FCFA | Compagnie niveau 9 |
 
-La capacité exacte dépendra du modèle 3D et de son homologation simulée. Le jeu ne doit jamais permettre de dépasser la capacité de places réellement installées.
+Les nombres indiquent les sièges passagers, hors conducteur et accompagnateur. Les variantes avec toilettes, espace bagages ou espacement supérieur peuvent réduire la capacité. Ne jamais dépasser le nombre de sièges réellement modélisés.
 
-### Différences de conduite
+### Marques et modèles de référence
 
-Chaque véhicule doit avoir ses propres valeurs de masse, dimensions, puissance, couple, rapports de boîte, freinage, rayon de braquage, suspension, consommation, capacité de bagages et comportement. Les catégories ne doivent pas être de simples changements de carrosserie.
+Les marques sont des références de véhicules à représenter uniquement après vérification des licences nécessaires. À défaut d'autorisation, créer des marques et carrosseries originales sans copier les logos ou dessins protégés.
 
-## 2. Tarifs initiaux des billets
+- Minicars/minibus : Toyota Coaster, Hyundai County, Isuzu Novo.
+- Cars moyens : Otokar Sultan, Isuzu Turquoise.
+- Autocars standards et confort : Yutong, Higer, Golden Dragon, MAN Lion's Intercity.
+- Grand tourisme : Mercedes-Benz Tourismo, MAN Lion's Coach, Scania Touring, Volvo 9700.
+- Premium : Setra ComfortClass, Irizar i6.
+- Double étage : Setra S 531 DT, Van Hool Astromega.
 
-Tarifs de référence **par passager et par trajet simple**, en FCFA. Ils sont volontairement présentés comme valeurs de jeu provisoires, et non comme des relevés du marché réel.
+Les capacités varient selon les versions et l'aménagement. À titre de repère, les fiches constructeurs donnent des configurations d'environ 51 à 59 sièges pour certaines variantes du Mercedes-Benz Tourismo, et jusqu'à 67 passagers assis selon la configuration du Scania Touring. Les modèles double étage peuvent accueillir davantage. Sources : <https://www.mercedes-benz-bus.com/gb/en/models/tourismo-rhd/facts-tourismo-rhd.html> ; <https://www.scania.com/uk/en/home/products/buses-and-coaches/travel-operations/scania-touring.html>.
 
-| Liaison de départ | Économique | Confort | Premium |
+## 2. Tarifs des voyages
+
+Prix par passager, aller simple, en FCFA. Valeurs de jeu provisoires, ajustables selon distance, durée, dépenses et demande.
+
+### Lignes nationales
+
+| Trajet | Économique | Confort | VIP |
 |---|---:|---:|---:|
-| Abidjan – Yamoussoukro | 3 000 | 4 000 | 5 000 |
-| Abidjan – Bouaké | 5 000 | 6 500 | 8 000 |
-| Abidjan – Accra | 8 000 | 10 000 | 12 500 |
+| Abidjan – Yamoussoukro | 5 000 | 7 000 | 10 000 |
+| Abidjan – Bouaké | 8 000 | 12 000 | 16 000 |
+| Abidjan – Korhogo | 12 000 | 16 000 | 22 000 |
+| Abidjan – San Pedro | 10 000 | 14 000 | 18 000 |
+| Abidjan – Man | 12 000 | 17 000 | 23 000 |
 
-Le tarif dépend du service choisi, pas uniquement du véhicule. Une liaison transfrontalière doit aussi prendre en compte les contrôles, le temps de trajet et les formalités simulées. Les prix affichés sont des prix de jeu et pourront être ajustés après équilibrage.
+### Lignes internationales
 
-## 3. Classes de service
+| Trajet | Économique | Confort | VIP |
+|---|---:|---:|---:|
+| Abidjan – Accra | 15 000 | 20 000 | 28 000 |
+| Abidjan – Lomé | 22 000 | 30 000 | 40 000 |
+| Abidjan – Cotonou | 28 000 | 38 000 | 50 000 |
+| Abidjan – Ouagadougou | 30 000 | 42 000 | 55 000 |
+| Abidjan – Bamako | 35 000 | 48 000 | 65 000 |
+| Abidjan – Conakry | 45 000 | 60 000 | 80 000 |
+| Accra – Lagos | 30 000 | 42 000 | 55 000 |
 
-- **Économique** : siège standard, climatisation selon équipement, service simple.
-- **Confort** : siège plus confortable, climatisation réglable, prises ou USB si installés, service à bord selon le car.
-- **Premium** : équipement haut de gamme réellement installé, divertissement, service de boissons ou repas si disponible.
+Le tarif VIP n'est proposé que si le car possède réellement les équipements promis. Les voyages internationaux comportent des contrôles frontaliers simulés, avec frais affichés avant le départ.
 
-Une classe supérieure ne peut être vendue que si le car possède les équipements correspondants. L'interface de réservation doit montrer les services inclus avant le paiement.
+## 3. Économie accessible : ne pas rendre le jeu trop difficile
 
-## 4. Réservation et calcul du chiffre d'affaires
+- Le joueur commence avec un minicar ou un minibus utilisable immédiatement, sans devoir économiser pendant des heures.
+- Le tutoriel finance le premier départ et explique les recettes et dépenses.
+- Les premières lignes sont courtes, rentables et disponibles tôt.
+- Le joueur peut partir avec un taux de remplissage raisonnable : il ne faut pas exiger 100 % des sièges pour rentabiliser un trajet.
+- La demande varie selon la ligne, l'heure, le prix, la réputation et la saison, sans punir excessivement les débutants.
+- Afficher avant chaque voyage une estimation du chiffre d'affaires, du carburant, des salaires, des péages et des autres frais.
+- Les frais de frontière sont annoncés avant validation.
+- Un voyage terminé prudemment donne une récompense raisonnable même si le car n'est pas complet.
+- Les contrats et objectifs de progression offrent des revenus supplémentaires sans être obligatoires.
+- Éviter les frais cachés, réparations disproportionnées et pénalités injustes.
 
-Avant confirmation, afficher :
-- départ, arrivée, date et heure ;
-- durée estimée et arrêts prévus ;
-- classe de service ;
-- prix par passager ;
-- nombre de places et sièges disponibles ;
-- bagages autorisés et éventuels frais supplémentaires clairement indiqués ;
-- montant total à payer.
+## 4. Calcul financier
 
-Formule de base :
+Chiffre d'affaires = somme des billets effectivement vendus.
 
-`Chiffre d'affaires billets = billets effectivement vendus × tarif unitaire`
+Bénéfice net = chiffre d'affaires - carburant - salaires - péages/frontières - repas et boissons fournis - entretien et autres dépenses.
 
-Le revenu net de la liaison est calculé après déduction du carburant, des péages éventuels, des salaires, des repas et boissons fournis, de l'entretien et des autres frais applicables. Les places vides ne génèrent aucun revenu.
+Le jeu affiche les deux montants. Les places vides ne rapportent rien, mais une occupation partielle ne doit pas rendre systématiquement le voyage déficitaire.
 
-## 5. Gestion des prix par la compagnie
+## 5. Classes de service
 
-Dans le mode gestion, le joueur peut choisir parmi des niveaux tarifaires encadrés :
-- tarif économique ;
-- tarif normal recommandé ;
-- tarif confort ou premium si les équipements le justifient.
+- Économique : sièges standards, services essentiels.
+- Confort : sièges plus confortables, climatisation et équipements installés.
+- VIP : confort supérieur, divertissement et restauration si disponibles.
 
-Un prix excessif doit réduire la demande et la réputation ; un prix trop bas peut augmenter le remplissage mais réduire la marge. Les prix ne doivent pas être modifiables pendant qu'un passager a déjà payé son billet.
+La classe vendue doit correspondre à la configuration réellement installée dans le car.
 
-Les tarifs doivent être cohérents avec la distance, le type de service, la concurrence simulée, la saison et les coûts d'exploitation. Les trajets plus longs ne doivent pas être automatiquement plus rentables si les dépenses augmentent aussi.
+## 6. Statut
 
-## 6. Progression et récompenses
-
-Les pièces de progression sont attribuées séparément des recettes en FCFA :
-- bonus de conduite sûre ;
-- bonus de ponctualité réaliste ;
-- bonus de satisfaction des passagers ;
-- bonus de trajet terminé et de gestion correcte des arrêts ;
-- bonus de progression de compagnie et de contrats.
-
-Ne pas attribuer de bonus pour la vitesse excessive. Les accidents, infractions, retards évitables et mauvais état du véhicule diminuent la note et peuvent réduire la récompense.
-
-## 7. Équilibrage à effectuer en jeu
-
-Les montants de véhicules et de billets sont des valeurs initiales de conception. Avant publication, simuler plusieurs profils de joueurs et mesurer :
-- le nombre de trajets nécessaires pour acheter chaque véhicule ;
-- le bénéfice réel par liaison selon le taux de remplissage ;
-- l'effet des réparations, du carburant et des services à bord ;
-- la progression d'un joueur prudent par rapport à un joueur expérimenté ;
-- la viabilité des trajets courts et longs.
-
-Aucun véhicule ne doit être indispensable pour terminer la progression. Le jeu doit rester jouable sans paiement réel et sans répétition artificielle excessive.
-
-## 8. Statut technique
-
-**Catalogue et règles économiques documentés.** Les prix ne sont pas encore intégrés dans une boutique, un système de réservation ou une simulation financière Unity. Ces systèmes devront être développés, sauvegardés et testés avant d'être annoncés comme fonctionnels.
+Catalogue, capacités cibles, tarifs et principes d'équilibrage documentés. Les véhicules, concessionnaire, réservations, simulation financière et lignes ne sont pas encore implémentés dans Unity. Les prix devront être testés en jeu avant toute promesse d'équilibrage définitif.
