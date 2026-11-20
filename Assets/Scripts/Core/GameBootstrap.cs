@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -6,6 +7,20 @@ using UnityEngine;
 /// </summary>
 public sealed class GameBootstrap : MonoBehaviour
 {
+    private static readonly Dictionary<Color, Material> SharedMaterials = new Dictionary<Color, Material>();
+
+    private static Material GetSharedMaterial(Color color)
+    {
+        if (SharedMaterials.TryGetValue(color, out Material existing) && existing != null)
+            return existing;
+
+        Shader shader = Shader.Find("Universal Render Pipeline/Lit");
+        if (shader == null) shader = Shader.Find("Standard");
+        if (shader == null) shader = Shader.Find("Diffuse");
+        var material = new Material(shader) { color = color };
+        SharedMaterials[color] = material;
+        return material;
+    }
     private CoachVehicleController coach;
     private MobileDriveInput input;
     private CameraFollow cameraFollow;
@@ -108,7 +123,7 @@ public sealed class GameBootstrap : MonoBehaviour
         visual.transform.localScale = new Vector3(0.92f, 0.18f, 0.92f);
         Object.Destroy(visual.GetComponent<Collider>());
         var renderer = visual.GetComponent<Renderer>();
-        renderer.material.color = new Color(0.06f, 0.06f, 0.065f);
+        renderer.sharedMaterial = GetSharedMaterial(new Color(0.06f, 0.06f, 0.065f));
         coachVisuals.Add(new WheelVisual { collider = wheel, visual = visual.transform });
         return wheel;
     }
@@ -147,7 +162,7 @@ public sealed class GameBootstrap : MonoBehaviour
         block.name = objectName;
         block.transform.position = position;
         block.transform.localScale = scale;
-        block.GetComponent<Renderer>().material.color = color;
+        block.GetComponent<Renderer>().sharedMaterial = GetSharedMaterial(color);
         if (objectName != "Terrain" && objectName != "Road")
             Object.Destroy(block.GetComponent<Collider>());
         return block;
@@ -161,7 +176,7 @@ public sealed class GameBootstrap : MonoBehaviour
         part.transform.localPosition = localPosition;
         part.transform.localScale = scale;
         Object.Destroy(part.GetComponent<Collider>());
-        part.GetComponent<Renderer>().material.color = color;
+        part.GetComponent<Renderer>().sharedMaterial = GetSharedMaterial(color);
     }
 
     private void LateUpdate()
