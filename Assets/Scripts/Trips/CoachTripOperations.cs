@@ -91,14 +91,37 @@ public sealed class CoachTripOperations
         { reason = "Le trajet n'est pas prêt au départ."; return false; }
         if (company == null || costs == null)
         { reason = "Données financières manquantes."; return false; }
-        if (costs.TotalXof < 0L)
-        { reason = "Les dépenses du trajet sont invalides."; return false; }
-        if (!company.TrySpend(costs.TotalXof, "Départ du trajet " + TripId))
+        long totalCosts;
+        if (!TryCalculateOperatingCosts(costs, out totalCosts))
+        { reason = "Les dépenses du trajet sont invalides ou dépassent la limite financière autorisée."; return false; }
+        if (!company.TrySpend(totalCosts, "Départ du trajet " + TripId))
         { reason = "Solde insuffisant pour couvrir les dépenses annoncées."; return false; }
 
-        ChargedOperatingCostsXof = costs.TotalXof;
+        ChargedOperatingCostsXof = totalCosts;
         Status = CoachTripStatus.OnRoad;
         return true;
+    }
+
+    private static bool TryCalculateOperatingCosts(TripOperatingCosts costs, out long total)
+    {
+        total = 0L;
+        if (costs == null || costs.FuelXof < 0L || costs.DriverAndStaffXof < 0L ||
+            costs.TollsAndBorderXof < 0L || costs.FoodAndDrinksXof < 0L ||
+            costs.MaintenanceReserveXof < 0L) return false;
+
+        try
+        {
+            checked
+            {
+                total = costs.FuelXof + costs.DriverAndStaffXof + costs.TollsAndBorderXof +
+                    costs.FoodAndDrinksXof + costs.MaintenanceReserveXof;
+            }
+            return true;
+        }
+        catch (OverflowException)
+        {
+            return false;
+        }
     }
 
     public bool TryComplete(CompanyProfile company, PassengerTrip passengers, bool safeDriving,
