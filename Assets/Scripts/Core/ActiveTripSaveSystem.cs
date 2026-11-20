@@ -69,8 +69,6 @@ public static class ActiveTripSaveSystem
             if (string.IsNullOrEmpty(json)) return false;
             PlayerPrefs.SetString(SaveKey, json);
             PlayerPrefs.Save();
-            isRaining = data.IsRaining;
-            isNight = data.IsNight;
             return true;
         }
         catch (Exception exception)
@@ -108,6 +106,8 @@ public static class ActiveTripSaveSystem
                 Debug.LogWarning("Reprise du voyage impossible : " + reason);
                 return false;
             }
+            isRaining = data.IsRaining;
+            isNight = data.IsNight;
             return true;
         }
         catch (Exception exception)
