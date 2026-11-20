@@ -1,127 +1,72 @@
-# Progression, pièces et déblocage des véhicules
+# Économie, achats et personnalisation des autocars
 
-## Décision de conception
+## Monnaie unique
 
-BUS & COACH SIMULATOR AFRICA utilise une progression fondée sur des pièces virtuelles gagnées en jouant. Les véhicules, certaines options de confort et les améliorations mécaniques peuvent être achetés ou débloqués avec ces pièces. Le joueur doit pouvoir profiter du jeu et atteindre les véhicules haut de gamme sans paiement en argent réel.
+Le jeu utilise une seule monnaie : **FCFA (XOF)**. Il n'existe ni pièces, ni jetons, ni monnaie secondaire.
 
-Ce document définit les règles de conception. Il ne signifie pas que l'économie ou les écrans de boutique sont déjà implémentés.
+Les recettes des billets et contrats alimentent la trésorerie de la compagnie. Cette trésorerie sert à acheter les cars, financer les voyages, payer les dépenses, entretenir les véhicules, les améliorer et les personnaliser.
 
-## 1. Monnaie du jeu
+## 1. Achats de véhicules
 
-- **Pièces** : monnaie principale gagnée pendant les activités normales.
-- Les récompenses sont annoncées clairement avant chaque mission.
-- Aucun achat obligatoire en argent réel ne doit bloquer la progression principale.
-- Les prix et récompenses doivent être équilibrés après des essais de jeu, pas choisis arbitrairement.
-- Pas de récompense aléatoire payante donnant un avantage compétitif.
-- Les éventuels achats réels futurs ne doivent pas rendre les véhicules ou améliorations indispensables inaccessibles aux joueurs gratuits.
+Tous les véhicules sont des cars et autocars de transport de voyageurs : minicar, minibus interurbain, car moyen, autocar standard, confort, grand tourisme, premium et double étage. Aucun autobus urbain, bus articulé, camion, voiture ou moto.
 
-## 2. Comment gagner des pièces
+Le concessionnaire affiche pour chaque car :
+- prix en FCFA et conditions de progression ;
+- capacité exacte en sièges passagers ;
+- volume de bagages et équipements ;
+- puissance, couple, boîte, consommation et masse ;
+- état du véhicule ;
+- cockpit, intérieur et options compatibles.
 
-Le joueur peut recevoir des pièces pour :
-- terminer une liaison et déposer les passagers à destination ;
-- conduire prudemment et respecter le code de la route ;
-- respecter les horaires sans conduite dangereuse ;
-- transporter le bon nombre de passagers et gérer correctement les bagages ;
-- assurer le confort des voyageurs pendant les longs trajets ;
-- effectuer les arrêts prévus et gérer le carburant ;
-- entretenir le car et éviter les dégâts ;
-- développer sa compagnie et réussir des contrats.
+L'achat débite le prix une seule fois et ajoute le véhicule au garage, avec sauvegarde persistante.
 
-Les récompenses doivent tenir compte de la distance, de la difficulté et de la qualité du service. Les infractions, accidents, dégâts et retards injustifiés peuvent réduire la récompense. Le jeu ne doit jamais encourager la vitesse dangereuse.
+## 2. Garage et améliorations payées en FCFA
 
-## 3. Déblocage des véhicules
+Les améliorations mécaniques et esthétiques sont achetées avec la trésorerie :
+- moteur, boîte de vitesses et réglage de conduite ;
+- freinage, suspension, pneus et éclairage ;
+- peinture, livrée, couleurs et accessoires autorisés ;
+- climatisation, radio, télévision et système audio ;
+- sièges inclinables, repose-pieds, rideaux et liseuses ;
+- ports USB, Wi-Fi, réfrigérateur et équipements de restauration ;
+- toilettes embarquées uniquement sur les modèles compatibles ;
+- microphone et annonces passagers.
 
-Chaque véhicule possède sa propre fiche :
-- marque et modèle fictifs ou utilisés avec autorisation ;
-- catégorie (minibus, autocar standard, grand tourisme, etc.) ;
-- prix en pièces et éventuel niveau de progression requis ;
-- capacité passagers et bagages ;
-- puissance, couple, transmission et consommation ;
-- dimensions, masse, rayon de braquage et comportement de suspension ;
-- caractéristiques de freinage et performances ;
-- configuration du cockpit et du tableau de bord ;
-- aménagement intérieur, confort et équipements compatibles.
+Les prix dépendent du type de car et du niveau d'amélioration. L'interface montre le coût total avant confirmation et l'effet concret sur le véhicule. Les options incompatibles ne sont jamais proposées.
 
-Certains véhicules sont disponibles au départ. D'autres nécessitent un niveau de compagnie, une réputation ou des contrats accomplis, puis un achat avec les pièces. L'achat d'un véhicule ne doit pas le faire apparaître gratuitement dans la flotte si le joueur n'a pas payé son prix.
+Les équipements essentiels de sécurité (ceintures, extincteurs, sorties de secours et dispositifs requis) ne sont pas des options de luxe à débloquer.
 
-## 4. Déblocage des options à bord
+## 3. Progression accessible
 
-Les options compatibles avec un modèle peuvent être achetées séparément ou proposées dans des packs clairement détaillés, par exemple :
-- climatisation améliorée et réglages de ventilation ;
-- télévision et système de divertissement ;
-- radio et système audio amélioré ;
-- Wi-Fi, ports USB et prises ;
-- sièges inclinables, repose-pieds et rideaux ;
-- éclairage d'ambiance et liseuses ;
-- réfrigérateur, distributeur ou service de nourriture et boissons ;
-- toilettes embarquées sur les cars prévus pour cela ;
-- microphone et système d'annonces.
+- Démarrer avec un véhicule exploitable ou un capital suffisant pour en acheter un.
+- Permettre de gagner de l'argent sur les premières lignes sans remplir systématiquement toutes les places.
+- Introduire les véhicules plus chers progressivement, sans blocage artificiel.
+- Afficher les revenus et dépenses estimés avant chaque voyage.
+- Les réparations, amendes et frais internationaux sont proportionnés et annoncés.
+- Prévoir des contrats, missions et bonus de conduite sûre comme compléments de revenus.
+- Aucun achat réel n'est nécessaire à la progression.
+- Ne pas faire perdre arbitrairement un véhicule acheté.
 
-Une option ne doit être affichée comme achetable que si le modèle de car la prend réellement en charge. Les équipements installés doivent être visibles dans l'habitacle et fonctionner dans le gameplay, pas seulement apparaître comme une icône dans un menu.
+## 4. Comptabilité de la compagnie
 
-## 5. Améliorations mécaniques
+L'écran financier distingue :
+- solde disponible ;
+- chiffre d'affaires des billets ;
+- coûts de carburant ;
+- salaires ;
+- péages et frais frontaliers ;
+- repas, boissons et fournitures ;
+- entretien et réparations ;
+- achats de véhicules ;
+- améliorations et personnalisation ;
+- bénéfice net par voyage et par période.
 
-Les pièces peuvent aussi financer des améliorations compatibles :
-- moteur et réponse de l'accélérateur ;
-- boîte de vitesses et rapports ;
-- système de freinage ;
-- suspension et amortisseurs ;
-- pneus adaptés aux conditions de route ;
-- capacité ou efficacité énergétique lorsque techniquement plausible.
+Les transactions sont sauvegardées et les achats ne peuvent pas être débités deux fois par une répétition d'action.
 
-Les améliorations doivent rester crédibles : elles modifient les caractéristiques du véhicule et peuvent avoir des effets secondaires (coût, consommation, entretien, usure). Elles ne doivent pas transformer instantanément un vieux car en véhicule irréaliste.
+## 5. Validation technique
 
-## 6. Sécurité et équipements obligatoires
-
-Les équipements essentiels à la sécurité et à la conformité ne doivent pas être artificiellement verrouillés derrière une longue progression. Les ceintures, les sorties de secours, les extincteurs, les dispositifs de sécurité et les contrôles avant départ doivent être présents selon la configuration du véhicule. Le gameplay peut demander au conducteur de vérifier leur état et leur utilisation.
-
-Les options de confort et de luxe peuvent être des déblocages ; la sécurité fondamentale ne doit pas devenir un avantage payant.
-
-## 7. Économie et coûts d'exploitation
-
-Posséder un véhicule entraîne des dépenses cohérentes :
-- carburant ou énergie ;
-- entretien périodique et réparations ;
-- pneus et pièces d'usure ;
-- salaires et frais d'exploitation si le mode compagnie les gère ;
-- réapprovisionnement des boissons, snacks et repas lorsque ces services sont installés.
-
-Le joueur doit pouvoir consulter le coût estimé avant d'acheter un véhicule ou une option. Les frais ne doivent pas être cachés.
-
-## 8. Interface attendue
-
-Prévoir des espaces distincts :
-1. **Garage** : véhicules possédés, état, entretien et sélection du car.
-2. **Concessionnaire** : véhicules verrouillés, prix, conditions et comparaison des caractéristiques.
-3. **Personnalisation** : options compatibles, aperçu intérieur et coût d'installation.
-4. **Améliorations** : pièces mécaniques, niveaux et effets mesurables.
-5. **Économie** : solde de pièces, historique des gains et dépenses.
-
-Chaque élément verrouillé indique précisément la condition à remplir : nombre de pièces, niveau, réputation, contrat ou véhicule requis. Le joueur doit pouvoir distinguer « verrouillé », « achetable », « possédé » et « installé ».
-
-## 9. Principes anti-frustration
-
-- La progression est possible en jouant normalement, sans répétition excessive d'une seule mission.
-- Les prix sont cohérents avec les récompenses et les coûts d'exploitation.
-- Les véhicules de départ permettent réellement de terminer les premières liaisons.
-- Les véhicules haut de gamme sont des objectifs motivants, pas des nécessités pour gagner.
-- Pas de vente trompeuse : caractéristiques, compatibilité, coûts et conditions sont visibles.
-- Pas de perte arbitraire d'un véhicule acheté.
-- Les sauvegardes conservent les pièces, véhicules, options achetées et améliorations installées.
-
-## 10. Critères de validation
-
-Avant de considérer le système comme terminé, vérifier que :
-- les pièces sont attribuées uniquement après validation d'une activité ;
-- le solde est sauvegardé et ne peut pas être modifié par une simple manipulation de l'interface ;
-- un achat débite le bon montant une seule fois ;
-- un véhicule acheté rejoint le garage et reste disponible après redémarrage ;
-- une option incompatible ne peut pas être installée ;
-- l'aperçu correspond à l'équipement réellement installé ;
-- les conditions de déblocage sont compréhensibles ;
-- un joueur gratuit peut atteindre les contenus de progression prévus ;
-- l'économie a été testée sur plusieurs heures de jeu et plusieurs profils.
+Avant de déclarer le système opérationnel, tester l'achat d'un car, le débit correct, sa présence durable au garage, l'installation d'améliorations compatibles, la sauvegarde du solde, le calcul des recettes et dépenses et la progression avec un remplissage moyen.
 
 ## Statut
 
-**Validé comme exigence produit et de conception.** Les systèmes de monnaie, boutique, garage, sauvegarde et déblocage restent à développer et à tester dans Unity.
+Ces règles sont des exigences de conception. Le concessionnaire, les achats, le garage, la comptabilité et les améliorations restent à développer et tester dans Unity.
