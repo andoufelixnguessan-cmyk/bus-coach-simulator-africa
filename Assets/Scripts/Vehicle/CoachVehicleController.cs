@@ -33,6 +33,7 @@ public sealed class CoachVehicleController : MonoBehaviour
     private GearSelection gearSelection = GearSelection.Park;
     private int automaticGear = 1;
     private float gearShiftCooldown;
+    private bool absActive;
     private Light leftHeadlight, rightHeadlight;
     private Light[] indicatorLights = System.Array.Empty<Light>();
     private Light[] brakeLights = System.Array.Empty<Light>();
@@ -51,7 +52,7 @@ public sealed class CoachVehicleController : MonoBehaviour
     public float AirPressureBar => airPressureBar;
     public float BatteryVoltage => 24.2f;
     public bool EngineWarning => EngineRunning && (coolantTemperatureC >= 105f || oilPressureBar < 1.2f);
-    public bool AbsWarning => false;
+    public bool AbsWarning => absActive;
     public bool ParkingBrakeApplied => handbrake || gearSelection == GearSelection.Park;
     public GearSelection SelectedGear => gearSelection;
     public int AutomaticGear => automaticGear;
@@ -267,13 +268,39 @@ public sealed class CoachVehicleController : MonoBehaviour
         rearRight.motorTorque = torque * 0.25f;
         rearLeftInner.motorTorque = torque * 0.25f;
         rearRightInner.motorTorque = torque * 0.25f;
-        float brake = brakeInput * serviceBrakeTorque;
+        float requestedBrake = brakeInput * serviceBrakeTorque;
+        absActive = false;
+        float frontLeftBrake = ApplyAbs(frontLeft, requestedBrake);
+        float frontRightBrake = ApplyAbs(frontRight, requestedBrake);
+        float rearLeftService = ApplyAbs(rearLeft, requestedBrake);
+        float rearRightService = ApplyAbs(rearRight, requestedBrake);
+        float rearLeftInnerService = ApplyAbs(rearLeftInner, requestedBrake);
+        float rearRightInnerService = ApplyAbs(rearRightInner, requestedBrake);
         float parkBrake = gearSelection == GearSelection.Park ? handbrakeTorque * 1.4f : 0f;
-        frontLeft.brakeTorque = brake + parkBrake; frontRight.brakeTorque = brake + parkBrake;
-        float rearBrake = brake + (handbrake ? handbrakeTorque : 0f) + parkBrake;
-        rearLeft.brakeTorque = rearBrake; rearRight.brakeTorque = rearBrake;
-        rearLeftInner.brakeTorque = rearBrake; rearRightInner.brakeTorque = rearBrake;
+        float handbrakeForce = handbrake ? handbrakeTorque : 0f;
+        frontLeft.brakeTorque = frontLeftBrake + parkBrake;
+        frontRight.brakeTorque = frontRightBrake + parkBrake;
+        rearLeft.brakeTorque = rearLeftService + handbrakeForce + parkBrake;
+        rearRight.brakeTorque = rearRightService + handbrakeForce + parkBrake;
+        rearLeftInner.brakeTorque = rearLeftInnerService + handbrakeForce + parkBrake;
+        rearRightInner.brakeTorque = rearRightInnerService + handbrakeForce + parkBrake;
         body.AddForce(-transform.up * downforce * body.linearVelocity.magnitude);
+    }
+
+
+    private float ApplyAbs(WheelCollider wheel, float requestedTorque)
+    {
+        if (requestedTorque <= 0f || handbrake || gearSelection == GearSelection.Park) return requestedTorque;
+        if (wheel == null || !wheel.GetGroundHit(out WheelHit hit)) return requestedTorque;
+
+        float vehicleSpeed = body.linearVelocity.magnitude;
+        if (vehicleSpeed < 2f) return requestedTorque;
+        float wheelSurfaceSpeed = Mathf.Abs(wheel.rpm) * (2f * Mathf.PI * wheel.radius) / 60f;
+        float slipRatio = (vehicleSpeed - wheelSurfaceSpeed) / Mathf.Max(vehicleSpeed, 1f);
+        if (slipRatio <= 0.22f) return requestedTorque;
+
+        absActive = true;
+        return requestedTorque * 0.62f;
     }
 
     private bool WheelsAssigned() => frontLeft != null && frontRight != null && rearLeft != null && rearRight != null && rearLeftInner != null && rearRightInner != null;
