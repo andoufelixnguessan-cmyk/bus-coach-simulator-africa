@@ -68,11 +68,11 @@ public sealed class PrototypeTouchControls : MonoBehaviour
             new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(28f, 26f), new Vector2(116f, 92f));
         CreateHoldButton(safeRoot, "▶", MobileHoldButton.ActionType.SteerRight,
             new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(154f, 26f), new Vector2(116f, 92f));
-        CreateHoldButton(safeRoot, "FREIN", MobileHoldButton.ActionType.Brake,
+        CreateHoldButton(safeRoot, "▼", MobileHoldButton.ActionType.Brake,
             new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-286f, 26f), new Vector2(116f, 92f));
-        CreateHoldButton(safeRoot, "ACCÉLÉRER", MobileHoldButton.ActionType.Throttle,
+        CreateHoldButton(safeRoot, "▲", MobileHoldButton.ActionType.Throttle,
             new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-152f, 26f), new Vector2(128f, 92f));
-        CreateHoldButton(safeRoot, "FREIN PARK", MobileHoldButton.ActionType.Handbrake,
+        CreateHoldButton(safeRoot, "P", MobileHoldButton.ActionType.Handbrake,
             new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-152f, 132f), new Vector2(128f, 66f));
 
         GameObject speedPanel = CreatePanel(safeRoot, "Speed panel", new Vector2(0f, 1f), new Vector2(0f, 1f),
