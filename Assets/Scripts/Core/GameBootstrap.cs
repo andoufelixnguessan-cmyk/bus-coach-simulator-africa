@@ -26,6 +26,7 @@ public sealed class GameBootstrap : MonoBehaviour
     private CoachDrivingHud drivingHud;
     public CompanyProfile ActiveCompany { get; private set; }
     public PlayerRouteTripSetup CurrentTripSetup { get; private set; }
+    public PlayerTripSession CurrentTripSession { get; private set; }
     private GameObject routePlannerCanvas;
     private GameObject passengerManifestCanvas;
     private CoachPassengerManifestPanel passengerManifestPanel;
@@ -623,6 +624,8 @@ public sealed class GameBootstrap : MonoBehaviour
     private void HandleTripPrepared(PlayerRouteTripSetup setup)
     {
         CurrentTripSetup = setup;
+        CurrentTripSession = setup != null && ActiveCompany != null
+            ? new PlayerTripSession(setup, ActiveCompany) : null;
         if (passengerManifestPanel != null && setup != null)
             passengerManifestPanel.Configure(setup.Passengers, ActiveCompany, ClosePassengerManifest);
         if (drivingHud != null) drivingHud.SetRouteDisplay(setup);
