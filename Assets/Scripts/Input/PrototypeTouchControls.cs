@@ -223,7 +223,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     private void ToggleEngine()
     {
         if (vehicle != null && !vehicle.ToggleEngine())
-            Debug.Log("Démarrage impossible : vérifiez l'arrêt du car et le carburant.");
+            Debug.Log("Démarrage impossible : vérifiez l'arrêt, P/N, la porte, la ceinture et le carburant.");
     }
 
     private void ToggleCameraView()
