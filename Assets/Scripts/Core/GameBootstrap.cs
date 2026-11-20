@@ -107,6 +107,7 @@ public sealed class GameBootstrap : MonoBehaviour
             CreatePart(root.transform, "Left passenger window", new Vector3(-1.235f, 2.05f, z), new Vector3(0.025f, 0.82f, 0.78f), new Color(0.13f, 0.25f, 0.31f));
             CreatePart(root.transform, "Right passenger window", new Vector3(1.235f, 2.05f, z), new Vector3(0.025f, 0.82f, 0.78f), new Color(0.13f, 0.25f, 0.31f));
         }
+        BuildPassengerSeats(root.transform);
 
         CreatePart(root.transform, "Front bumper", new Vector3(0f, 0.55f, 4.98f), new Vector3(2.4f, 0.25f, 0.18f), new Color(0.08f, 0.09f, 0.1f));
         CreatePart(root.transform, "Rear bumper", new Vector3(0f, 0.55f, -4.98f), new Vector3(2.4f, 0.25f, 0.18f), new Color(0.08f, 0.09f, 0.1f));
@@ -148,6 +149,29 @@ public sealed class GameBootstrap : MonoBehaviour
         BuildWipers(root.transform);
     }
 
+
+
+    private void BuildPassengerSeats(Transform coachRoot)
+    {
+        Material fabric = GetSharedMaterial(new Color(0.055f, 0.12f, 0.22f));
+        Material piping = GetSharedMaterial(new Color(0.28f, 0.36f, 0.43f));
+        float[] seatX = { -0.82f, -0.42f, 0.42f, 0.82f };
+        for (int row = 0; row < 8; row++)
+        {
+            float z = 1.72f - row * 0.70f;
+            for (int seat = 0; seat < seatX.Length; seat++)
+            {
+                float x = seatX[seat];
+                string id = "Passenger seat row " + (row + 1) + " position " + (seat + 1);
+                CreatePart(coachRoot, id + " cushion", new Vector3(x, 0.88f, z),
+                    new Vector3(0.36f, 0.16f, 0.43f), fabric);
+                CreatePart(coachRoot, id + " backrest", new Vector3(x, 1.20f, z - 0.20f),
+                    new Vector3(0.36f, 0.54f, 0.13f), fabric);
+                CreatePart(coachRoot, id + " headrest", new Vector3(x, 1.55f, z - 0.20f),
+                    new Vector3(0.25f, 0.17f, 0.13f), piping);
+            }
+        }
+    }
 
     private void BuildPassengerDoor(Transform coachRoot)
     {
