@@ -147,12 +147,24 @@ public sealed class GameBootstrap : MonoBehaviour
         root.AddComponent<CoachCockpit3D>().Configure(root.transform, coach, engineProfile);
         BuildPassengerDoor(root.transform);
         BuildWipers(root.transform);
+        root.AddComponent<CoachCabinLightingSystem>().Configure(
+            CreateCabinLight(root.transform, "Cabin ceiling light front", new Vector3(0f, 2.48f, 1.65f)),
+            CreateCabinLight(root.transform, "Cabin ceiling light middle", new Vector3(0f, 2.48f, 0f)),
+            CreateCabinLight(root.transform, "Cabin ceiling light rear", new Vector3(0f, 2.48f, -1.65f)));
     }
 
 
 
     private void BuildPassengerSeats(Transform coachRoot)
     {
+        CreatePart(coachRoot, "Passenger cabin floor", new Vector3(0f, 0.28f, 0f),
+            new Vector3(2.18f, 0.08f, 9.15f), GetSharedMaterial(new Color(0.10f, 0.12f, 0.14f)));
+        CreatePart(coachRoot, "Passenger aisle carpet", new Vector3(0f, 0.335f, -0.45f),
+            new Vector3(0.42f, 0.025f, 5.85f), GetSharedMaterial(new Color(0.18f, 0.20f, 0.22f)));
+        CreatePart(coachRoot, "Left overhead luggage rack", new Vector3(-0.92f, 2.34f, -0.25f),
+            new Vector3(0.30f, 0.12f, 7.1f), GetSharedMaterial(new Color(0.12f, 0.15f, 0.18f)));
+        CreatePart(coachRoot, "Right overhead luggage rack", new Vector3(0.92f, 2.34f, -0.25f),
+            new Vector3(0.30f, 0.12f, 7.1f), GetSharedMaterial(new Color(0.12f, 0.15f, 0.18f)));
         Material fabric = GetSharedMaterial(new Color(0.055f, 0.12f, 0.22f));
         Material piping = GetSharedMaterial(new Color(0.28f, 0.36f, 0.43f));
         float[] seatX = { -0.82f, -0.42f, 0.42f, 0.82f };
@@ -235,6 +247,22 @@ public sealed class GameBootstrap : MonoBehaviour
     }
 
 
+
+
+    private Light CreateCabinLight(Transform parent, string lightName, Vector3 localPosition)
+    {
+        GameObject holder = new GameObject(lightName);
+        holder.transform.SetParent(parent, false);
+        holder.transform.localPosition = localPosition;
+        Light lamp = holder.AddComponent<Light>();
+        lamp.type = LightType.Point;
+        lamp.range = 5.5f;
+        lamp.intensity = 0.75f;
+        lamp.color = new Color(1f, 0.88f, 0.68f);
+        lamp.shadows = LightShadows.None;
+        lamp.enabled = false;
+        return lamp;
+    }
 
     private Light CreateTailLight(Transform parent, string lightName, Vector3 localPosition)
     {
