@@ -20,6 +20,7 @@ namespace ATP.Editor
             RequireFile("Assets/Scripts/Core/GameBootstrap.cs", errors);
             RequireFile("Assets/Scripts/Vehicle/CoachVehicleController.cs", errors);
             RequireFile("Assets/Scripts/Core/ActiveCoachSaveSystem.cs", errors);
+            RequireFile("Assets/Scripts/Core/ActiveTripSaveSystem.cs", errors);
             RequireFile("Assets/Scripts/Core/CompanySaveSystem.cs", errors);
             RequireFile("Assets/Scripts/UI/RoutePlanningPanel.cs", errors);
 
