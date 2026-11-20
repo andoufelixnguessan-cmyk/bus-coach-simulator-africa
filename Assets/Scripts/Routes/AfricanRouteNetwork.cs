@@ -207,6 +207,57 @@ public sealed class InternationalBorderManager
         return total;
     }
 
+    public void CaptureSaveState(PlayerTripSaveData data)
+    {
+        if (data == null) throw new ArgumentNullException("data");
+        data.BorderRecords = new BorderCrossingRecord[records.Count];
+        for (int i = 0; i < records.Count; i++)
+        {
+            BorderCrossingRecord source = records[i];
+            data.BorderRecords[i] = new BorderCrossingRecord
+            {
+                CheckpointId = source.CheckpointId,
+                Status = source.Status,
+                PassengersDocumentsChecked = source.PassengersDocumentsChecked,
+                CoachDocumentsChecked = source.CoachDocumentsChecked,
+                FeePaidXof = source.FeePaidXof,
+                ActualProcessingMinutes = source.ActualProcessingMinutes
+            };
+        }
+    }
+
+    public bool RestoreSaveState(PlayerTripSaveData data, out string reason)
+    {
+        reason = string.Empty;
+        if (data == null || data.BorderRecords == null || data.BorderRecords.Length != records.Count)
+        { reason = "Les contrôles frontaliers sauvegardés ne correspondent pas à l'itinéraire."; return false; }
+
+        List<BorderCrossingRecord> restored = new List<BorderCrossingRecord>();
+        for (int i = 0; i < records.Count; i++)
+        {
+            BorderCrossingRecord source = data.BorderRecords[i];
+            if (source == null || source.CheckpointId != records[i].CheckpointId ||
+                !Enum.IsDefined(typeof(BorderCrossingStatus), source.Status) ||
+                source.FeePaidXof < 0L || source.ActualProcessingMinutes < 0 ||
+                (source.Status == BorderCrossingStatus.Cleared &&
+                 (!source.PassengersDocumentsChecked || !source.CoachDocumentsChecked)))
+            { reason = "Un enregistrement frontalier sauvegardé est invalide."; return false; }
+
+            restored.Add(new BorderCrossingRecord
+            {
+                CheckpointId = source.CheckpointId,
+                Status = source.Status,
+                PassengersDocumentsChecked = source.PassengersDocumentsChecked,
+                CoachDocumentsChecked = source.CoachDocumentsChecked,
+                FeePaidXof = source.FeePaidXof,
+                ActualProcessingMinutes = source.ActualProcessingMinutes
+            });
+        }
+        records.Clear();
+        records.AddRange(restored);
+        return true;
+    }
+
     public bool TryClearBorder(string checkpointId, bool passengerDocumentsValid, bool coachDocumentsValid,
         CompanyProfile company, out string reason)
     {
