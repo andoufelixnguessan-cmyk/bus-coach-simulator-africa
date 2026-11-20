@@ -43,7 +43,7 @@ public sealed class CoachEngineAudio : MonoBehaviour
             return;
         }
         rpm = vehicle.EngineRpm;
-        load = Mathf.Clamp01((vehicle.EngineRpmNormalized * 0.35f) + 0.15f);
+        load = Mathf.Clamp01((vehicle.EngineRpmNormalized * 0.35f) + 0.15f + vehicle.AccessoryLoad * 0.25f);
         int upgrade = Mathf.Clamp(Mathf.RoundToInt((vehicle.GetMaximumRpm() - 2400f) / 100f), 0, 5);
         source.pitch = Mathf.Clamp(0.82f + (rpm / profile.RedlineRpm) * 0.48f + upgrade * 0.018f, 0.75f, 1.5f);
         source.volume = profile.EngineVolume * (0.72f + load * 0.28f);
