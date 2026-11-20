@@ -113,14 +113,13 @@ public sealed class GameBootstrap : MonoBehaviour
 
         WheelCollider fl = CreateWheel(root.transform, "Front left wheel", new Vector3(-1.18f, 0.48f, 3.05f));
         WheelCollider fr = CreateWheel(root.transform, "Front right wheel", new Vector3(1.18f, 0.48f, 3.05f));
-        WheelCollider rl = CreateWheel(root.transform, "Rear left wheel", new Vector3(-1.18f, 0.48f, -3.05f));
-        WheelCollider rr = CreateWheel(root.transform, "Rear right wheel", new Vector3(1.18f, 0.48f, -3.05f));
-        // Full-size intercity coach appearance: single front tires and dual rear tires (6 visible tires total).
-        CreateDualWheelVisual(root.transform, "Rear left inner tire", rl, -0.22f);
-        CreateDualWheelVisual(root.transform, "Rear right inner tire", rr, 0.22f);
+        WheelCollider rl = CreateWheel(root.transform, "Rear left outer wheel", new Vector3(-1.18f, 0.48f, -3.05f));
+        WheelCollider rr = CreateWheel(root.transform, "Rear right outer wheel", new Vector3(1.18f, 0.48f, -3.05f));
+        WheelCollider rli = CreateWheel(root.transform, "Rear left inner wheel", new Vector3(-0.78f, 0.48f, -3.05f));
+        WheelCollider rri = CreateWheel(root.transform, "Rear right inner wheel", new Vector3(0.78f, 0.48f, -3.05f));
 
         coach = root.AddComponent<CoachVehicleController>();
-        coach.Configure(fl, fr, rl, rr, 11000f, 21000f, 24f, 105f);
+        coach.Configure(fl, fr, rl, rr, rli, rri, 11000f, 21000f, 24f, 105f);
         coach.ApplyEngineUpgrade(0);
         Light leftHeadlamp = CreateHeadlamp(root.transform, "Left headlamp", new Vector3(-0.72f, 0.92f, 4.98f));
         Light rightHeadlamp = CreateHeadlamp(root.transform, "Right headlamp", new Vector3(0.72f, 0.92f, 4.98f));
