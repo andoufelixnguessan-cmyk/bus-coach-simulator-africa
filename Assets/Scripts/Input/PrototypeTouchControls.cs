@@ -12,6 +12,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     private CoachCabinComfortSystem cabinComfort;
     private CoachFuelSystem fuelSystem;
     private CoachWeatherSystem weather;
+    private AfricanDayNightSystem dayNight;
     private MobileDriveInput input;
     private MobileGraphicsSettings graphics;
     private Text speedText;
@@ -23,7 +24,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     private CoachHudIcon seatbeltIcon;
     private CoachHudIcon doorIcon;
     private Image leftIndicatorImage, hazardImage, rightIndicatorImage, headlightImage, highBeamImage, engineImage;
-    private Image seatbeltPanelImage, doorPanelImage, wiperImage, cabinLightImage, acImage, fuelImage, passengerImage, weatherImage;
+    private Image seatbeltPanelImage, doorPanelImage, wiperImage, cabinLightImage, acImage, fuelImage, passengerImage, weatherImage, dayNightImage;
     private GameObject serviceMessagePanel;
     private Text serviceMessageText;
     private float serviceMessageExpiry;
@@ -41,6 +42,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         cabinComfort = cabinComfortSystem;
         fuelSystem = coachFuelSystem;
         weather = target != null ? target.GetComponent<CoachWeatherSystem>() : null;
+        dayNight = target != null ? target.GetComponent<AfricanDayNightSystem>() : null;
         input = driveInput;
         graphics = graphicsSettings;
         cameraView = camera;
@@ -80,6 +82,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         if (cabinComfort != null) SetButtonState(acImage, cabinComfort.AirConditioningOn);
         if (fuelImage != null) fuelImage.gameObject.SetActive(fuelSystem != null && fuelSystem.AtFuelStation);
         if (weather != null) SetButtonState(weatherImage, weather.IsRaining);
+        if (dayNight != null) SetButtonState(dayNightImage, dayNight.IsNight);
         if (serviceMessagePanel != null && serviceMessagePanel.activeSelf && Time.unscaledTime >= serviceMessageExpiry)
             serviceMessagePanel.SetActive(false);
     }
@@ -180,6 +183,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         CreatePassengerManifestButton(safeRoot);
         CreateFuelButton(safeRoot);
         CreateWeatherButton(safeRoot);
+        CreateDayNightButton(safeRoot);
     }
 
     private void CreateSeatbeltButton(Transform parent)
@@ -259,6 +263,17 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         passengerImage = CreateUtilityButton(parent, "♟", new Vector2(0.5f, 1f),
             new Vector2(-460f, -88f), () => { if (openPassengerManifest != null) openPassengerManifest(); });
         passengerImage.gameObject.SetActive(false);
+    }
+
+    private void CreateDayNightButton(Transform parent)
+    {
+        dayNightImage = CreateUtilityButton(parent, "◐", new Vector2(0.5f, 1f),
+            new Vector2(260f, -270f), ToggleDayNight);
+    }
+
+    private void ToggleDayNight()
+    {
+        if (dayNight != null) dayNight.ToggleTimeOfDay();
     }
 
     private void CreateWeatherButton(Transform parent)
@@ -379,6 +394,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
             case "⛽": return CoachHudIcon.IconType.FuelPump;
             case "♟": return CoachHudIcon.IconType.Passengers;
             case "☔": return CoachHudIcon.IconType.Rain;
+            case "◐": return CoachHudIcon.IconType.DayNight;
             default: return CoachHudIcon.IconType.Warning;
         }
     }
