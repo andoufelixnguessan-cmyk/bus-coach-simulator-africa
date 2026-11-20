@@ -104,7 +104,7 @@ public sealed class CoachVehicleController : MonoBehaviour
     private void UpdateAutomaticGearbox()
     {
         if (gearShiftCooldown > 0f) gearShiftCooldown -= Time.deltaTime;
-        if (gearSelection != GearSelection.Drive || gearShiftCooldown > 0f) return;
+        if (!EngineRunning || gearSelection != GearSelection.Drive || gearShiftCooldown > 0f) return;
 
         int index = Mathf.Clamp(automaticGear - 1, 0, UpshiftSpeeds.Length - 1);
         if (automaticGear < 6 && SpeedKph >= UpshiftSpeeds[index] && engineRpm > 1850f)
