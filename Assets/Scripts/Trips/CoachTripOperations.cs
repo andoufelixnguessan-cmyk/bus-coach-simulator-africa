@@ -146,29 +146,21 @@ public sealed class CoachTripOperations
         if (guarantee > long.MaxValue - bonus || company.BalanceXof > long.MaxValue - guarantee - bonus)
         { reason = "Impossible d'enregistrer les recettes de clôture : montant financier trop élevé."; return false; }
 
-        // Validate the complete passenger state before writing any financial or arrival changes.
+        // Every passenger must already have left at their own planned destination stop.
+        // This prevents the trip-end screen from hiding missed intermediate stops.
         for (int i = 0; i < passengers.Bookings.Count; i++)
         {
             PassengerBooking booking = passengers.Bookings[i];
             if (booking == null)
             { reason = "Le manifeste contient une réservation invalide."; return false; }
+            if (booking.Status == PassengerTicketStatus.Boarded)
+            { reason = "Des passagers sont encore à bord : traitez leur arrêt de descente avant de clôturer le trajet."; return false; }
         }
 
         if (guarantee > 0L && !company.AddIncome(guarantee, "Garantie de bénéfice minimum voyage international - " + TripId))
         { reason = "Impossible d'enregistrer la garantie de rentabilité internationale."; return false; }
         if (bonus > 0L && !company.AddIncome(bonus, "Prime de conduite prudente - " + TripId))
         { reason = "Impossible d'enregistrer la prime."; return false; }
-
-        for (int i = 0; i < passengers.Bookings.Count; i++)
-        {
-            PassengerBooking booking = passengers.Bookings[i];
-            if (booking.Status == PassengerTicketStatus.Boarded)
-            {
-                string arrivalError;
-                if (!passengers.TryMarkPassengerArrived(booking.TicketId, out arrivalError))
-                { reason = arrivalError; return false; }
-            }
-        }
 
         InternationalProfitGuaranteeXof = guarantee;
         SafeDrivingBonusXof = bonus;
