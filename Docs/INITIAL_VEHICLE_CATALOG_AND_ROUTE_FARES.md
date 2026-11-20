@@ -74,7 +74,20 @@ Le tarif VIP n'est proposé que si le car possède réellement les équipements 
 - Les contrats et objectifs de progression offrent des revenus supplémentaires sans être obligatoires.
 - Éviter les frais cachés, réparations disproportionnées et pénalités injustes.
 
-## 4. Calcul financier
+## 4. Garantie de bénéfice minimum sur les voyages internationaux
+
+**Objectif de conception : au moins 500 000 FCFA de bénéfice net pour chaque voyage international terminé avec au moins un passager embarqué.**
+
+Le calcul est effectué à la clôture du voyage :
+- bénéfice provisoire = billets effectivement encaissés - dépenses d'exploitation déjà débitées ;
+- si le résultat est inférieur à 500 000 FCFA, une garantie commerciale internationale complète la différence ;
+- si le résultat atteint ou dépasse 500 000 FCFA, aucun complément n'est versé ;
+- la garantie est comptabilisée séparément dans l'historique financier, sans modifier le prix payé par les passagers ;
+- elle ne s'applique pas aux trajets nationaux, aux trajets annulés ou aux voyages internationaux sans billet encaissé.
+
+L'écran de devis doit afficher le chiffre d'affaires prévisionnel, les dépenses, le bénéfice avant garantie et le complément de garantie estimé. Le bilan final doit montrer le bénéfice net après garantie. Il s'agit d'une règle d'équilibrage du jeu (garantie commerciale/contrat de ligne), pas d'une promesse de rentabilité dans le transport réel.
+
+## 5. Calcul financier
 
 Chiffre d'affaires = somme des billets effectivement vendus.
 
@@ -82,7 +95,7 @@ Bénéfice net = chiffre d'affaires - carburant - salaires - péages/frontières
 
 Le jeu affiche les deux montants. Les places vides ne rapportent rien, mais une occupation partielle ne doit pas rendre systématiquement le voyage déficitaire.
 
-## 5. Classes de service
+## 6. Classes de service
 
 - Économique : sièges standards, services essentiels.
 - Confort : sièges plus confortables, climatisation et équipements installés.
@@ -90,6 +103,6 @@ Le jeu affiche les deux montants. Les places vides ne rapportent rien, mais une 
 
 La classe vendue doit correspondre à la configuration réellement installée dans le car.
 
-## 6. Statut
+## 7. Statut
 
-Catalogue, capacités cibles, tarifs et principes d'équilibrage documentés. Les véhicules, concessionnaire, réservations, simulation financière et lignes ne sont pas encore implémentés dans Unity. Les prix devront être testés en jeu avant toute promesse d'équilibrage définitif.
+Catalogue, capacités cibles, tarifs, garantie internationale de 500 000 FCFA et principes d'équilibrage documentés. Les véhicules, concessionnaire, réservations, simulation financière et lignes ne sont pas encore implémentés dans Unity. Les prix devront être testés en jeu avant toute promesse d'équilibrage définitif.
