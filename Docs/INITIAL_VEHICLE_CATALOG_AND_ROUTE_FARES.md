@@ -78,8 +78,8 @@ Le tarif VIP n'est proposé que si le car possède réellement les équipements 
 
 **Objectif de conception : au moins 500 000 FCFA de bénéfice net pour chaque voyage international terminé avec au moins un passager embarqué.**
 
-Le calcul est effectué à la clôture du voyage :
-- bénéfice provisoire = billets effectivement encaissés - dépenses d'exploitation déjà débitées ;
+Le calcul est effectué à la clôture du voyage. Les frais frontaliers réglés séparément sont inclus dans les dépenses de voyage au moment de la clôture :
+- bénéfice provisoire = billets effectivement encaissés - dépenses d'exploitation déjà débitées - frais frontaliers effectivement payés ;
 - si le résultat est inférieur à 500 000 FCFA, une garantie commerciale internationale complète la différence ;
 - si le résultat atteint ou dépasse 500 000 FCFA, aucun complément n'est versé ;
 - la garantie est comptabilisée séparément dans l'historique financier, sans modifier le prix payé par les passagers ;
