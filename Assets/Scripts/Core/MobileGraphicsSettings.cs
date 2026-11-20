@@ -65,7 +65,7 @@ public sealed class MobileGraphicsSettings : MonoBehaviour
                 break;
 
             case Preset.High:
-                Application.targetFrameRate = 60;
+                Application.targetFrameRate = 30;
                 QualitySettings.shadows = ShadowQuality.All;
                 QualitySettings.shadowDistance = 65f;
                 QualitySettings.lodBias = 1f;
