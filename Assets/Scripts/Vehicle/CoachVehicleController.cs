@@ -25,6 +25,8 @@ public sealed class CoachVehicleController : MonoBehaviour
     private float oilPressureBar = 4.2f;
     private float airPressureBar = 8.2f;
     private int engineUpgradeLevel;
+    private Light leftHeadlight, rightHeadlight;
+    public bool HeadlightsOn { get; private set; }
 
     public float SpeedKph => body == null ? 0f : body.linearVelocity.magnitude * 3.6f;
     public float EngineRpm => engineRpm;
@@ -88,6 +90,16 @@ public sealed class CoachVehicleController : MonoBehaviour
     }
 
     public void SetIndicators(bool left, bool right) { LeftIndicatorOn = left; RightIndicatorOn = right && !left; }
+    public void ToggleLeftIndicator() { bool next = !LeftIndicatorOn; SetIndicators(next, false); }
+    public void ToggleRightIndicator() { bool next = !RightIndicatorOn; SetIndicators(false, next); }
+    public void ConfigureHeadlights(Light left, Light right) { leftHeadlight = left; rightHeadlight = right; SetHeadlights(false); }
+    public void ToggleHeadlights() { SetHeadlights(!HeadlightsOn); }
+    private void SetHeadlights(bool enabled)
+    {
+        HeadlightsOn = enabled;
+        if (leftHeadlight != null) leftHeadlight.enabled = enabled;
+        if (rightHeadlight != null) rightHeadlight.enabled = enabled;
+    }
     public void SetHighBeam(bool enabled) { HighBeamOn = enabled; }
     public void SetSeatbelt(bool fastened) { SeatbeltFastened = fastened; }
     public float GetMaximumRpm() { return 2400f + engineUpgradeLevel * 100f; }
