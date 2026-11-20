@@ -72,6 +72,21 @@ Source-level structural checks do not prove that the project compiles or runs. N
 - Exemple : un itinéraire d'environ 600 km peut afficher une durée simulée d'environ 10 h, tout en visant une session de jeu de l'ordre de 8 à 10 minutes selon les contrôles frontaliers.
 
 
+## Reprise complète du voyage actif (20 novembre 2026)
+
+Le système de sauvegarde de voyage a été étendu dans le code :
+- itinéraire, liste ordonnée des arrêts et frontières ;
+- réservations, billets, sièges, bagages et statut de chaque passager ;
+- prochain numéro de billet et dernier arrêt passagers traité ;
+- index du prochain arrêt de l'itinéraire ;
+- contrôles frontaliers déjà validés, documents contrôlés et frais réellement payés ;
+- statut du trajet, dépenses d'exploitation déjà débitées et indicateurs de résultat ;
+- météo (pluie) et période jour/nuit.
+
+Au démarrage, le jeu tente de reconstruire la session et de réafficher l'itinéraire et le manifeste. Le car est restauré séparément à sa position exacte, moteur coupé et frein de stationnement serré. La sauvegarde est locale via PlayerPrefs, pas cloud.
+
+**Validation restante :** aucune compilation Unity ni fermeture forcée sur Android n'a encore été exécutée. Il faut tester les allers-retours d'arrêt, les frontières, le solde, les billets, la reprise après fermeture forcée et la clôture du voyage. L'interface permettant de traiter les arrêts pendant le trajet doit aussi être validée et complétée dans Unity si nécessaire.
+
 ## Sauvegarde automatique et reprise de conduite (20 novembre 2026)
 
 - `ActiveCoachSaveSystem` enregistre localement le point de contrôle du car dans `PlayerPrefs` : position 3D, orientation et niveau de carburant.
