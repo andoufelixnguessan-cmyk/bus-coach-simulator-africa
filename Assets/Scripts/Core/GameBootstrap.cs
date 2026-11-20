@@ -136,6 +136,7 @@ public sealed class GameBootstrap : MonoBehaviour
         root.AddComponent<CoachEngineAudio>().Configure(coach, engineProfile);
         root.AddComponent<CoachCockpit3D>().Configure(root.transform, coach, engineProfile);
         BuildPassengerDoor(root.transform);
+        BuildWipers(root.transform);
     }
 
 
@@ -157,6 +158,33 @@ public sealed class GameBootstrap : MonoBehaviour
         CreatePart(panel.transform, "Door handle", new Vector3(0.55f, -0.18f, 0.27f),
             new Vector3(0.08f, 0.035f, 0.12f), new Color(0.72f, 0.74f, 0.76f));
         hinge.AddComponent<CoachDoorAnimator>().Configure(coach, panel.transform);
+    }
+
+
+    private void BuildWipers(Transform coachRoot)
+    {
+        CreateTransparentPart(coachRoot, "Front windshield glass", new Vector3(0f, 2.02f, 4.79f),
+            new Vector3(2.24f, 1.42f, 0.035f), new Color(0.24f, 0.43f, 0.52f, 0.22f));
+
+        GameObject leftPivot = new GameObject("Left windshield wiper pivot");
+        leftPivot.transform.SetParent(coachRoot, false);
+        leftPivot.transform.localPosition = new Vector3(-0.42f, 1.40f, 4.83f);
+        GameObject leftArm = CreatePart(leftPivot.transform, "Left wiper arm",
+            new Vector3(0.02f, 0.38f, 0f), new Vector3(0.035f, 0.76f, 0.035f), GetSharedMaterial(new Color(0.045f, 0.05f, 0.055f)));
+        leftArm.transform.localRotation = Quaternion.Euler(0f, 0f, -18f);
+        CreatePart(leftPivot.transform, "Left wiper blade", new Vector3(0.18f, 0.75f, 0f),
+            new Vector3(0.43f, 0.045f, 0.045f), GetSharedMaterial(new Color(0.025f, 0.03f, 0.035f)));
+
+        GameObject rightPivot = new GameObject("Right windshield wiper pivot");
+        rightPivot.transform.SetParent(coachRoot, false);
+        rightPivot.transform.localPosition = new Vector3(0.42f, 1.40f, 4.83f);
+        GameObject rightArm = CreatePart(rightPivot.transform, "Right wiper arm",
+            new Vector3(-0.02f, 0.38f, 0f), new Vector3(0.035f, 0.76f, 0.035f), GetSharedMaterial(new Color(0.045f, 0.05f, 0.055f)));
+        rightArm.transform.localRotation = Quaternion.Euler(0f, 0f, 18f);
+        CreatePart(rightPivot.transform, "Right wiper blade", new Vector3(-0.18f, 0.75f, 0f),
+            new Vector3(0.43f, 0.045f, 0.045f), GetSharedMaterial(new Color(0.025f, 0.03f, 0.035f)));
+
+        coachRoot.gameObject.AddComponent<CoachWiperSystem>().Configure(leftPivot.transform, rightPivot.transform);
     }
 
     private Light CreateIndicatorLight(Transform parent, string lightName, Vector3 localPosition)
