@@ -30,7 +30,7 @@ Tout itinéraire construit par le joueur peut maintenant produire son propre obj
 - les montants sont arrondis aux 500 FCFA les plus proches ; les planchers sont de 5 000 FCFA sur une ligne nationale et 15 000 FCFA sur une ligne internationale ;
 - le statut international est détecté automatiquement à partir des contrôles de frontière ou des pays traversés. Il ne dépend pas d'une case à cocher manuelle.
 
-La création d'un trajet passagers accepte directement un `RouteItinerary` et construit le tarif correspondant. Ainsi, un itinéraire personnalisé traversant une frontière est marqué international et entre dans le calcul de la garantie de bénéfice minimum de 500 000 FCFA à la fin d'un voyage admissible.
+La création d'un trajet passagers accepte directement un `RouteItinerary` et construit le tarif correspondant. Ainsi, un itinéraire personnalisé traversant une frontière est marqué international et entre dans le calcul de la garantie de bénéfice minimum de 500 000 FCFA à la fin d'un voyage admissible. Le gestionnaire frontalier expose aussi le total des frais effectivement payés ; cette somme doit être fournie à la surcharge de clôture du voyage pour que la garantie couvre également ces frais séparés.
 
 Ces tarifs personnalisés sont des paramètres d'équilibrage du jeu, et non des prix de transport réels. Ils devront être ajustés après essais dans le jeu.
 
