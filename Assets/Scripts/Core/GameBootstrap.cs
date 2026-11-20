@@ -168,6 +168,7 @@ public sealed class GameBootstrap : MonoBehaviour
             CreateReverseLight(root.transform, "Rear left reverse lamp", new Vector3(-0.55f, 0.72f, -5.0f)),
             CreateReverseLight(root.transform, "Rear right reverse lamp", new Vector3(0.55f, 0.72f, -5.0f)));
         CoachDashboardProfile engineProfile = CoachDashboardProfile.ForCoach(activeCoachId);
+        coach.ConfigureEngineProfile(engineProfile.IdleRpm, engineProfile.RedlineRpm);
         CoachCabinComfortSystem cabinComfort = root.AddComponent<CoachCabinComfortSystem>();
         cabinComfort.Configure(coach);
         root.AddComponent<CoachEngineAudio>().Configure(coach, engineProfile);
