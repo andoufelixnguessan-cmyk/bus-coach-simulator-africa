@@ -48,3 +48,12 @@ The first-person camera is the default driving view. A landscape HUD button swit
 - Test visibility, safe-area placement, input response, frame time, and sound on the target Android device.
 
 The source was checked for balanced braces and parentheses after integration. This is not a Unity compile or an Android device test.
+
+
+## Mise à jour des commandes extérieures
+
+Le HUD mobile a été réparé et ses commandes ont été repositionnées avec des pivots adaptés afin de rester dans la zone sûre de l'écran paysage. Les commandes disponibles sont maintenant : clignotant gauche, feux de détresse, clignotant droit, feux avant, pleins phares et changement de caméra.
+
+Les clignotants commandent quatre sources lumineuses extérieures (avant/arrière, gauche/droite) avec une cadence de clignotement commune. Les feux de détresse activent les deux côtés et désactivent les clignotants directionnels. Les pleins phares modifient réellement l'intensité des deux projecteurs et le témoin bleu du tableau de bord suit leur état.
+
+**Limite actuelle :** les projecteurs et indicateurs sont encore des lumières Unity de prototype, sans optiques, cabochons, réflecteurs ni matériaux lumineux de production. La vérification de compilation Unity et les essais tactiles sur Android restent à effectuer.
