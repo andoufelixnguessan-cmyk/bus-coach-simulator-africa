@@ -1,6 +1,6 @@
 using UnityEngine;
 
-/// <summary>First-pass coach physics and live instrument data for the driving HUD.</summary>
+/// <summary>Long-distance coach physics, safety interlocks and live instrument telemetry.</summary>
 [RequireComponent(typeof(Rigidbody))]
 public sealed class CoachVehicleController : MonoBehaviour
 {
