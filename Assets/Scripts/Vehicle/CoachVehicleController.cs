@@ -142,11 +142,16 @@ public sealed class CoachVehicleController : MonoBehaviour
     private void SetHeadlights(bool enabled)
     {
         HeadlightsOn = enabled;
+        if (!enabled) HighBeamOn = false;
         if (leftHeadlight != null) leftHeadlight.enabled = enabled;
         if (rightHeadlight != null) rightHeadlight.enabled = enabled;
         ApplyBeamIntensity();
     }
-    public void ToggleHighBeam() { SetHighBeam(!HighBeamOn); }
+    public void ToggleHighBeam()
+    {
+        if (!HeadlightsOn) return;
+        SetHighBeam(!HighBeamOn);
+    }
     public void SetHighBeam(bool enabled)
     {
         HighBeamOn = enabled;
