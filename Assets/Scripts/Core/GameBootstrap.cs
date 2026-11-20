@@ -62,6 +62,7 @@ public sealed class GameBootstrap : MonoBehaviour
         BuildPassengerManifest();
         BuildDeparturePreparation();
         BuildTouchControls();
+        TryRestoreActiveTrip();
     }
 
     private void Update()
@@ -92,6 +93,30 @@ public sealed class GameBootstrap : MonoBehaviour
     {
         if (ActiveCompany != null) CompanySaveSystem.Save(ActiveCompany);
         if (coach != null) ActiveCoachSaveSystem.Save(coach);
+        if (CurrentTripSession != null) ActiveTripSaveSystem.Save(CurrentTripSession);
+    }
+
+    private void TryRestoreActiveTrip()
+    {
+        PlayerTripSession restored;
+        string reason;
+        if (!ActiveTripSaveSystem.TryRestore(ActiveCompany, out restored, out reason))
+        {
+            if (ActiveTripSaveSystem.HasActiveTripSave)
+                Debug.LogWarning("Voyage sauvegardé non repris : " + reason);
+            return;
+        }
+
+        CurrentTripSession = restored;
+        CurrentTripSetup = restored.Setup;
+        if (passengerManifestPanel != null)
+            passengerManifestPanel.Configure(CurrentTripSetup.Passengers, ActiveCompany, ClosePassengerManifest);
+        if (drivingHud != null) drivingHud.SetRouteDisplay(CurrentTripSetup);
+        Time.timeScale = 1f;
+        Debug.Log("Voyage repris : " + CurrentTripSetup.Itinerary.DisplayName +
+            " — prochain arrêt : " + (restored.Progression.NextStop != null
+                ? restored.Progression.NextStop.Name : "destination finale") +
+            ". Les passagers, billets, arrêts et contrôles frontaliers ont été restaurés.");
     }
 
     private void BuildTraffic()
@@ -732,6 +757,7 @@ public sealed class GameBootstrap : MonoBehaviour
         if (departurePreparationCanvas != null) departurePreparationCanvas.SetActive(false);
         if (passengerManifestCanvas != null) passengerManifestCanvas.SetActive(false);
         Time.timeScale = 1f;
+        SaveGameCheckpoint();
         Debug.Log("Départ du car confirmé. Le trajet est maintenant en cours.");
     }
 
