@@ -191,6 +191,43 @@ public sealed class CoachTripOperations
         return true;
     }
 
+    public void CaptureSaveState(PlayerTripSaveData data)
+    {
+        if (data == null) throw new ArgumentNullException("data");
+        data.TripId = TripId;
+        data.CoachId = CoachId;
+        data.TripStatus = (int)Status;
+        data.ChargedOperatingCostsXof = ChargedOperatingCostsXof;
+        data.SafeDrivingBonusXof = SafeDrivingBonusXof;
+        data.InternationalProfitGuaranteeXof = InternationalProfitGuaranteeXof;
+    }
+
+    public bool RestoreSaveState(PlayerTripSaveData data, out string reason)
+    {
+        reason = string.Empty;
+        if (data == null || data.TripId != TripId || data.CoachId != CoachId ||
+            !Enum.IsDefined(typeof(CoachTripStatus), data.TripStatus) ||
+            data.ChargedOperatingCostsXof < 0L || data.SafeDrivingBonusXof < 0L ||
+            data.InternationalProfitGuaranteeXof < 0L)
+        {
+            reason = "L'état financier ou opérationnel du voyage sauvegardé est invalide.";
+            return false;
+        }
+
+        CoachTripStatus restoredStatus = (CoachTripStatus)data.TripStatus;
+        if (restoredStatus != CoachTripStatus.OnRoad)
+        {
+            reason = "Seul un voyage effectivement parti peut être repris automatiquement.";
+            return false;
+        }
+
+        Status = restoredStatus;
+        ChargedOperatingCostsXof = data.ChargedOperatingCostsXof;
+        SafeDrivingBonusXof = data.SafeDrivingBonusXof;
+        InternationalProfitGuaranteeXof = data.InternationalProfitGuaranteeXof;
+        return true;
+    }
+
     public bool TryCancelBeforeDeparture(out string reason)
     {
         reason = string.Empty;
