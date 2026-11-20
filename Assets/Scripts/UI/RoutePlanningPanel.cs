@@ -226,7 +226,7 @@ public sealed class RoutePlanningPanel : MonoBehaviour
             routeText.text += "\nDistance estimée : " + km.ToString("N0") + " km" +
                 "\nDurée estimée : " + FormatDuration(preview.EstimatedTotalMinutes) +
                 "\nFrais frontière : " + borderFees.ToString("N0") + " FCFA" +
-                (fare == null ? "" : "\nTarif éco indicatif : " + fare.EconomyFareXof.ToString("N0") + " FCFA / passager");
+                (fare == null ? "" : "\nTarif éco indicatif : " + fare.EconomyXof.ToString("N0") + " FCFA / passager");
         }
     }
 
