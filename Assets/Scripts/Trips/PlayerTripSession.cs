@@ -20,6 +20,7 @@ public sealed class PlayerTripSession
             throw new ArgumentNullException("company");
 
         Setup = setup;
+        companyForSession = company;
         Operations = new CoachTripOperations(setup.Passengers.TripId, setup.CoachId);
         Progression = new RouteProgressionController(setup, Operations, company);
     }
