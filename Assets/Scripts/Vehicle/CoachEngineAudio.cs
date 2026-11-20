@@ -31,6 +31,13 @@ public sealed class CoachEngineAudio : MonoBehaviour
     private void Update()
     {
         if (vehicle == null || profile == null) return;
+        if (!vehicle.EngineRunning)
+        {
+            rpm = 0f;
+            load = 0f;
+            source.volume = 0f;
+            return;
+        }
         rpm = vehicle.EngineRpm;
         load = Mathf.Clamp01((vehicle.EngineRpmNormalized * 0.35f) + 0.15f);
         int upgrade = Mathf.Clamp(Mathf.RoundToInt((vehicle.GetMaximumRpm() - 2400f) / 100f), 0, 5);
@@ -44,7 +51,7 @@ public sealed class CoachEngineAudio : MonoBehaviour
         float baseTone = p == null ? 49f : p.EngineToneHz;
         float rumble = p == null ? 0.6f : p.EngineRumble;
         float frequency = baseTone * Mathf.Clamp(rpm / 850f, 0.72f, 2.9f);
-        float amplitude = 0.12f + load * 0.12f;
+        float amplitude = rpm <= 1f ? 0f : 0.12f + load * 0.12f;
         for (int i = 0; i < data.Length; i++)
         {
             phaseA += 2f * Mathf.PI * frequency / SampleRate;
