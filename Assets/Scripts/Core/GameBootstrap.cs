@@ -24,6 +24,7 @@ public sealed class GameBootstrap : MonoBehaviour
     private CoachVehicleController coach;
     private MobileDriveInput input;
     private CameraFollow cameraFollow;
+    private MobileGraphicsSettings graphicsSettings;
 
     private void Start()
     {
@@ -151,8 +152,10 @@ public sealed class GameBootstrap : MonoBehaviour
     {
         var inputObject = new GameObject("Mobile Drive Input");
         input = inputObject.AddComponent<MobileDriveInput>();
+        graphicsSettings = inputObject.AddComponent<MobileGraphicsSettings>();
+        graphicsSettings.ApplySavedPreset();
         var touch = inputObject.AddComponent<PrototypeTouchControls>();
-        touch.Configure(coach, input);
+        touch.Configure(coach, input, graphicsSettings);
     }
 
     private static GameObject CreateBlock(string objectName, Vector3 position, Vector3 scale, Color color)
