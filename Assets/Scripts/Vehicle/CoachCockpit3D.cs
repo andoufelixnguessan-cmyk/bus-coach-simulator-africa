@@ -125,7 +125,7 @@ public sealed class CoachCockpit3D : MonoBehaviour
         seatbeltVisual = new GameObject("Driver three-point seatbelt");
         seatbeltVisual.transform.SetParent(root, false);
         GameObject strap = Part(seatbeltVisual.transform, "Seatbelt webbing",
-            new Vector3(-.36f, 1.08f, 2.82f), new Vector3(.055f, .92f, .045f), needleMat);
+            new Vector3(-.36f, 1.08f, 2.82f), new Vector3(.055f, .92f, .045f), white);
         strap.transform.localRotation = Quaternion.Euler(0f, 0f, -34f);
         Part(seatbeltVisual.transform, "Seatbelt buckle",
             new Vector3(-.12f, .70f, 2.48f), new Vector3(.12f, .10f, .07f), trim);
