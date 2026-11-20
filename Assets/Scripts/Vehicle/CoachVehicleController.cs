@@ -54,6 +54,19 @@ public sealed class CoachVehicleController : MonoBehaviour
         handbrake = applyHandbrake;
     }
 
+    public void Configure(WheelCollider fl, WheelCollider fr, WheelCollider rl, WheelCollider rr,
+        float driveTorque, float brakeTorque, float steeringAngle, float speedLimitKph)
+    {
+        frontLeft = fl;
+        frontRight = fr;
+        rearLeft = rl;
+        rearRight = rr;
+        motorTorque = Mathf.Max(0f, driveTorque);
+        serviceBrakeTorque = Mathf.Max(0f, brakeTorque);
+        maxSteerAngle = Mathf.Clamp(steeringAngle, 5f, 45f);
+        maxSpeedKph = Mathf.Max(10f, speedLimitKph);
+    }
+
     private void FixedUpdate()
     {
         if (!WheelsAssigned()) return;
