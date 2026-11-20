@@ -401,18 +401,18 @@ public sealed class GameBootstrap : MonoBehaviour
             GameObject upperLeftPivot = new GameObject("Upper deck left windshield wiper pivot");
             upperLeftPivot.transform.SetParent(coachRoot, false);
             upperLeftPivot.transform.localPosition = new Vector3(-0.42f, 2.92f, 4.83f);
-            GameObject upperLeftArm = CreatePart(upperLeftPivot.transform, "Upper deck left wiper arm",
+            CreatePart(upperLeftPivot.transform, "Upper deck left wiper arm",
                 new Vector3(0.02f, 0.30f, 0f), new Vector3(0.035f, 0.60f, 0.035f), GetSharedMaterial(new Color(0.045f, 0.05f, 0.055f)));
-            upperLeftArm.transform.localRotation = Quaternion.Euler(0f, 0f, -18f);
+            upperLeftPivot.transform.Find("Upper deck left wiper arm").localRotation = Quaternion.Euler(0f, 0f, -18f);
             CreatePart(upperLeftPivot.transform, "Upper deck left wiper blade", new Vector3(0.18f, 0.60f, 0f),
                 new Vector3(0.43f, 0.045f, 0.045f), GetSharedMaterial(new Color(0.025f, 0.03f, 0.035f)));
 
             GameObject upperRightPivot = new GameObject("Upper deck right windshield wiper pivot");
             upperRightPivot.transform.SetParent(coachRoot, false);
             upperRightPivot.transform.localPosition = new Vector3(0.42f, 2.92f, 4.83f);
-            GameObject upperRightArm = CreatePart(upperRightPivot.transform, "Upper deck right wiper arm",
+            CreatePart(upperRightPivot.transform, "Upper deck right wiper arm",
                 new Vector3(-0.02f, 0.30f, 0f), new Vector3(0.035f, 0.60f, 0.035f), GetSharedMaterial(new Color(0.045f, 0.05f, 0.055f)));
-            upperRightArm.transform.localRotation = Quaternion.Euler(0f, 0f, 18f);
+            upperRightPivot.transform.Find("Upper deck right wiper arm").localRotation = Quaternion.Euler(0f, 0f, 18f);
             CreatePart(upperRightPivot.transform, "Upper deck right wiper blade", new Vector3(-0.18f, 0.60f, 0f),
                 new Vector3(0.43f, 0.045f, 0.045f), GetSharedMaterial(new Color(0.025f, 0.03f, 0.035f)));
             wiperPivots.Add(upperLeftPivot.transform);
