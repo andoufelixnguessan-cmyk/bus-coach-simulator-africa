@@ -31,3 +31,20 @@ Le prototype utilise un moteur diesel synthétique temporaire pour valider la va
 
 ## État de validation
 Les scripts constituent une première base technique. Le combiné n'est pas encore un tableau de bord 3D de cockpit, les valeurs de diagnostic sont en partie simulées, les clignotants/phares ne sont pas encore reliés à des commandes de conduite, et le son synthétique ne remplace pas des enregistrements moteur. Compilation Unity, contrôle visuel, équilibrage et essais Android restent obligatoires.
+
+
+## Prototype cockpit integration (implemented in source)
+
+The current driving test scene now generates a first-person cockpit with a steering wheel, dashboard shell, center console, windshield glass, analog gauge faces with animated needles, and a digital cluster variant for coach profiles that request it. The steering wheel follows the steering input. Speed, RPM, fuel and coolant values animate the instrument display. Indicator lamps flash and the warning lamps are driven by the available vehicle state.
+
+The first-person camera is the default driving view. A landscape HUD button switches between cockpit and exterior chase camera. Separate touch buttons toggle left/right indicators and headlights; two temporary spotlights respond to the headlight switch. The generated cockpit is a functional low-poly prototype, not final photorealistic art or a model copied from a commercial simulator.
+
+## Remaining production work
+
+- Add model-specific, high-quality cockpit meshes, materials, labels, steering column, mirrors, pedals and dashboard layouts.
+- Connect all vehicle switches to full systems (wipers, hazard lights, low/high beams, doors, air conditioning, radio and other equipment).
+- Replace simulated diagnostics and the synthesized diesel tone with validated mechanical data and original/licensed engine recordings.
+- Add a full dashboard start-up self-test, realistic warning thresholds, air-brake pressure build-up and blink synchronization with exterior indicator lamps.
+- Test visibility, safe-area placement, input response, frame time, and sound on the target Android device.
+
+The source was checked for balanced braces and parentheses after integration. This is not a Unity compile or an Android device test.
