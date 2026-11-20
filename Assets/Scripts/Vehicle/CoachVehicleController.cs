@@ -45,6 +45,7 @@ public sealed class CoachVehicleController : MonoBehaviour
     public bool AbsWarning => false;
     public bool ParkingBrakeApplied => handbrake;
     public bool SeatbeltFastened { get; private set; } = true;
+    public bool PassengerDoorOpen { get; private set; }
     public bool LeftIndicatorOn { get; private set; }
     public bool RightIndicatorOn { get; private set; }
     public bool HighBeamOn { get; private set; }
@@ -170,6 +171,14 @@ public sealed class CoachVehicleController : MonoBehaviour
         return true;
     }
     public void SetSeatbelt(bool fastened) { SeatbeltFastened = fastened; }
+
+    /// <summary>Passenger doors may only be operated while the coach is fully stopped.</summary>
+    public bool TogglePassengerDoor()
+    {
+        if (SpeedKph > 1f) return false;
+        PassengerDoorOpen = !PassengerDoorOpen;
+        return true;
+    }
     public float GetMaximumRpm() { return 2400f + engineUpgradeLevel * 100f; }
 
     private void FixedUpdate()
