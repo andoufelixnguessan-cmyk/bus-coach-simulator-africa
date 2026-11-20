@@ -120,8 +120,8 @@ public sealed class CoachHudIcon : Graphic
                 Circle(vh, P(.38f,-.06f), unit*.11f, thickness, 14);
                 break;
             case IconType.FuelPump:
-                Rect(vh, P(-.34f,0f), unit*.42f, unit*.74f, thickness);
-                Rect(vh, P(-.34f,.24f), unit*.24f, unit*.15f, thickness*.7f);
+                Polyline(vh, new[] { P(-.55f,-.48f), P(-.55f,.48f), P(-.10f,.48f), P(-.10f,-.48f), P(-.55f,-.48f) }, thickness);
+                Polyline(vh, new[] { P(-.46f,.30f), P(-.20f,.30f), P(-.20f,.12f), P(-.46f,.12f), P(-.46f,.30f) }, thickness*.7f);
                 Line(vh, P(-.12f,.26f), P(.24f,.26f), thickness);
                 Line(vh, P(.24f,.26f), P(.36f,.08f), thickness);
                 Line(vh, P(.36f,.08f), P(.36f,-.34f), thickness);
