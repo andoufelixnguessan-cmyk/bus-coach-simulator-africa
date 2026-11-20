@@ -82,18 +82,22 @@ public sealed class GameBootstrap : MonoBehaviour
 
     private void BuildCoach()
     {
-        var root = new GameObject("Intercity Coach - Fleet 01");
+        string activeCoachId = ActiveCompany != null && ActiveCompany.OwnedCoachIds != null &&
+            ActiveCompany.OwnedCoachIds.Count > 0 ? ActiveCompany.OwnedCoachIds[0] : CoachEconomy.StartingCoachId;
+        CoachDefinition activeCoachDefinition = CoachEconomy.FindCoach(activeCoachId);
+        bool doubleDeck = activeCoachDefinition != null && activeCoachDefinition.MinimumWheelCount >= 10;
+        var root = new GameObject(doubleDeck ? "Double-decker Coach - Fleet 01" : "Intercity Coach - Fleet 01");
         root.transform.position = AfricanRoadWorldBuilder.GetLanePoint(3f, 2.15f) + Vector3.up * 0.15f;
         root.transform.rotation = AfricanRoadWorldBuilder.GetRoadRotation(3f, true);
 
         var body = root.AddComponent<Rigidbody>();
-        body.mass = 14000f;
+        body.mass = doubleDeck ? 19000f : 14000f;
         body.drag = 0.04f;
         body.angularDrag = 1.8f;
         body.interpolation = RigidbodyInterpolation.Interpolate;
         var hull = root.AddComponent<BoxCollider>();
-        hull.size = new Vector3(2.45f, 2.85f, 9.8f);
-        hull.center = new Vector3(0f, 1.35f, 0f);
+        hull.size = new Vector3(2.45f, doubleDeck ? 4.45f : 2.85f, 9.8f);
+        hull.center = new Vector3(0f, doubleDeck ? 2.05f : 1.35f, 0f);
 
         CreatePart(root.transform, "Lower coach body", new Vector3(0f, 0.55f, 0f), new Vector3(2.45f, 1.05f, 9.8f), new Color(0.83f, 0.84f, 0.82f));
         CreatePart(root.transform, "Coach roof", new Vector3(0f, 2.72f, 0f), new Vector3(2.45f, 0.22f, 9.8f), new Color(0.78f, 0.8f, 0.79f));
@@ -110,20 +114,37 @@ public sealed class GameBootstrap : MonoBehaviour
             CreatePart(root.transform, "Right passenger window", new Vector3(1.235f, 2.05f, z), new Vector3(0.025f, 0.82f, 0.78f), new Color(0.13f, 0.25f, 0.31f));
         }
         BuildPassengerSeats(root.transform);
+        if (doubleDeck)
+        {
+            BuildDoubleDeckUpperBody(root.transform);
+            BuildUpperDeckPassengerSeats(root.transform);
+        }
         BuildCoachExteriorDetails(root.transform);
 
         CreatePart(root.transform, "Front bumper", new Vector3(0f, 0.55f, 4.98f), new Vector3(2.4f, 0.25f, 0.18f), new Color(0.08f, 0.09f, 0.1f));
         CreatePart(root.transform, "Rear bumper", new Vector3(0f, 0.55f, -4.98f), new Vector3(2.4f, 0.25f, 0.18f), new Color(0.08f, 0.09f, 0.1f));
 
+        float firstRearAxleZ = doubleDeck ? -1.85f : -3.05f;
         WheelCollider fl = CreateWheel(root.transform, "Front left wheel", new Vector3(-1.18f, 0.48f, 3.05f));
         WheelCollider fr = CreateWheel(root.transform, "Front right wheel", new Vector3(1.18f, 0.48f, 3.05f));
-        WheelCollider rl = CreateWheel(root.transform, "Rear left outer wheel", new Vector3(-1.18f, 0.48f, -3.05f));
-        WheelCollider rr = CreateWheel(root.transform, "Rear right outer wheel", new Vector3(1.18f, 0.48f, -3.05f));
-        WheelCollider rli = CreateWheel(root.transform, "Rear left inner wheel", new Vector3(-0.78f, 0.48f, -3.05f));
-        WheelCollider rri = CreateWheel(root.transform, "Rear right inner wheel", new Vector3(0.78f, 0.48f, -3.05f));
+        WheelCollider rl = CreateWheel(root.transform, "Rear left outer wheel", new Vector3(-1.18f, 0.48f, firstRearAxleZ));
+        WheelCollider rr = CreateWheel(root.transform, "Rear right outer wheel", new Vector3(1.18f, 0.48f, firstRearAxleZ));
+        WheelCollider rli = CreateWheel(root.transform, "Rear left inner wheel", new Vector3(-0.78f, 0.48f, firstRearAxleZ));
+        WheelCollider rri = CreateWheel(root.transform, "Rear right inner wheel", new Vector3(0.78f, 0.48f, firstRearAxleZ));
+        WheelCollider rl2 = null, rr2 = null, rli2 = null, rri2 = null;
+        if (doubleDeck)
+        {
+            rl2 = CreateWheel(root.transform, "Second rear axle left outer wheel", new Vector3(-1.18f, 0.48f, -3.55f));
+            rr2 = CreateWheel(root.transform, "Second rear axle right outer wheel", new Vector3(1.18f, 0.48f, -3.55f));
+            rli2 = CreateWheel(root.transform, "Second rear axle left inner wheel", new Vector3(-0.78f, 0.48f, -3.55f));
+            rri2 = CreateWheel(root.transform, "Second rear axle right inner wheel", new Vector3(0.78f, 0.48f, -3.55f));
+        }
 
         coach = root.AddComponent<CoachVehicleController>();
-        coach.Configure(fl, fr, rl, rr, rli, rri, 11000f, 21000f, 24f, 105f);
+        if (doubleDeck)
+            coach.Configure(fl, fr, rl, rr, rli, rri, rl2, rr2, rli2, rri2, 15000f, 26000f, 22f, 100f);
+        else
+            coach.Configure(fl, fr, rl, rr, rli, rri, 11000f, 21000f, 24f, 105f);
         coach.ApplyEngineUpgrade(0);
         root.AddComponent<CoachFuelSystem>().Configure(coach, ActiveCompany);
         Light leftHeadlamp = CreateHeadlamp(root.transform, "Left headlamp", new Vector3(-0.72f, 0.92f, 4.98f));
@@ -146,8 +167,6 @@ public sealed class GameBootstrap : MonoBehaviour
         coach.ConfigureReverseLights(
             CreateReverseLight(root.transform, "Rear left reverse lamp", new Vector3(-0.55f, 0.72f, -5.0f)),
             CreateReverseLight(root.transform, "Rear right reverse lamp", new Vector3(0.55f, 0.72f, -5.0f)));
-        string activeCoachId = ActiveCompany != null && ActiveCompany.OwnedCoachIds != null &&
-            ActiveCompany.OwnedCoachIds.Count > 0 ? ActiveCompany.OwnedCoachIds[0] : CoachEconomy.StartingCoachId;
         CoachDashboardProfile engineProfile = CoachDashboardProfile.ForCoach(activeCoachId);
         CoachCabinComfortSystem cabinComfort = root.AddComponent<CoachCabinComfortSystem>();
         cabinComfort.Configure(coach);
