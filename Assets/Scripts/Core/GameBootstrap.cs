@@ -32,6 +32,7 @@ public sealed class GameBootstrap : MonoBehaviour
     private CoachPassengerManifestPanel passengerManifestPanel;
     private GameObject departurePreparationCanvas;
     private CoachDeparturePreparationPanel departurePreparationPanel;
+    private float checkpointSaveTimer;
 
     private void Awake()
     {
@@ -54,6 +55,8 @@ public sealed class GameBootstrap : MonoBehaviour
         AfricanRoadWorldBuilder.BuildStarterCorridor();
         BuildTraffic();
         BuildCoach();
+        if (ActiveCoachSaveSystem.TryRestore(coach))
+            Debug.Log("Point de reprise chargé : le car a retrouvé sa position sauvegardée. Moteur coupé et frein de stationnement serré.");
         BuildCamera();
         BuildRoutePlanning();
         BuildPassengerManifest();
@@ -66,16 +69,29 @@ public sealed class GameBootstrap : MonoBehaviour
         // Bridge simultaneous mobile touch input to the active coach physics controller.
         if (coach != null && input != null)
             coach.SetInputs(input.Steering, input.Throttle, input.Brake, input.Handbrake);
+
+        checkpointSaveTimer += Time.unscaledDeltaTime;
+        if (checkpointSaveTimer >= 3f)
+        {
+            checkpointSaveTimer = 0f;
+            SaveGameCheckpoint();
+        }
     }
 
     private void OnApplicationPause(bool paused)
     {
-        if (paused && ActiveCompany != null) CompanySaveSystem.Save(ActiveCompany);
+        if (paused) SaveGameCheckpoint();
     }
 
     private void OnApplicationQuit()
     {
+        SaveGameCheckpoint();
+    }
+
+    private void SaveGameCheckpoint()
+    {
         if (ActiveCompany != null) CompanySaveSystem.Save(ActiveCompany);
+        if (coach != null) ActiveCoachSaveSystem.Save(coach);
     }
 
     private void BuildTraffic()
