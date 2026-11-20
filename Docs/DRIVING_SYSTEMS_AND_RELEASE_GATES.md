@@ -62,3 +62,11 @@ Source-level structural checks do not prove that the project compiles or runs. N
 - Le départ ne peut être validé que si la checklist est complète, si au moins un passager est embarqué et si l'entreprise peut payer les dépenses calculées. Le statut du trajet passe alors à `OnRoad`.
 - Les coûts affichés sont des estimations provisoires d'équilibrage du jeu, pas des tarifs réels. Le traitement interactif des arrêts successifs et des contrôles frontaliers dans le HUD reste à intégrer.
 - Compilation Unity et tests sur appareil non effectués à ce stade.
+
+
+## Durée du voyage et temps réel du joueur (20 novembre 2026)
+
+- La durée en heures/minutes affichée dans le planificateur représente le temps estimé du voyage dans l'univers simulé ; elle ne doit jamais être interprétée comme une obligation de jeu en temps réel.
+- Le planificateur distingue maintenant cette durée simulée d'un objectif indicatif de session joueur : environ 8 minutes pour 600 km, avec une minute supplémentaire par frontière prévue, et une plage de conception plafonnée entre 4 et 30 minutes.
+- Cet objectif est une règle de conception affichée pour éviter les trajets interminables. Il n'est pas encore un chronomètre ni une accélération de simulation effectivement raccordée : la durée réelle devra être mesurée et ajustée après génération des routes complètes et essais dans Unity.
+- Exemple : un itinéraire d'environ 600 km peut afficher une durée simulée d'environ 10 h, tout en visant une session de jeu de l'ordre de 8 à 10 minutes selon les contrôles frontaliers.
