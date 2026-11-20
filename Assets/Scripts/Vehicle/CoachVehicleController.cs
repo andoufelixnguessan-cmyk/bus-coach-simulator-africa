@@ -5,7 +5,7 @@ using UnityEngine;
 public sealed class CoachVehicleController : MonoBehaviour
 {
     [Header("Wheel colliders")]
-    [SerializeField] private WheelCollider frontLeft, frontRight, rearLeft, rearRight;
+    [SerializeField] private WheelCollider frontLeft, frontRight, rearLeft, rearRight, rearLeftInner, rearRightInner;
     [Header("Vehicle tuning")]
     [SerializeField, Min(0f)] private float motorTorque = 4200f;
     [SerializeField, Min(0f)] private float serviceBrakeTorque = 8500f;
@@ -83,9 +83,10 @@ public sealed class CoachVehicleController : MonoBehaviour
     }
 
     public void Configure(WheelCollider fl, WheelCollider fr, WheelCollider rl, WheelCollider rr,
-        float driveTorque, float brakeTorque, float steeringAngle, float speedLimitKph)
+        WheelCollider rli, WheelCollider rri, float driveTorque, float brakeTorque, float steeringAngle, float speedLimitKph)
     {
         frontLeft = fl; frontRight = fr; rearLeft = rl; rearRight = rr;
+        rearLeftInner = rli; rearRightInner = rri;
         motorTorque = Mathf.Max(0f, driveTorque);
         serviceBrakeTorque = Mathf.Max(0f, brakeTorque);
         maxSteerAngle = Mathf.Clamp(steeringAngle, 5f, 45f);
@@ -194,14 +195,17 @@ public sealed class CoachVehicleController : MonoBehaviour
         float torque = EngineRunning && !safetyInterlock ? motorTorque * throttleInput * speedFactor : 0f;
         frontLeft.steerAngle = steeringInput * maxSteerAngle;
         frontRight.steerAngle = steeringInput * maxSteerAngle;
-        rearLeft.motorTorque = torque * 0.5f;
-        rearRight.motorTorque = torque * 0.5f;
+        rearLeft.motorTorque = torque * 0.25f;
+        rearRight.motorTorque = torque * 0.25f;
+        rearLeftInner.motorTorque = torque * 0.25f;
+        rearRightInner.motorTorque = torque * 0.25f;
         float brake = brakeInput * serviceBrakeTorque;
         frontLeft.brakeTorque = brake; frontRight.brakeTorque = brake;
-        rearLeft.brakeTorque = brake + (handbrake ? handbrakeTorque : 0f);
-        rearRight.brakeTorque = brake + (handbrake ? handbrakeTorque : 0f);
+        float rearBrake = brake + (handbrake ? handbrakeTorque : 0f);
+        rearLeft.brakeTorque = rearBrake; rearRight.brakeTorque = rearBrake;
+        rearLeftInner.brakeTorque = rearBrake; rearRightInner.brakeTorque = rearBrake;
         body.AddForce(-transform.up * downforce * body.linearVelocity.magnitude);
     }
 
-    private bool WheelsAssigned() => frontLeft != null && frontRight != null && rearLeft != null && rearRight != null;
+    private bool WheelsAssigned() => frontLeft != null && frontRight != null && rearLeft != null && rearRight != null && rearLeftInner != null && rearRightInner != null;
 }
