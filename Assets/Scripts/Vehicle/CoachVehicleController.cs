@@ -31,6 +31,8 @@ public sealed class CoachVehicleController : MonoBehaviour
     public bool HeadlightsOn { get; private set; }
     public bool HazardLightsOn { get; private set; }
 
+    public bool EngineRunning { get; private set; }
+    public float SteeringInput => steeringInput;
     public float SpeedKph => body == null ? 0f : body.linearVelocity.magnitude * 3.6f;
     public float EngineRpm => engineRpm;
     public float EngineRpmNormalized => Mathf.InverseLerp(600f, GetMaximumRpm(), engineRpm);
@@ -39,7 +41,7 @@ public sealed class CoachVehicleController : MonoBehaviour
     public float OilPressureBar => oilPressureBar;
     public float AirPressureBar => airPressureBar;
     public float BatteryVoltage => 24.2f;
-    public bool EngineWarning => coolantTemperatureC >= 105f || oilPressureBar < 1.2f;
+    public bool EngineWarning => EngineRunning && (coolantTemperatureC >= 105f || oilPressureBar < 1.2f);
     public bool AbsWarning => false;
     public bool ParkingBrakeApplied => handbrake;
     public bool SeatbeltFastened { get; private set; } = true;
@@ -57,13 +59,16 @@ public sealed class CoachVehicleController : MonoBehaviour
 
     private void Update()
     {
-        float targetRpm = 650f + throttleInput * 1050f + Mathf.Clamp(SpeedKph * 12f, 0f, 1150f);
-        if (SpeedKph < 1f && throttleInput < 0.05f) targetRpm = 650f;
-        engineRpm = Mathf.Lerp(engineRpm, Mathf.Clamp(targetRpm, 600f, GetMaximumRpm()), Time.deltaTime * 2.4f);
-        if (throttleInput > 0.2f && SpeedKph > 4f)
+        float targetRpm = EngineRunning
+            ? 650f + throttleInput * 1050f + Mathf.Clamp(SpeedKph * 12f, 0f, 1150f)
+            : 0f;
+        if (EngineRunning && SpeedKph < 1f && throttleInput < 0.05f) targetRpm = 650f;
+        engineRpm = Mathf.Lerp(engineRpm, EngineRunning ? Mathf.Clamp(targetRpm, 600f, GetMaximumRpm()) : 0f, Time.deltaTime * 2.4f);
+        if (EngineRunning && throttleInput > 0.2f && SpeedKph > 4f)
             fuelPercent = Mathf.Max(0f, fuelPercent - Time.deltaTime * (0.00018f + engineUpgradeLevel * 0.000015f));
-        coolantTemperatureC = Mathf.Lerp(coolantTemperatureC, 82f + throttleInput * 15f, Time.deltaTime * 0.025f);
-        oilPressureBar = Mathf.Lerp(oilPressureBar, 1.5f + engineRpm / 1000f, Time.deltaTime * 0.5f);
+        float targetTemp = EngineRunning ? 82f + throttleInput * 15f : 25f;
+        coolantTemperatureC = Mathf.Lerp(coolantTemperatureC, targetTemp, Time.deltaTime * (EngineRunning ? 0.025f : 0.008f));
+        oilPressureBar = Mathf.Lerp(oilPressureBar, EngineRunning ? 1.5f + engineRpm / 1000f : 0f, Time.deltaTime * 0.5f);
         airPressureBar = Mathf.Lerp(airPressureBar, handbrake ? 8.0f : 8.3f, Time.deltaTime * 0.4f);
         UpdateExteriorIndicators();
     }
@@ -151,6 +156,19 @@ public sealed class CoachVehicleController : MonoBehaviour
         if (leftHeadlight != null) leftHeadlight.intensity = intensity;
         if (rightHeadlight != null) rightHeadlight.intensity = intensity;
     }
+    public bool ToggleEngine()
+    {
+        if (EngineRunning)
+        {
+            if (SpeedKph > 1f) return false;
+            EngineRunning = false;
+            throttleInput = 0f;
+            return true;
+        }
+        if (SpeedKph > 1f || fuelPercent <= 0f) return false;
+        EngineRunning = true;
+        return true;
+    }
     public void SetSeatbelt(bool fastened) { SeatbeltFastened = fastened; }
     public float GetMaximumRpm() { return 2400f + engineUpgradeLevel * 100f; }
 
@@ -158,7 +176,7 @@ public sealed class CoachVehicleController : MonoBehaviour
     {
         if (!WheelsAssigned()) return;
         float speedFactor = Mathf.InverseLerp(maxSpeedKph, 0f, SpeedKph);
-        float torque = motorTorque * throttleInput * speedFactor;
+        float torque = EngineRunning ? motorTorque * throttleInput * speedFactor : 0f;
         frontLeft.steerAngle = steeringInput * maxSteerAngle;
         frontRight.steerAngle = steeringInput * maxSteerAngle;
         rearLeft.motorTorque = torque * 0.5f;
