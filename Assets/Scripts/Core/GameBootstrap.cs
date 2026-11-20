@@ -132,6 +132,9 @@ public sealed class GameBootstrap : MonoBehaviour
             CreateIndicatorLight(root.transform, "Rear right indicator", new Vector3(1.02f, 0.94f, -4.99f))
         };
         coach.ConfigureIndicatorLights(indicators);
+        coach.ConfigureBrakeLights(
+            CreateBrakeLight(root.transform, "Rear left brake lamp", new Vector3(-0.78f, 0.92f, -5.0f)),
+            CreateBrakeLight(root.transform, "Rear right brake lamp", new Vector3(0.78f, 0.92f, -5.0f)));
         CoachDashboardProfile engineProfile = CoachDashboardProfile.ForCoach("car-moyen");
         root.AddComponent<CoachEngineAudio>().Configure(coach, engineProfile);
         root.AddComponent<CoachCockpit3D>().Configure(root.transform, coach, engineProfile);
@@ -199,6 +202,21 @@ public sealed class GameBootstrap : MonoBehaviour
         light.color = new Color(1f, 0.42f, 0.04f);
         light.enabled = false;
         return light;
+    }
+
+
+    private Light CreateBrakeLight(Transform parent, string lightName, Vector3 localPosition)
+    {
+        GameObject holder = new GameObject(lightName);
+        holder.transform.SetParent(parent, false);
+        holder.transform.localPosition = localPosition;
+        Light lamp = holder.AddComponent<Light>();
+        lamp.type = LightType.Point;
+        lamp.range = 4.5f;
+        lamp.intensity = 2.4f;
+        lamp.color = new Color(1f, 0.025f, 0.015f);
+        lamp.enabled = false;
+        return lamp;
     }
 
     private Light CreateHeadlamp(Transform parent, string lightName, Vector3 localPosition)
