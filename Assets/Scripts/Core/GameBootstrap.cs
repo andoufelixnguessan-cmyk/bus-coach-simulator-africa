@@ -30,6 +30,8 @@ public sealed class GameBootstrap : MonoBehaviour
     private GameObject routePlannerCanvas;
     private GameObject passengerManifestCanvas;
     private CoachPassengerManifestPanel passengerManifestPanel;
+    private GameObject departurePreparationCanvas;
+    private CoachDeparturePreparationPanel departurePreparationPanel;
 
     private void Awake()
     {
@@ -55,6 +57,7 @@ public sealed class GameBootstrap : MonoBehaviour
         BuildCamera();
         BuildRoutePlanning();
         BuildPassengerManifest();
+        BuildDeparturePreparation();
         BuildTouchControls();
     }
 
@@ -628,12 +631,18 @@ public sealed class GameBootstrap : MonoBehaviour
             ? new PlayerTripSession(setup, ActiveCompany) : null;
         if (passengerManifestPanel != null && setup != null)
             passengerManifestPanel.Configure(setup.Passengers, ActiveCompany, ClosePassengerManifest);
+        if (departurePreparationPanel != null && CurrentTripSession != null)
+            departurePreparationPanel.Configure(CurrentTripSession, ActiveCompany,
+                ShowPassengerManifest, OnTripDeparted);
         if (drivingHud != null) drivingHud.SetRouteDisplay(setup);
         CloseRoutePlanner();
         if (setup != null && setup.Itinerary != null)
+        {
             Debug.Log("Voyage prêt : " + setup.Itinerary.DisplayName + " | " +
                 setup.Itinerary.EstimatedDistanceKm + " km | " +
                 setup.GetPassengerFareXof().ToString("N0") + " FCFA par passager.");
+            ShowPassengerManifest();
+        }
     }
 
     private void BuildPassengerManifest()
@@ -670,7 +679,44 @@ public sealed class GameBootstrap : MonoBehaviour
     private void ClosePassengerManifest()
     {
         if (passengerManifestCanvas != null) passengerManifestCanvas.SetActive(false);
+        if (departurePreparationPanel != null && CurrentTripSession != null &&
+            CurrentTripSession.Status != CoachTripStatus.OnRoad)
+        {
+            departurePreparationPanel.Show();
+            return;
+        }
         Time.timeScale = 1f;
+    }
+
+    private void BuildDeparturePreparation()
+    {
+        departurePreparationCanvas = new GameObject("Departure Preparation Canvas", typeof(RectTransform),
+            typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+        Canvas canvas = departurePreparationCanvas.GetComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 32;
+        CanvasScaler scaler = departurePreparationCanvas.GetComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1600f, 720f);
+        scaler.matchWidthOrHeight = 0.5f;
+
+        GameObject panel = new GameObject("Departure Preparation Panel", typeof(RectTransform));
+        panel.transform.SetParent(departurePreparationCanvas.transform, false);
+        RectTransform rect = panel.GetComponent<RectTransform>();
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+        departurePreparationPanel = panel.AddComponent<CoachDeparturePreparationPanel>();
+        departurePreparationCanvas.SetActive(false);
+    }
+
+    private void OnTripDeparted()
+    {
+        if (departurePreparationCanvas != null) departurePreparationCanvas.SetActive(false);
+        if (passengerManifestCanvas != null) passengerManifestCanvas.SetActive(false);
+        Time.timeScale = 1f;
+        Debug.Log("Départ du car confirmé. Le trajet est maintenant en cours.");
     }
 
     private void BuildTouchControls()
