@@ -46,3 +46,8 @@ Test launch, touch controls, a complete driving session, frame rate, heat, memor
 
 ## Important
 The build workflow only automates compilation. It does not create missing 3D coach assets, realistic roads, traffic, passengers, or finished gameplay. Keep the project in development until a complete playable milestone has been built and tested.
+
+
+## Orientation de jeu — paysage uniquement
+
+BUS & COACH SIMULATOR AFRICA est conçu pour jouer en format paysage sur téléphone. Le pipeline Android fixe LandscapeLeft comme orientation de départ, autorise les deux orientations horizontales (gauche et droite) et désactive les deux orientations portrait. GameBootstrap réapplique aussi ces règles au démarrage pour éviter qu'une rotation du téléphone bascule l'interface en portrait. Tous les futurs écrans (menu, garage, itinéraires, gestion et conduite) doivent conserver une mise en page paysage et respecter MobileSafeAreaFitter. Le réglage est écrit dans le projet, mais doit encore être confirmé après compilation et installation sur Android.
