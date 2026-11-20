@@ -116,7 +116,7 @@ public sealed class CoachCockpit3D : MonoBehaviour
         Needle(tempNeedle,Mathf.InverseLerp(60,120,vehicle.CoolantTemperatureC));
         if(display!=null) display.text=Mathf.RoundToInt(vehicle.SpeedKph)+" km/h\n"+Mathf.RoundToInt(vehicle.EngineRpm)+" rpm   FUEL "+Mathf.RoundToInt(vehicle.FuelPercent)+"%";
         bool flash=Mathf.Repeat(Time.time,.8f)<.4f;
-        bool[] active={vehicle.LeftIndicatorOn&&flash,vehicle.RightIndicatorOn&&flash,vehicle.HighBeamOn,vehicle.ParkingBrakeApplied,!vehicle.SeatbeltFastened,vehicle.AbsWarning,vehicle.EngineWarning};
+        bool[] active={(vehicle.LeftIndicatorOn||vehicle.HazardLightsOn)&&flash,(vehicle.RightIndicatorOn||vehicle.HazardLightsOn)&&flash,vehicle.HighBeamOn&&vehicle.HeadlightsOn,vehicle.ParkingBrakeApplied,!vehicle.SeatbeltFastened,vehicle.AbsWarning,vehicle.EngineWarning};
         for(int i=0;i<lamps.Count;i++) lamps[i].sharedMaterial.color=active[i]?lampOn[i]:new Color(.06f,.07f,.08f);
     }
 
