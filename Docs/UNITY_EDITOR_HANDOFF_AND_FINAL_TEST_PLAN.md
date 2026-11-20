@@ -27,11 +27,11 @@ Dernière mise à jour : 20 novembre 2026.
 
 ## État réel — ne pas confondre code et validation
 
-Le dépôt contient une sauvegarde locale périodique du profil d'entreprise et un checkpoint du car (position, rotation et carburant). À la reprise, le moteur est coupé et le frein de stationnement serré.
+Le dépôt contient une sauvegarde locale périodique du profil d'entreprise et du car (position, rotation et carburant). Le système de voyage actif sauvegarde et reconstruit désormais : itinéraire et ordre des arrêts, billets et états des passagers, numéro de prochain billet, progression du manifeste, prochain arrêt, validations et frais frontaliers, statut opérationnel du trajet et dépenses d'exploitation déjà débitées. À la reprise, le moteur est coupé et le frein de stationnement serré.
 
-**La reprise complète d'une session de voyage n'est pas encore terminée.** Le checkpoint du car ne restaure pas encore le manifeste passagers, l'index du prochain arrêt, les contrôles frontaliers déjà validés, les dépenses du voyage ni l'horloge/météo de la session. Le joueur peut retrouver le car à sa position sauvegardée sans retrouver l'état métier complet du voyage.
+**Cette reprise complète est maintenant implémentée dans le code, mais pas encore validée en exécution.** L'heure de la journée et l'état météo ne sont pas encore restaurés. Il faut vérifier en Unity la sérialisation, la restauration, les soldes et les transitions après fermeture forcée.
 
-La durée de session affichée dans le planificateur est une cible de conception, pas encore une accélération du temps ou une simulation de trajet calibrée.
+La durée de session affichée dans le planificateur est une cible de conception, pas encore une accélération du temps ou une simulation de trajet calibrée. La sauvegarde utilise PlayerPrefs sur l'appareil : elle n'est pas synchronisée dans le cloud et ne survit pas nécessairement à une désinstallation.
 
 ## Conditions de sortie
 
