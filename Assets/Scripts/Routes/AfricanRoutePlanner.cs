@@ -87,7 +87,17 @@ public static class AfricanRoutePlanner
         new City("kano", "Kano", "NG"),
         new City("douala", "Douala", "CM"),
         new City("yaounde", "Yaoundé", "CM"),
-        new City("libreville", "Libreville", "GA")
+        new City("libreville", "Libreville", "GA"),
+        new City("kara", "Kara", "TG"),
+        new City("parakou", "Parakou", "BJ"),
+        new City("abuja", "Abuja", "NG"),
+        new City("port-harcourt", "Port Harcourt", "NG"),
+        new City("koudougou", "Koudougou", "BF"),
+        new City("kayes", "Kayes", "ML"),
+        new City("thies", "Thiès", "SN"),
+        new City("saint-louis", "Saint-Louis", "SN"),
+        new City("garoua", "Garoua", "CM"),
+        new City("takoradi", "Takoradi", "GH") 
     };
 
     // Bidirectional road links. Game estimates only; road geometry and legal corridors need later validation.
@@ -123,7 +133,17 @@ public static class AfricanRoutePlanner
         new RoadSegment("niamey","kano",400,360,"ne-ng-border","Frontière Niger – Nigeria",18000,75, "Maradi", "Jibia", "Katsina").ConfigureLocalities(2, "NE", "NE", "NG"),
         new RoadSegment("lagos","douala",1700,1560,"ng-cm-border","Frontière Nigeria – Cameroun",25000,120, "Benin City", "Enugu", "Calabar", "Kumba", "Buea").ConfigureLocalities(3, "NG", "NG", "NG", "CM", "CM"),
         new RoadSegment("douala","yaounde",245,210, null, null, 0L, 0, "Edea", "Mbankomo"),
-        new RoadSegment("yaounde","libreville",680,630,"cm-ga-border","Frontière Cameroun – Gabon",22000,100, "Ebolowa", "Ambam", "Bitam", "Oyem").ConfigureLocalities(2, "CM", "CM", "GA", "GA")
+        new RoadSegment("yaounde","libreville",680,630,"cm-ga-border","Frontière Cameroun – Gabon",22000,100, "Ebolowa", "Ambam", "Bitam", "Oyem").ConfigureLocalities(2, "CM", "CM", "GA", "GA"),
+        new RoadSegment("lome","kara",420,390, null, null, 0L, 0, "Notsé", "Atakpamé", "Sokodé", "Bafilo"),
+        new RoadSegment("cotonou","parakou",415,390, null, null, 0L, 0, "Bohicon", "Dassa-Zoumè", "Savè"),
+        new RoadSegment("lagos","abuja",750,690, null, null, 0L, 0, "Ore", "Benin City", "Auchi", "Lokoja"),
+        new RoadSegment("lagos","port-harcourt",620,570, null, null, 0L, 0, "Benin City", "Warri", "Ughelli"),
+        new RoadSegment("ouagadougou","koudougou",100,90, null, null, 0L, 0, "Kokologho"),
+        new RoadSegment("bamako","kayes",610,570, null, null, 0L, 0, "Kita", "Kassaro"),
+        new RoadSegment("dakar","thies",70,65, null, null, 0L, 0, "Rufisque", "Diamniadio"),
+        new RoadSegment("thies","saint-louis",190,180, null, null, 0L, 0, "Tivaouane", "Louga"),
+        new RoadSegment("yaounde","garoua",720,660, null, null, 0L, 0, "Bafia", "Bafoussam", "Bamenda", "Wum", "Ngaoundéré"),
+        new RoadSegment("accra","takoradi",230,210, null, null, 0L, 0, "Kasoa", "Winneba", "Cape Coast", "Elmina") 
     };
 
     public static IReadOnlyList<City> AllCities { get { return Cities; } }
