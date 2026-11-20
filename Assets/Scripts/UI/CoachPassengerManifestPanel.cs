@@ -335,6 +335,11 @@ public sealed class CoachPassengerManifestPanel : MonoBehaviour
     private Text CreateText(Transform parent, string value, int size, TextAnchor alignment, Color color)
     {
         GameObject root = CreateObject("Label", parent);
+        RectTransform rect = root.GetComponent<RectTransform>();
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
         Text text = root.AddComponent<Text>();
         text.font = font;
         text.text = value;
