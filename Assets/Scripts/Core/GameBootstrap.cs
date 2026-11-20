@@ -26,6 +26,16 @@ public sealed class GameBootstrap : MonoBehaviour
     private CameraFollow cameraFollow;
     private MobileGraphicsSettings graphicsSettings;
 
+    private void Awake()
+    {
+        // Keep the running game horizontal even if the device is rotated.
+        Screen.autorotateToPortrait = false;
+        Screen.autorotateToPortraitUpsideDown = false;
+        Screen.autorotateToLandscapeLeft = true;
+        Screen.autorotateToLandscapeRight = true;
+        Screen.orientation = ScreenOrientation.LandscapeLeft;
+    }
+
     private void Start()
     {
         Application.targetFrameRate = 30;
