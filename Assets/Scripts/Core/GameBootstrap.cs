@@ -151,6 +151,7 @@ public sealed class GameBootstrap : MonoBehaviour
             CreateCabinLight(root.transform, "Cabin ceiling light front", new Vector3(0f, 2.48f, 1.65f)),
             CreateCabinLight(root.transform, "Cabin ceiling light middle", new Vector3(0f, 2.48f, 0f)),
             CreateCabinLight(root.transform, "Cabin ceiling light rear", new Vector3(0f, 2.48f, -1.65f)));
+        root.AddComponent<CoachCabinComfortSystem>().Configure(coach);
     }
 
 
@@ -428,7 +429,7 @@ public sealed class GameBootstrap : MonoBehaviour
         graphicsSettings = inputObject.AddComponent<MobileGraphicsSettings>();
         graphicsSettings.ApplySavedPreset();
         var touch = inputObject.AddComponent<PrototypeTouchControls>();
-        touch.Configure(coach, input, graphicsSettings, cameraFollow, coach.GetComponent<CoachWiperSystem>(), coach.GetComponent<CoachCabinLightingSystem>());
+        touch.Configure(coach, input, graphicsSettings, cameraFollow, coach.GetComponent<CoachWiperSystem>(), coach.GetComponent<CoachCabinLightingSystem>(), coach.GetComponent<CoachCabinComfortSystem>());
     }
 
     private static GameObject CreateBlock(string objectName, Vector3 position, Vector3 scale, Color color)
