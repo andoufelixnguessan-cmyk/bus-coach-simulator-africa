@@ -4,6 +4,11 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public sealed class CoachVehicleController : MonoBehaviour
 {
+    public enum GearSelection { Park, Reverse, Neutral, Drive }
+    private static readonly float[] UpshiftSpeeds = { 18f, 32f, 48f, 66f, 86f };
+    private static readonly float[] DownshiftSpeeds = { 12f, 24f, 38f, 54f, 74f };
+    private static readonly float[] GearTorqueMultipliers = { 0f, 1.65f, 1.35f, 1.12f, 0.95f, 0.82f, 0.72f };
+    private static readonly float[] RpmPerKphByGear = { 0f, 55f, 36f, 27f, 21f, 17f, 14f };
     [Header("Wheel colliders")]
     [SerializeField] private WheelCollider frontLeft, frontRight, rearLeft, rearRight, rearLeftInner, rearRightInner;
     [Header("Vehicle tuning")]
@@ -25,6 +30,9 @@ public sealed class CoachVehicleController : MonoBehaviour
     private float oilPressureBar = 4.2f;
     private float airPressureBar = 8.2f;
     private int engineUpgradeLevel;
+    private GearSelection gearSelection = GearSelection.Park;
+    private int automaticGear = 1;
+    private float gearShiftCooldown;
     private Light leftHeadlight, rightHeadlight;
     private Light[] indicatorLights = System.Array.Empty<Light>();
     private Light[] brakeLights = System.Array.Empty<Light>();
@@ -44,7 +52,10 @@ public sealed class CoachVehicleController : MonoBehaviour
     public float BatteryVoltage => 24.2f;
     public bool EngineWarning => EngineRunning && (coolantTemperatureC >= 105f || oilPressureBar < 1.2f);
     public bool AbsWarning => false;
-    public bool ParkingBrakeApplied => handbrake;
+    public bool ParkingBrakeApplied => handbrake || gearSelection == GearSelection.Park;
+    public GearSelection SelectedGear => gearSelection;
+    public int AutomaticGear => automaticGear;
+    public string CurrentGearLabel => gearSelection == GearSelection.Drive ? "D" + automaticGear : gearSelection == GearSelection.Reverse ? "R" : gearSelection == GearSelection.Neutral ? "N" : "P";
     public bool SeatbeltFastened { get; private set; } = true;
     public bool PassengerDoorOpen { get; private set; }
     public bool LeftIndicatorOn { get; private set; }
@@ -61,8 +72,12 @@ public sealed class CoachVehicleController : MonoBehaviour
 
     private void Update()
     {
+        UpdateAutomaticGearbox();
+        float rpmFactor = gearSelection == GearSelection.Drive
+            ? RpmPerKphByGear[Mathf.Clamp(automaticGear, 1, 6)]
+            : gearSelection == GearSelection.Reverse ? 30f : 0f;
         float targetRpm = EngineRunning
-            ? 650f + throttleInput * 1050f + Mathf.Clamp(SpeedKph * 12f, 0f, 1150f)
+            ? 650f + Mathf.Clamp(SpeedKph * rpmFactor, 0f, 1500f) + throttleInput * 520f
             : 0f;
         if (EngineRunning && SpeedKph < 1f && throttleInput < 0.05f) targetRpm = 650f;
         engineRpm = Mathf.Lerp(engineRpm, EngineRunning ? Mathf.Clamp(targetRpm, 600f, GetMaximumRpm()) : 0f, Time.deltaTime * 2.4f);
@@ -71,9 +86,36 @@ public sealed class CoachVehicleController : MonoBehaviour
         float targetTemp = EngineRunning ? 82f + throttleInput * 15f : 25f;
         coolantTemperatureC = Mathf.Lerp(coolantTemperatureC, targetTemp, Time.deltaTime * (EngineRunning ? 0.025f : 0.008f));
         oilPressureBar = Mathf.Lerp(oilPressureBar, EngineRunning ? 1.5f + engineRpm / 1000f : 0f, Time.deltaTime * 0.5f);
-        airPressureBar = Mathf.Lerp(airPressureBar, handbrake ? 8.0f : 8.3f, Time.deltaTime * 0.4f);
+        airPressureBar = Mathf.Lerp(airPressureBar, ParkingBrakeApplied ? 8.0f : 8.3f, Time.deltaTime * 0.4f);
         UpdateExteriorIndicators();
         UpdateBrakeLights();
+    }
+
+    private void UpdateAutomaticGearbox()
+    {
+        if (gearShiftCooldown > 0f) gearShiftCooldown -= Time.deltaTime;
+        if (gearSelection != GearSelection.Drive || gearShiftCooldown > 0f) return;
+
+        int index = Mathf.Clamp(automaticGear - 1, 0, UpshiftSpeeds.Length - 1);
+        if (automaticGear < 6 && SpeedKph >= UpshiftSpeeds[index] && engineRpm > 1850f)
+        {
+            automaticGear++;
+            gearShiftCooldown = 0.65f;
+        }
+        else if (automaticGear > 1 && SpeedKph <= DownshiftSpeeds[automaticGear - 2])
+        {
+            automaticGear--;
+            gearShiftCooldown = 0.45f;
+        }
+    }
+
+    /// <summary>Cycles P-R-N-D only while the coach is fully stopped.</summary>
+    public bool CycleGearSelection()
+    {
+        if (SpeedKph > 1f) return false;
+        gearSelection = (GearSelection)(((int)gearSelection + 1) % 4);
+        if (gearSelection == GearSelection.Drive) automaticGear = 1;
+        return true;
     }
 
     public void SetInputs(float steering, float throttle, float brake, bool applyHandbrake = false)
@@ -188,7 +230,7 @@ public sealed class CoachVehicleController : MonoBehaviour
             throttleInput = 0f;
             return true;
         }
-        if (SpeedKph > 1f || fuelPercent <= 0f || PassengerDoorOpen || !SeatbeltFastened) return false;
+        if (SpeedKph > 1f || fuelPercent <= 0f || PassengerDoorOpen || !SeatbeltFastened || (gearSelection != GearSelection.Park && gearSelection != GearSelection.Neutral)) return false;
         EngineRunning = true;
         return true;
     }
@@ -213,7 +255,12 @@ public sealed class CoachVehicleController : MonoBehaviour
         if (!WheelsAssigned()) return;
         float speedFactor = Mathf.InverseLerp(maxSpeedKph, 0f, SpeedKph);
         bool safetyInterlock = PassengerDoorOpen || !SeatbeltFastened;
-        float torque = EngineRunning && !safetyInterlock ? motorTorque * throttleInput * speedFactor : 0f;
+        float direction = gearSelection == GearSelection.Drive ? 1f : gearSelection == GearSelection.Reverse ? -1f : 0f;
+        float ratio = gearSelection == GearSelection.Drive
+            ? GearTorqueMultipliers[Mathf.Clamp(automaticGear, 1, 6)]
+            : gearSelection == GearSelection.Reverse ? 1.45f : 0f;
+        float torque = EngineRunning && !safetyInterlock
+            ? motorTorque * throttleInput * speedFactor * ratio * direction : 0f;
         frontLeft.steerAngle = steeringInput * maxSteerAngle;
         frontRight.steerAngle = steeringInput * maxSteerAngle;
         rearLeft.motorTorque = torque * 0.25f;
@@ -221,8 +268,9 @@ public sealed class CoachVehicleController : MonoBehaviour
         rearLeftInner.motorTorque = torque * 0.25f;
         rearRightInner.motorTorque = torque * 0.25f;
         float brake = brakeInput * serviceBrakeTorque;
-        frontLeft.brakeTorque = brake; frontRight.brakeTorque = brake;
-        float rearBrake = brake + (handbrake ? handbrakeTorque : 0f);
+        float parkBrake = gearSelection == GearSelection.Park ? handbrakeTorque * 1.4f : 0f;
+        frontLeft.brakeTorque = brake + parkBrake; frontRight.brakeTorque = brake + parkBrake;
+        float rearBrake = brake + (handbrake ? handbrakeTorque : 0f) + parkBrake;
         rearLeft.brakeTorque = rearBrake; rearRight.brakeTorque = rearBrake;
         rearLeftInner.brakeTorque = rearBrake; rearRightInner.brakeTorque = rearBrake;
         body.AddForce(-transform.up * downforce * body.linearVelocity.magnitude);
