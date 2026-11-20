@@ -37,6 +37,8 @@ public sealed class CoachVehicleController : MonoBehaviour
     private Light leftHeadlight, rightHeadlight;
     private Light[] indicatorLights = System.Array.Empty<Light>();
     private Light[] brakeLights = System.Array.Empty<Light>();
+    private Light[] tailLights = System.Array.Empty<Light>();
+    private Light[] reverseLights = System.Array.Empty<Light>();
     private float leftHeadlightBaseIntensity = 2.2f;
     public bool HeadlightsOn { get; private set; }
     public bool HazardLightsOn { get; private set; }
@@ -96,6 +98,7 @@ public sealed class CoachVehicleController : MonoBehaviour
         airPressureBar = Mathf.Clamp(airPressureBar + (airSupply - airUse) * Time.deltaTime, 0f, 8.3f);
         UpdateExteriorIndicators();
         UpdateBrakeLights();
+        UpdateReverseLights();
     }
 
     private void UpdateAutomaticGearbox()
@@ -197,6 +200,32 @@ public sealed class CoachVehicleController : MonoBehaviour
             if (brakeLights[i] != null) brakeLights[i].enabled = braking;
     }
 
+
+    public void ConfigureTailLights(params Light[] lights)
+    {
+        tailLights = lights ?? System.Array.Empty<Light>();
+        UpdateTailLights();
+    }
+
+    private void UpdateTailLights()
+    {
+        for (int i = 0; i < tailLights.Length; i++)
+            if (tailLights[i] != null) tailLights[i].enabled = HeadlightsOn;
+    }
+
+    public void ConfigureReverseLights(params Light[] lights)
+    {
+        reverseLights = lights ?? System.Array.Empty<Light>();
+        UpdateReverseLights();
+    }
+
+    private void UpdateReverseLights()
+    {
+        bool reverseActive = EngineRunning && gearSelection == GearSelection.Reverse;
+        for (int i = 0; i < reverseLights.Length; i++)
+            if (reverseLights[i] != null) reverseLights[i].enabled = reverseActive;
+    }
+
     public void ConfigureHeadlights(Light left, Light right)
     {
         leftHeadlight = left; rightHeadlight = right;
@@ -211,6 +240,7 @@ public sealed class CoachVehicleController : MonoBehaviour
         if (leftHeadlight != null) leftHeadlight.enabled = enabled;
         if (rightHeadlight != null) rightHeadlight.enabled = enabled;
         ApplyBeamIntensity();
+        UpdateTailLights();
     }
     public void ToggleHighBeam()
     {
