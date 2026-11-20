@@ -17,10 +17,20 @@ def material(name, color, metallic=0.0, roughness=0.42):
     mat = bpy.data.materials.new(name)
     mat.diffuse_color = (*color, 1.0)
     mat.use_nodes = True
-    bsdf = mat.node_tree.nodes.get("Principled BSDF")
-    bsdf.inputs["Base Color"].default_value = (*color, 1.0)
-    bsdf.inputs["Metallic"].default_value = metallic
-    bsdf.inputs["Roughness"].default_value = roughness
+    # Trouver le shader par son type plutôt que par son nom
+    # (le nom peut varier selon la langue/version de Blender).
+    bsdf = next((node for node in mat.node_tree.nodes
+                 if node.type == 'BSDF_PRINCIPLED'), None)
+    if bsdf is not None:
+        base_color = bsdf.inputs.get("Base Color")
+        metal_input = bsdf.inputs.get("Metallic")
+        rough_input = bsdf.inputs.get("Roughness")
+        if base_color is not None:
+            base_color.default_value = (*color, 1.0)
+        if metal_input is not None:
+            metal_input.default_value = metallic
+        if rough_input is not None:
+            rough_input.default_value = roughness
     return mat
 
 PAINT = material("Carrosserie | Bleu profond métallisé", (0.025, 0.12, 0.30), 0.68, 0.27)
