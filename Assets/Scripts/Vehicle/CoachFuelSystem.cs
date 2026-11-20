@@ -44,9 +44,9 @@ public sealed class CoachFuelSystem : MonoBehaviour
             reason = "Placez le car dans une station-service.";
             return false;
         }
-        if (vehicle.EngineRunning || vehicle.SpeedKph > 1f)
+        if (vehicle.EngineRunning || vehicle.SpeedKph > 1f || !vehicle.ParkingBrakeApplied)
         {
-            reason = "Coupez le moteur et immobilisez le car avant le ravitaillement.";
+            reason = "Coupez le moteur, immobilisez le car et serrez le frein de stationnement.";
             return false;
         }
         long cost = EstimatedFullRefillCostXof;
