@@ -10,23 +10,29 @@ public sealed class PrototypeTouchControls : MonoBehaviour
 {
     private CoachVehicleController vehicle;
     private MobileDriveInput input;
+    private MobileGraphicsSettings graphics;
     private Text speedText;
-    private int lastSpeedRefreshFrame;
+    private Text qualityText;
+    private int lastHudRefreshFrame;
 
-    public void Configure(CoachVehicleController target, MobileDriveInput driveInput)
+    public void Configure(CoachVehicleController target, MobileDriveInput driveInput, MobileGraphicsSettings graphicsSettings)
     {
         vehicle = target;
         input = driveInput;
+        graphics = graphicsSettings;
         BuildCanvas();
     }
 
     private void Update()
     {
-        if (vehicle == null || speedText == null || Time.frameCount - lastSpeedRefreshFrame < 6)
-            return;
+        if (Time.frameCount - lastHudRefreshFrame < 6) return;
+        lastHudRefreshFrame = Time.frameCount;
 
-        lastSpeedRefreshFrame = Time.frameCount;
-        speedText.text = "VITESSE  " + Mathf.RoundToInt(vehicle.SpeedKph) + " km/h";
+        if (vehicle != null && speedText != null)
+            speedText.text = "VITESSE  " + Mathf.RoundToInt(vehicle.SpeedKph) + " km/h";
+
+        if (graphics != null && qualityText != null)
+            qualityText.text = "GRAPHISMES  " + graphics.PresetLabel;
     }
 
     private void BuildCanvas()
@@ -42,10 +48,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         scaler.matchWidthOrHeight = 0.5f;
 
         if (EventSystem.current == null)
-        {
-            var eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
-            eventSystem.transform.SetParent(canvasObject.transform, false);
-        }
+            new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
 
         CreateHoldButton(canvas.transform, "◀", MobileHoldButton.ActionType.SteerLeft,
             new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(42f, 42f), new Vector2(142f, 112f));
@@ -64,6 +67,19 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         speedText = CreateText(speedPanel.transform, "VITESSE  0 km/h", 28, TextAnchor.MiddleLeft);
         speedText.rectTransform.offsetMin = new Vector2(18f, 0f);
         speedText.rectTransform.offsetMax = new Vector2(-8f, 0f);
+
+        var qualityPanel = CreatePanel(canvas.transform, "Graphics preset button",
+            new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-42f, -38f), new Vector2(330f, 70f),
+            new Color(0.025f, 0.055f, 0.09f, 0.78f));
+        var qualityButton = qualityPanel.AddComponent<Button>();
+        qualityButton.targetGraphic = qualityPanel.GetComponent<Image>();
+        qualityButton.onClick.AddListener(CycleGraphics);
+        qualityText = CreateText(qualityPanel.transform, "GRAPHISMES  ÉCONOMIE", 23, TextAnchor.MiddleCenter);
+    }
+
+    private void CycleGraphics()
+    {
+        if (graphics != null) graphics.CyclePreset();
     }
 
     private void CreateHoldButton(Transform parent, string label, MobileHoldButton.ActionType action,
