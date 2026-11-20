@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
@@ -7,20 +8,29 @@ using UnityEngine.SceneManagement;
 
 namespace ATP.Editor
 {
+    /// <summary>
+    /// One-click project preparation and Android APK build commands.
+    /// Preparation is safe to run without Android build modules; APK build requires them.
+    /// </summary>
     public static class AndroidBuildPipeline
     {
         private const string ScenePath = "Assets/Scenes/PrototypeDriving.unity";
         private const string OutputPath = "build/Android/BUS-COACH-SIMULATOR-AFRICA.apk";
+        private const string BundleId = "com.buscoachsimulator.africa";
 
-        public static void BuildAndroid()
+        [MenuItem("BUS & COACH SIMULATOR AFRICA/1 - Prepare Unity project")]
+        public static void PrepareProject()
         {
             Directory.CreateDirectory("Assets/Scenes");
-            Directory.CreateDirectory("build/Android");
 
-            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            var bootstrap = new GameObject("Game Bootstrap");
-            bootstrap.AddComponent<GameBootstrap>();
-            EditorSceneManager.SaveScene(scene, ScenePath);
+            SceneAsset existingScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath);
+            if (existingScene == null)
+            {
+                Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+                GameObject bootstrap = new GameObject("Game Bootstrap");
+                bootstrap.AddComponent<GameBootstrap>();
+                EditorSceneManager.SaveScene(scene, ScenePath);
+            }
 
             EditorBuildSettings.scenes = new[]
             {
@@ -31,8 +41,7 @@ namespace ATP.Editor
             PlayerSettings.productName = "BUS & COACH SIMULATOR AFRICA";
             PlayerSettings.bundleVersion = "0.1.0";
             PlayerSettings.Android.bundleVersionCode = 1;
-            PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, "com.buscoachsimulator.africa");
-            // Landscape-only game: permit both horizontal directions, never portrait.
+            PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, BundleId);
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.LandscapeLeft;
             PlayerSettings.allowedAutorotateToLandscapeLeft = true;
             PlayerSettings.allowedAutorotateToLandscapeRight = true;
@@ -43,9 +52,27 @@ namespace ATP.Editor
             PlayerSettings.runInBackground = false;
             PlayerSettings.stripEngineCode = true;
 
-            EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Android, BuildTarget.Android);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Debug.Log("Projet préparé : scène de conduite, scène de démarrage et paramètres Android/ paysage configurés.");
+            EditorUtility.DisplayDialog("Projet préparé",
+                "La scène de démarrage et les paramètres Android sont configurés.\n\nAucun APK n'a été compilé.",
+                "OK");
+        }
 
-            var options = new BuildPlayerOptions
+        [MenuItem("BUS & COACH SIMULATOR AFRICA/2 - Build Android APK")]
+        public static void BuildAndroid()
+        {
+            PrepareProject();
+            Directory.CreateDirectory("build/Android");
+
+            bool switched = EditorUserBuildSettings.SwitchActiveBuildTarget(
+                BuildTargetGroup.Android, BuildTarget.Android);
+            if (!switched)
+                throw new InvalidOperationException(
+                    "Impossible d'activer Android. Vérifiez que Android Build Support, SDK, NDK et OpenJDK sont installés dans Unity Hub.");
+
+            BuildPlayerOptions options = new BuildPlayerOptions
             {
                 scenes = new[] { ScenePath },
                 locationPathName = OutputPath,
@@ -55,9 +82,12 @@ namespace ATP.Editor
 
             BuildReport report = BuildPipeline.BuildPlayer(options);
             if (report.summary.result != BuildResult.Succeeded)
-                throw new System.Exception("Android build failed: " + report.summary.result + " — " + report.summary.totalErrors + " error(s).");
+                throw new Exception("Android build failed: " + report.summary.result +
+                    " — " + report.summary.totalErrors + " error(s).");
 
-            Debug.Log("Android APK created: " + Path.GetFullPath(OutputPath));
+            Debug.Log("APK Android créé : " + Path.GetFullPath(OutputPath));
+            EditorUtility.DisplayDialog("Compilation terminée",
+                "APK créé :\n" + Path.GetFullPath(OutputPath), "OK");
         }
     }
 }
