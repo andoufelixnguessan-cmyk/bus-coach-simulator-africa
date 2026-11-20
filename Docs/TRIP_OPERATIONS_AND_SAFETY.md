@@ -22,7 +22,7 @@ Ces éléments de sécurité ne sont jamais des achats facultatifs. Le départ e
 5. Arrivée des passagers et clôture.
 6. Prime facultative de conduite prudente si le trajet est terminé sans incident.
 
-Les recettes des billets sont enregistrées au moment de leur vente dans le système passagers. Les dépenses sont débitées au départ par le système d'exploitation, afin d'éviter un double comptage lors de la clôture.
+Les recettes des billets sont enregistrées au moment de leur vente dans le système passagers. Les dépenses principales sont débitées au départ par le système d'exploitation, afin d'éviter un double comptage lors de la clôture. Les frais frontaliers réglés séparément sont exposés par `InternationalBorderManager.GetTotalFeesPaidXof()` et doivent être transmis à la surcharge de `CoachTripOperations.TryComplete(...)` qui accepte le gestionnaire frontalier. La garantie de 500 000 FCFA tient alors compte des frais réellement payés aux frontières.
 
 ## Limites actuelles
-La logique C# est ajoutée, mais n'est pas encore reliée à une interface Unity ni testée dans l'éditeur. La checklist est une validation de prototype : elle ne remplace pas encore les contrôles visuels/animés ni les diagnostics mécaniques du véhicule. La gestion des étapes intermédiaires, des contrôles frontaliers interactifs, des pannes, des arrêts et de la fatigue en temps réel reste à développer.
+La logique C# est ajoutée, mais n'est pas encore reliée à une interface Unity ni testée dans l'éditeur. La checklist est une validation de prototype : elle ne remplace pas encore les contrôles visuels/animés ni les diagnostics mécaniques du véhicule. La gestion des étapes intermédiaires, des contrôles frontaliers interactifs, des pannes, des arrêts et de la fatigue en temps réel reste à développer. Le branchement complet entre l'interface de voyage et la surcharge de clôture doit encore être réalisé et testé.
