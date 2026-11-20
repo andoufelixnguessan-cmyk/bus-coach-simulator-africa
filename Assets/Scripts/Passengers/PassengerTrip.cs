@@ -79,6 +79,15 @@ public sealed class PassengerTrip
     public CoachServiceClass ServiceClass => serviceClass;
     public int SeatCapacity => seatCapacity;
 
+    /// <summary>
+    /// Creates a passenger trip directly from a player-selected itinerary so custom international
+    /// routes automatically receive an international fare and the minimum-profit guarantee.
+    /// </summary>
+    public PassengerTrip(string tripId, string coachId, RouteItinerary itinerary, CoachServiceClass serviceClass)
+        : this(tripId, coachId, RouteEconomy.CreateFareForItinerary(itinerary), serviceClass)
+    {
+    }
+
     public PassengerTrip(string tripId, string coachId, RouteFare route, CoachServiceClass serviceClass)
     {
         this.tripId = tripId;
