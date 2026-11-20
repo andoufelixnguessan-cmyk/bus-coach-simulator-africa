@@ -95,6 +95,9 @@ public sealed class GameBootstrap : MonoBehaviour
         WheelCollider fr = CreateWheel(root.transform, "Front right wheel", new Vector3(1.18f, 0.48f, 3.05f));
         WheelCollider rl = CreateWheel(root.transform, "Rear left wheel", new Vector3(-1.18f, 0.48f, -3.05f));
         WheelCollider rr = CreateWheel(root.transform, "Rear right wheel", new Vector3(1.18f, 0.48f, -3.05f));
+        // Full-size intercity coach appearance: single front tires and dual rear tires (6 visible tires total).
+        CreateDualWheelVisual(root.transform, "Rear left inner tire", rl, -0.22f);
+        CreateDualWheelVisual(root.transform, "Rear right inner tire", rr, 0.22f);
 
         coach = root.AddComponent<CoachVehicleController>();
         coach.Configure(fl, fr, rl, rr, 11000f, 21000f, 24f, 105f);
@@ -128,12 +131,26 @@ public sealed class GameBootstrap : MonoBehaviour
         return wheel;
     }
 
+    private void CreateDualWheelVisual(Transform parent, string wheelName, WheelCollider linkedWheel, float lateralOffset)
+    {
+        var visual = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        visual.name = wheelName;
+        visual.transform.SetParent(parent, false);
+        visual.transform.localPosition = linkedWheel.transform.localPosition + new Vector3(lateralOffset, 0f, 0f);
+        visual.transform.localRotation = Quaternion.Euler(0f, 0f, 90f);
+        visual.transform.localScale = new Vector3(0.92f, 0.18f, 0.92f);
+        Object.Destroy(visual.GetComponent<Collider>());
+        visual.GetComponent<Renderer>().sharedMaterial = GetSharedMaterial(new Color(0.06f, 0.06f, 0.065f));
+        coachVisuals.Add(new WheelVisual { collider = linkedWheel, visual = visual.transform, lateralOffset = lateralOffset });
+    }
+
     private readonly System.Collections.Generic.List<WheelVisual> coachVisuals = new System.Collections.Generic.List<WheelVisual>();
 
     private struct WheelVisual
     {
         public WheelCollider collider;
         public Transform visual;
+        public float lateralOffset;
     }
 
     private void BuildCamera()
@@ -189,6 +206,7 @@ public sealed class GameBootstrap : MonoBehaviour
             if (item.collider != null && item.visual != null)
             {
                 item.collider.GetWorldPose(out Vector3 position, out Quaternion rotation);
+                position += item.collider.transform.right * item.lateralOffset;
                 item.visual.SetPositionAndRotation(position, rotation);
             }
         }
