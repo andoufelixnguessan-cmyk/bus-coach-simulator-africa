@@ -15,6 +15,7 @@
 - Vector-drawn touch-control icons, active-state colors, gear selector and mobile safe-area layout.
 - Landscape-only orientation and 30 FPS target on all graphics presets; actual device performance is not measured yet.
 - Functional cabin lighting and air-conditioning temperature response; climate accessory load affects engine torque, fuel consumption and engine sound.
+- Toggleable rainfall particles, wet-road darkening/reflectivity and animated wipers.
 - Local company save/load for XOF balance, level, owned coaches, starting coach and finance history; financial mutations save automatically and app suspension/exit also saves.
 - Curved 4.32 km playable starter corridor with asphalt mesh collision, shoulders, road markings, direction signs, roadside markers and batched savannah vegetation.
 - Seven lightweight traffic vehicles follow the road curvature in both traffic directions, including an oncoming coach; the player starts in the correct right-hand lane.
@@ -27,7 +28,7 @@
 1. Replace the starter corridor with route-specific geometry for all selected cities, including accurate road lengths, junctions, towns, terminals, rest areas, fuel stations and border checkpoints. The current 4.32 km corridor is a playable starter environment, not a complete real-world intercity route.
 2. Connect trip progression to the actual road route, automatic stop arrival, and international border checks. The route planner and passenger manifest currently prepare bookings and allow manual stop processing; they do not yet simulate the complete itinerary.
 3. Add passenger 3D models, seat occupancy visuals, luggage loading animations and onboard service interactions.
-4. Expand traffic AI with lane changing, overtaking, junction rules, traffic lights, collision response and route events; add day/night cycle, weather and rain response.
+4. Expand traffic AI with lane changing, overtaking, junction rules, traffic lights, collision response and route events; add full day/night cycle, windshield water effects, variable rain intensity and weather transitions.
 5. Add original production-quality exterior/interior models for every coach category and the remaining coach-specific equipment.
 6. Add original or properly licensed vehicle-brand names, logos, sounds and designs. Fictional brands remain in use until permission is obtained.
 7. Calibrate vehicle physics with measured vehicle mass, wheelbase, axle loads, tire data and braking data. Current values are game tuning, not manufacturer-validated vehicle data.
