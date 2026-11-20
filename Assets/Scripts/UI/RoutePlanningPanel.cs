@@ -122,12 +122,13 @@ public sealed class RoutePlanningPanel : MonoBehaviour
 
         routeText = AddText(contentObject.transform, "", 15, 0, -478, 132, TextAnchor.UpperLeft, Color.white);
         AddButton(contentObject.transform, "TRAJET CONSEILLÉ : ABIDJAN → YAMOUSSOUKRO", 0, -622, 50, UseRecommendedRoute);
-        AddButton(contentObject.transform, "RÉINITIALISER LE TRAJET", 0, -680, 48, ResetRoute);
-        prepareButton = AddButton(contentObject.transform, "PRÉPARER LE VOYAGE", 0, -736, 56, PrepareTrip);
-        feedbackText = AddText(contentObject.transform, "", 14, 0, -800, 64, TextAnchor.MiddleCenter,
+        AddButton(contentObject.transform, "ANNULER LA DERNIÈRE VILLE", 0, -680, 48, RemoveLastCity);
+        AddButton(contentObject.transform, "RÉINITIALISER LE TRAJET", 0, -736, 48, ResetRoute);
+        prepareButton = AddButton(contentObject.transform, "PRÉPARER LE VOYAGE", 0, -792, 56, PrepareTrip);
+        feedbackText = AddText(contentObject.transform, "", 14, 0, -856, 64, TextAnchor.MiddleCenter,
             new Color(1f, 0.78f, 0.35f));
-        AddButton(contentObject.transform, "FERMER ET CONDUIRE", 0, -870, 52, ClosePanel);
-        contentRect.sizeDelta = new Vector2(0f, 970f);
+        AddButton(contentObject.transform, "FERMER ET CONDUIRE", 0, -926, 52, ClosePanel);
+        contentRect.sizeDelta = new Vector2(0f, 1020f);
         RefreshCityOptions();
     }
 
@@ -190,6 +191,22 @@ public sealed class RoutePlanningPanel : MonoBehaviour
         RefreshCityOptions();
         RefreshRouteText();
         SetFeedback("Trajet conseillé sélectionné. Vérifiez votre car et préparez le voyage.", false);
+    }
+
+    private void RemoveLastCity()
+    {
+        if (selectedCityIds.Count == 0)
+        {
+            SetFeedback("Aucune ville à retirer.", true);
+            return;
+        }
+
+        selectedCityIds.RemoveAt(selectedCityIds.Count - 1);
+        RefreshCityOptions();
+        RefreshRouteText();
+        SetFeedback(selectedCityIds.Count == 0
+            ? "Itinéraire vidé. Choisissez une ville de départ."
+            : "Dernière ville retirée. Vous pouvez choisir une autre étape.", false);
     }
 
     private void ResetRoute()
