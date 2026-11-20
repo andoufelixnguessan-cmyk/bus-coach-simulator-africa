@@ -16,6 +16,8 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     private Text speedText;
     private Text qualityText;
     private Text gearText;
+    private Text routeStatusText;
+    private GameObject routeStatusPanel;
     private Image gearPanelImage;
     private CoachHudIcon seatbeltIcon;
     private CoachHudIcon doorIcon;
@@ -72,6 +74,19 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         if (fuelImage != null) fuelImage.gameObject.SetActive(fuelSystem != null && fuelSystem.AtFuelStation);
     }
 
+    public void SetRouteDisplay(PlayerRouteTripSetup setup)
+    {
+        if (routeStatusPanel == null || routeStatusText == null) return;
+        if (setup == null || setup.Itinerary == null)
+        {
+            routeStatusPanel.SetActive(false);
+            return;
+        }
+        routeStatusText.text = setup.Itinerary.DisplayName + " • " +
+            setup.Itinerary.EstimatedDistanceKm.ToString("N0") + " km";
+        routeStatusPanel.SetActive(true);
+    }
+
     private void BuildCanvas()
     {
         var canvasObject = new GameObject("Mobile Driving HUD", typeof(RectTransform), typeof(Canvas),
@@ -118,6 +133,11 @@ public sealed class PrototypeTouchControls : MonoBehaviour
             new Vector2(0f, -24f), new Vector2(430f, 48f), new Color(0.025f, 0.055f, 0.09f, 0.72f));
         Text title = CreateText(titlePanel.transform, "BUS & COACH SIMULATOR AFRICA", 18, TextAnchor.MiddleCenter);
         title.color = new Color(0.88f, 0.93f, 1f);
+        routeStatusPanel = CreatePanel(safeRoot, "Active route display", new Vector2(0.5f, 1f),
+            new Vector2(0.5f, 0.5f), new Vector2(0f, -74f), new Vector2(470f, 34f),
+            new Color(0.025f, 0.055f, 0.09f, 0.88f));
+        routeStatusText = CreateText(routeStatusPanel.transform, "", 15, TextAnchor.MiddleCenter);
+        routeStatusPanel.SetActive(false);
 
         GameObject qualityPanel = CreatePanel(safeRoot, "Graphics preset button", new Vector2(1f, 1f), new Vector2(1f, 1f),
             new Vector2(-28f, -24f), new Vector2(286f, 62f), new Color(0.025f, 0.055f, 0.09f, 0.9f));
