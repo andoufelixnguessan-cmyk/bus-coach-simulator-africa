@@ -114,6 +114,7 @@ public sealed class CompanyProfile
         BalanceXof -= coach.PurchasePriceXof;
         OwnedCoachIds.Add(coachId);
         FinanceHistory.Add(new FinanceEntry("Achat : " + coach.DisplayName, coach.PurchasePriceXof, BalanceXof, false));
+        CompanySaveSystem.Save(this);
         return true;
     }
 
@@ -122,6 +123,7 @@ public sealed class CompanyProfile
         if (amountXof <= 0L || BalanceXof < amountXof) return false;
         BalanceXof -= amountXof;
         FinanceHistory.Add(new FinanceEntry(reason ?? "Dépense", amountXof, BalanceXof, false));
+        CompanySaveSystem.Save(this);
         return true;
     }
 
@@ -130,11 +132,32 @@ public sealed class CompanyProfile
         if (amountXof <= 0L || BalanceXof > long.MaxValue - amountXof) return false;
         BalanceXof += amountXof;
         FinanceHistory.Add(new FinanceEntry(reason ?? "Recette", amountXof, BalanceXof, true));
+        CompanySaveSystem.Save(this);
         return true;
     }
 
-    public void SetCompanyLevel(int level) { CompanyLevel = Math.Max(1, level); }
-    internal void RecordStartingCoach(string coachId) { StartingCoachId = coachId; }
+    public void SetCompanyLevel(int level)
+    {
+        CompanyLevel = Math.Max(1, level);
+        CompanySaveSystem.Save(this);
+    }
+
+    internal void RecordStartingCoach(string coachId)
+    {
+        StartingCoachId = coachId;
+        CompanySaveSystem.Save(this);
+    }
+
+    internal static CompanyProfile RestoreFromSave(long balance, int level,
+        List<string> ownedCoachIds, List<FinanceEntry> financeHistory, string startingCoachId)
+    {
+        CompanyProfile company = new CompanyProfile(balance);
+        company.CompanyLevel = Math.Max(1, level);
+        company.OwnedCoachIds = ownedCoachIds ?? new List<string>();
+        company.FinanceHistory = financeHistory ?? new List<FinanceEntry>();
+        company.StartingCoachId = startingCoachId;
+        return company;
+    }
 }
 
 [Serializable]
