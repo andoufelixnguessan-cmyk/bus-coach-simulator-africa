@@ -160,6 +160,7 @@ public sealed class CoachVehicleController : MonoBehaviour
     {
         frontLeft = fl; frontRight = fr; rearLeft = rl; rearRight = rr;
         rearLeftInner = rli; rearRightInner = rri;
+        rearLeftSecondOuter = rearRightSecondOuter = rearLeftSecondInner = rearRightSecondInner = null;
         baseMotorTorque = Mathf.Max(0f, driveTorque);
         motorTorque = baseMotorTorque;
         serviceBrakeTorque = Mathf.Max(0f, brakeTorque);
