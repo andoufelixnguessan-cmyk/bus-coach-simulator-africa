@@ -270,7 +270,7 @@ public sealed class CoachDrivingHud : MonoBehaviour
     private void CreatePassengerManifestButton(Transform parent)
     {
         passengerImage = CreateUtilityButton(parent, "♟", new Vector2(0.5f, 1f),
-            new Vector2(-460f, -88f), () => { if (openPassengerManifest != null) openPassengerManifest(); });
+            new Vector2(-460f, -205f), () => { if (openPassengerManifest != null) openPassengerManifest(); });
         passengerImage.gameObject.SetActive(false);
     }
 
@@ -316,7 +316,7 @@ public sealed class CoachDrivingHud : MonoBehaviour
     private void CreateRoutePlannerButton(Transform parent)
     {
         CreateUtilityButton(parent, "⌖", new Vector2(0.5f, 1f),
-            new Vector2(460f, -88f), () => { if (openRoutePlanner != null) openRoutePlanner(); });
+            new Vector2(460f, -210f), () => { if (openRoutePlanner != null) openRoutePlanner(); });
     }
 
     private void CreateAirConditioningButton(Transform parent)
