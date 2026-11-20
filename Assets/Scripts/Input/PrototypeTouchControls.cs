@@ -7,6 +7,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
 {
     private CoachVehicleController vehicle;
     private CoachWiperSystem wipers;
+    private CoachCabinLightingSystem cabinLights;
     private MobileDriveInput input;
     private MobileGraphicsSettings graphics;
     private Text speedText;
@@ -16,15 +17,16 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     private CoachHudIcon seatbeltIcon;
     private CoachHudIcon doorIcon;
     private Image leftIndicatorImage, hazardImage, rightIndicatorImage, headlightImage, highBeamImage, engineImage;
-    private Image seatbeltPanelImage, doorPanelImage, wiperImage;
+    private Image seatbeltPanelImage, doorPanelImage, wiperImage, cabinLightImage;
     private int lastHudRefreshFrame;
     private CameraFollow cameraView;
 
     public void Configure(CoachVehicleController target, MobileDriveInput driveInput,
-        MobileGraphicsSettings graphicsSettings, CameraFollow camera, CoachWiperSystem wiperSystem)
+        MobileGraphicsSettings graphicsSettings, CameraFollow camera, CoachWiperSystem wiperSystem, CoachCabinLightingSystem cabinLightingSystem)
     {
         vehicle = target;
         wipers = wiperSystem;
+        cabinLights = cabinLightingSystem;
         input = driveInput;
         graphics = graphicsSettings;
         cameraView = camera;
@@ -58,6 +60,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
             SetButtonState(gearPanelImage, vehicle.SelectedGear == CoachVehicleController.GearSelection.Drive || vehicle.SelectedGear == CoachVehicleController.GearSelection.Reverse);
         }
         if (wipers != null) SetButtonState(wiperImage, wipers.IsEnabled);
+        if (cabinLights != null) SetButtonState(cabinLightImage, cabinLights.IsOn);
     }
 
     private void BuildCanvas()
@@ -125,6 +128,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         CreateWiperButton(safeRoot);
         CreatePassengerDoorButton(safeRoot);
         CreateGearSelectorButton(safeRoot);
+        CreateCabinLightButton(safeRoot);
     }
 
     private void CreateSeatbeltButton(Transform parent)
@@ -180,6 +184,18 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         gearText = CreateText(panel.transform, vehicle != null ? vehicle.CurrentGearLabel : "P", 25, TextAnchor.MiddleCenter);
         gearText.resizeTextMinSize = 18;
         gearText.resizeTextMaxSize = 28;
+    }
+
+
+    private void CreateCabinLightButton(Transform parent)
+    {
+        cabinLightImage = CreateUtilityButton(parent, "☾", new Vector2(0.5f, 1f),
+            new Vector2(-130f, -270f), ToggleCabinLights);
+    }
+
+    private void ToggleCabinLights()
+    {
+        if (cabinLights != null) cabinLights.Toggle();
     }
 
     private void CycleGearSelection()
