@@ -1,10 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Generates a lightweight first driving test scene. All geometry here is temporary
-/// prototype geometry and must be replaced by original, production-quality assets.
-/// </summary>
+/// <summary>Initializes the playable mobile driving session and the owned long-distance coach.</summary>
 public sealed class GameBootstrap : MonoBehaviour
 {
     private static readonly Dictionary<Color, Material> SharedMaterials = new Dictionary<Color, Material>();
@@ -45,7 +42,7 @@ public sealed class GameBootstrap : MonoBehaviour
         QualitySettings.shadows = ShadowQuality.Disable;
         QualitySettings.antiAliasing = 0;
 
-        BuildTestRoad();
+        AfricanRoadWorldBuilder.BuildStarterCorridor();
         BuildCoach();
         BuildCamera();
         BuildTouchControls();
@@ -68,32 +65,9 @@ public sealed class GameBootstrap : MonoBehaviour
         if (ActiveCompany != null) CompanySaveSystem.Save(ActiveCompany);
     }
 
-    private void BuildTestRoad()
-    {
-        RenderSettings.ambientLight = new Color(0.62f, 0.64f, 0.67f);
-        CreateBlock("Terrain", new Vector3(0f, -0.65f, 450f), new Vector3(90f, 1f, 1100f), new Color(0.28f, 0.39f, 0.24f));
-        CreateBlock("Road", new Vector3(0f, -0.05f, 450f), new Vector3(9f, 0.2f, 1100f), new Color(0.16f, 0.17f, 0.18f));
-        CreateBlock("Road edge left", new Vector3(-4.25f, 0.07f, 450f), new Vector3(0.12f, 0.025f, 1100f), Color.white);
-        CreateBlock("Road edge right", new Vector3(4.25f, 0.07f, 450f), new Vector3(0.12f, 0.025f, 1100f), Color.white);
-
-        for (int z = 5; z < 1080; z += 14)
-            CreateBlock("Center marking", new Vector3(0f, 0.075f, z), new Vector3(0.12f, 0.025f, 6f), new Color(0.92f, 0.82f, 0.42f));
-
-        for (int z = 35; z < 1000; z += 95)
-        {
-            CreateBlock("Roadside marker L", new Vector3(-5.1f, 0.45f, z), new Vector3(0.18f, 0.9f, 0.18f), Color.white);
-            CreateBlock("Roadside marker R", new Vector3(5.1f, 0.45f, z), new Vector3(0.18f, 0.9f, 0.18f), Color.white);
-        }
-
-        var sun = new GameObject("Sun").AddComponent<Light>();
-        sun.type = LightType.Directional;
-        sun.intensity = 1.05f;
-        sun.transform.rotation = Quaternion.Euler(48f, -32f, 0f);
-    }
-
     private void BuildCoach()
     {
-        var root = new GameObject("Prototype Intercity Coach");
+        var root = new GameObject("Intercity Coach - Fleet 01");
         root.transform.position = new Vector3(0f, 0.15f, 3f);
 
         var body = root.AddComponent<Rigidbody>();
@@ -110,7 +84,7 @@ public sealed class GameBootstrap : MonoBehaviour
         CreatePart(root.transform, "Left coach side shell", new Vector3(-1.19f, 1.62f, 0f), new Vector3(0.08f, 1.2f, 9.7f), new Color(0.83f, 0.84f, 0.82f));
         CreatePart(root.transform, "Right coach side shell", new Vector3(1.19f, 1.62f, 0f), new Vector3(0.08f, 1.2f, 9.7f), new Color(0.83f, 0.84f, 0.82f));
         CreatePart(root.transform, "Lower blue skirt", new Vector3(0f, 0.35f, 0f), new Vector3(2.48f, 0.55f, 9.7f), new Color(0.04f, 0.18f, 0.36f));
-        // Clear front opening retained in this prototype for first-person road visibility.
+        // Driver windscreen opening is kept clear for the cockpit camera.
         CreatePart(root.transform, "Rear window", new Vector3(0f, 2.25f, -4.91f), new Vector3(2.05f, 0.8f, 0.035f), new Color(0.12f, 0.22f, 0.28f));
 
         for (int i = 0; i < 7; i++)
