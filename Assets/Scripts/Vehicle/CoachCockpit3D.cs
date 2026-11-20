@@ -9,14 +9,14 @@ public sealed class CoachCockpit3D : MonoBehaviour
     private readonly List<Renderer> lamps = new List<Renderer>();
     private readonly List<Color> lampOn = new List<Color>();
     private TextMesh display;
-    private Material dark, trim, face, needleMat, screenMat;
+    private Material dark, trim, face, needleMat, screenMat, white;
 
     public void Configure(Transform root, CoachVehicleController target, CoachDashboardProfile profile)
     {
         vehicle=target;
         dark=Mat(new Color(.025f,.035f,.045f)); trim=Mat(new Color(.10f,.13f,.15f));
         face=Mat(new Color(.008f,.014f,.02f)); needleMat=Mat(new Color(.95f,.12f,.06f));
-        screenMat=Mat(new Color(.015f,.10f,.12f));
+        screenMat=Mat(new Color(.015f,.10f,.12f)); white=Mat(new Color(.82f,.86f,.88f));
         Part(root,"Padded dashboard",new Vector3(0,1.34f,4.43f),new Vector3(2.35f,.62f,.70f),dark);
         Part(root,"Dashboard lower trim",new Vector3(0,1.03f,4.38f),new Vector3(2.25f,.12f,.62f),trim);
         Part(root,"Instrument bezel",new Vector3(-.18f,1.48f,4.08f),new Vector3(1.42f,.58f,.13f),trim);
