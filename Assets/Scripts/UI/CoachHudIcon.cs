@@ -7,7 +7,7 @@ public sealed class CoachHudIcon : Graphic
     public enum IconType
     {
         ArrowLeft, ArrowRight, Warning, Headlights, HighBeam, Camera, Power,
-        SeatbeltOn, SeatbeltOff, DoorClosed, DoorOpen, PedalUp, PedalDown, Parking, Wipers, CabinLight, AirConditioning, RouteMap
+        SeatbeltOn, SeatbeltOff, DoorClosed, DoorOpen, PedalUp, PedalDown, Parking, Wipers, CabinLight, AirConditioning, RouteMap, FuelPump
     }
 
     [SerializeField] private IconType iconType;
@@ -118,6 +118,15 @@ public sealed class CoachHudIcon : Graphic
                 Line(vh, P(.18f,-.42f), P(.18f,.42f), thickness*.8f);
                 Circle(vh, P(-.38f,.08f), unit*.11f, thickness, 14);
                 Circle(vh, P(.38f,-.06f), unit*.11f, thickness, 14);
+                break;
+            case IconType.FuelPump:
+                Rect(vh, P(-.34f,0f), unit*.42f, unit*.74f, thickness);
+                Rect(vh, P(-.34f,.24f), unit*.24f, unit*.15f, thickness*.7f);
+                Line(vh, P(-.12f,.26f), P(.24f,.26f), thickness);
+                Line(vh, P(.24f,.26f), P(.36f,.08f), thickness);
+                Line(vh, P(.36f,.08f), P(.36f,-.34f), thickness);
+                Line(vh, P(.36f,-.34f), P(.52f,-.34f), thickness);
+                Line(vh, P(-.55f,-.48f), P(-.12f,-.48f), thickness);
                 break;
         }
     }
