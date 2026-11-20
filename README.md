@@ -62,3 +62,7 @@ International completed trips have a minimum net-profit target of 500,000 XOF: t
 ## Player-selected trip setup
 
 A new `PlayerRouteTripFactory` validates the player's ordered city list, company ownership of the selected coach, the six-wheel minimum and service-class compatibility. It then creates the itinerary, fare, passenger manifest and border manager as one data-level trip setup. Border-aware trip completion now refuses to close a journey while any required border checkpoint remains uncleared and includes actually paid border fees in the international guarantee calculation. A graphical route-planning screen and 3D route-world integration are still pending.
+
+## Mobile route planning panel
+
+A first UGUI route-planning panel has been added in `Assets/Scripts/UI/RoutePlanningPanel.cs`. It lets a player build a connected city sequence, choose an owned six-wheel-or-more coach and service class, and review estimated distance, duration, fare and announced border fees before preparing a `PlayerRouteTripSetup`. It must still be connected to the company/garage scene by calling `Configure(...)`; it does not yet create a 3D route or start the driving simulation. See `Docs/ROUTE_PLANNING_PANEL.md`. This new UI code has not yet been compiled or tested in Unity or on Android.
