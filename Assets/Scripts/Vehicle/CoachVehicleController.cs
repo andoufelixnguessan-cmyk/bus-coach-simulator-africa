@@ -27,6 +27,7 @@ public sealed class CoachVehicleController : MonoBehaviour
     private int engineUpgradeLevel;
     private Light leftHeadlight, rightHeadlight;
     private Light[] indicatorLights = System.Array.Empty<Light>();
+    private Light[] brakeLights = System.Array.Empty<Light>();
     private float leftHeadlightBaseIntensity = 2.2f;
     public bool HeadlightsOn { get; private set; }
     public bool HazardLightsOn { get; private set; }
@@ -72,6 +73,7 @@ public sealed class CoachVehicleController : MonoBehaviour
         oilPressureBar = Mathf.Lerp(oilPressureBar, EngineRunning ? 1.5f + engineRpm / 1000f : 0f, Time.deltaTime * 0.5f);
         airPressureBar = Mathf.Lerp(airPressureBar, handbrake ? 8.0f : 8.3f, Time.deltaTime * 0.4f);
         UpdateExteriorIndicators();
+        UpdateBrakeLights();
     }
 
     public void SetInputs(float steering, float throttle, float brake, bool applyHandbrake = false)
@@ -132,6 +134,20 @@ public sealed class CoachVehicleController : MonoBehaviour
             lamp.enabled = active && flash;
         }
     }
+
+    public void ConfigureBrakeLights(params Light[] lights)
+    {
+        brakeLights = lights ?? System.Array.Empty<Light>();
+        UpdateBrakeLights();
+    }
+
+    private void UpdateBrakeLights()
+    {
+        bool braking = brakeInput > 0.05f || handbrake;
+        for (int i = 0; i < brakeLights.Length; i++)
+            if (brakeLights[i] != null) brakeLights[i].enabled = braking;
+    }
+
     public void ConfigureHeadlights(Light left, Light right)
     {
         leftHeadlight = left; rightHeadlight = right;
