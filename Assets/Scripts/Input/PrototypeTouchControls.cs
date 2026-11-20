@@ -43,13 +43,14 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 20;
 
-        GameObject safeAreaObject = new GameObject("Safe Area", typeof(RectTransform), typeof(MobileSafeAreaFitter));
+        GameObject safeAreaObject = new GameObject("Safe Area", typeof(RectTransform));
         safeAreaObject.transform.SetParent(canvas.transform, false);
         safeAreaRoot = safeAreaObject.GetComponent<RectTransform>();
         safeAreaRoot.anchorMin = Vector2.zero;
         safeAreaRoot.anchorMax = Vector2.one;
         safeAreaRoot.offsetMin = Vector2.zero;
         safeAreaRoot.offsetMax = Vector2.zero;
+        safeAreaObject.AddComponent<MobileSafeAreaFitter>();
 
         var scaler = canvasObject.GetComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
