@@ -209,7 +209,7 @@ public sealed class CoachVehicleController : MonoBehaviour
 
     private void UpdateBrakeLights()
     {
-        bool braking = brakeInput > 0.05f || handbrake || gearSelection == GearSelection.Park || airPressureBar < 1f;
+        bool braking = brakeInput > 0.05f || handbrake || airPressureBar < 1f;
         for (int i = 0; i < brakeLights.Length; i++)
             if (brakeLights[i] != null) brakeLights[i].enabled = braking;
     }
