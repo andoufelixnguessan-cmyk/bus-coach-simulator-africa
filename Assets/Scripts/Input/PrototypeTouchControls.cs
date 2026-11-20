@@ -11,6 +11,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     private Text speedText;
     private Text qualityText;
     private Text seatbeltText;
+    private Text doorText;
     private int lastHudRefreshFrame;
     private CameraFollow cameraView;
 
@@ -34,6 +35,8 @@ public sealed class PrototypeTouchControls : MonoBehaviour
             qualityText.text = "GRAPHISMES  " + graphics.PresetLabel;
         if (vehicle != null && seatbeltText != null)
             seatbeltText.text = vehicle.SeatbeltFastened ? "CEINTURE  ATTACHÉE" : "CEINTURE  DÉTACHÉE";
+        if (vehicle != null && doorText != null)
+            doorText.text = vehicle.PassengerDoorOpen ? "PORTE  OUVERTE" : "PORTE  FERMÉE";
     }
 
     private void BuildCanvas()
@@ -98,6 +101,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         CreateUtilityButton(safeRoot, "CAMÉRA", new Vector2(0.5f, 1f), new Vector2(330f, -88f), ToggleCameraView);
         CreateUtilityButton(safeRoot, "DÉMARRER / STOP", new Vector2(0.5f, 1f), new Vector2(0f, -150f), ToggleEngine);
         CreateSeatbeltButton(safeRoot);
+        CreatePassengerDoorButton(safeRoot);
     }
 
     private void CreateSeatbeltButton(Transform parent)
@@ -111,6 +115,28 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         seatbeltText = CreateText(panel.transform, "CEINTURE  ATTACHÉE", 14, TextAnchor.MiddleCenter);
         seatbeltText.resizeTextMinSize = 10;
         seatbeltText.resizeTextMaxSize = 14;
+    }
+
+
+    private void CreatePassengerDoorButton(Transform parent)
+    {
+        GameObject panel = CreatePanel(parent, "Passenger door control", new Vector2(0.5f, 1f),
+            new Vector2(0.5f, 0.5f), new Vector2(0f, -260f), new Vector2(190f, 42f),
+            new Color(0.035f, 0.075f, 0.11f, 0.92f));
+        Button button = panel.AddComponent<Button>();
+        button.targetGraphic = panel.GetComponent<Image>();
+        button.onClick.AddListener(TogglePassengerDoor);
+        doorText = CreateText(panel.transform, "PORTE  FERMÉE", 14, TextAnchor.MiddleCenter);
+        doorText.resizeTextMinSize = 10;
+        doorText.resizeTextMaxSize = 14;
+    }
+
+    private void TogglePassengerDoor()
+    {
+        if (vehicle != null && !vehicle.TogglePassengerDoor())
+            Debug.Log("Porte passagers verrouillée : arrêtez complètement le car.");
+        if (vehicle != null && doorText != null)
+            doorText.text = vehicle.PassengerDoorOpen ? "PORTE  OUVERTE" : "PORTE  FERMÉE";
     }
 
     private void ToggleSeatbelt()
