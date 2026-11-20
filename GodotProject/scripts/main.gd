@@ -43,7 +43,7 @@ func _physics_process(delta: float) -> void:
 		speed = move_toward(speed, 0.0, BRAKING * delta)
 
 	steering = float(steer_right) - float(steer_left)
-	var steering_factor := clamp(speed / MAX_SPEED, 0.15, 1.0)
+	var steering_factor: float = clampf(speed / MAX_SPEED, 0.15, 1.0)
 	coach.position.x = clamp(coach.position.x + steering * 8.0 * steering_factor * delta, -4.0, 4.0)
 	coach.position.z -= speed * delta
 	distance_km += speed * delta / 1000.0
