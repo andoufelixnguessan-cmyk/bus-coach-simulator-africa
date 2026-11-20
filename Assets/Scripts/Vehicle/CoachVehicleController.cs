@@ -84,8 +84,9 @@ public sealed class CoachVehicleController : MonoBehaviour
         engineRpm = Mathf.Lerp(engineRpm, EngineRunning ? Mathf.Clamp(targetRpm, 600f, GetMaximumRpm()) : 0f, Time.deltaTime * 2.4f);
         if (EngineRunning && throttleInput > 0.2f && SpeedKph > 4f)
             fuelPercent = Mathf.Max(0f, fuelPercent - Time.deltaTime * (0.00018f + engineUpgradeLevel * 0.000015f));
-        float targetTemp = EngineRunning ? 82f + throttleInput * 15f : 25f;
-        coolantTemperatureC = Mathf.Lerp(coolantTemperatureC, targetTemp, Time.deltaTime * (EngineRunning ? 0.025f : 0.008f));
+        float targetTemp = EngineRunning ? 84f + throttleInput * 22f - Mathf.Clamp(SpeedKph * 0.04f, 0f, 5f) : 25f;
+        float coolingRate = EngineRunning ? 0.018f + Mathf.Clamp(SpeedKph * 0.00025f, 0f, 0.025f) : 0.008f;
+        coolantTemperatureC = Mathf.Lerp(coolantTemperatureC, targetTemp, Time.deltaTime * coolingRate);
         oilPressureBar = Mathf.Lerp(oilPressureBar, EngineRunning ? 1.5f + engineRpm / 1000f : 0f, Time.deltaTime * 0.5f);
         airPressureBar = Mathf.Lerp(airPressureBar, ParkingBrakeApplied ? 8.0f : 8.3f, Time.deltaTime * 0.4f);
         UpdateExteriorIndicators();
@@ -260,8 +261,11 @@ public sealed class CoachVehicleController : MonoBehaviour
         float ratio = gearSelection == GearSelection.Drive
             ? GearTorqueMultipliers[Mathf.Clamp(automaticGear, 1, 6)]
             : gearSelection == GearSelection.Reverse ? 1.45f : 0f;
+        float rpmFraction = Mathf.InverseLerp(600f, GetMaximumRpm(), engineRpm);
+        float torqueCurve = Mathf.Lerp(0.78f, 1.08f, Mathf.InverseLerp(0.05f, 0.58f, rpmFraction));
+        if (rpmFraction > 0.88f) torqueCurve *= Mathf.Lerp(1f, 0.78f, Mathf.InverseLerp(0.88f, 1f, rpmFraction));
         float torque = EngineRunning && !safetyInterlock
-            ? motorTorque * throttleInput * speedFactor * ratio * direction : 0f;
+            ? motorTorque * torqueCurve * throttleInput * speedFactor * ratio * direction : 0f;
         frontLeft.steerAngle = steeringInput * maxSteerAngle;
         frontRight.steerAngle = steeringInput * maxSteerAngle;
         rearLeft.motorTorque = torque * 0.25f;
