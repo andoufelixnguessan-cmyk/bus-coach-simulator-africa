@@ -42,6 +42,10 @@ The codebase now includes early C# foundations for:
 
 These are code foundations only. They are not yet connected to production menus, persistent save data, animated passenger models, route scenes or a complete playable journey. They have not been compiled or tested in Unity.
 
+## African route and border foundations
+
+The repository also includes an initial route network with ordered terminals, passenger stops, rest stops, estimated distances/durations, and explicit international border checkpoints with document checks and announced FCFA fees. Route values are provisional game-balancing data, not real navigation or official border tariffs. This system is not yet connected to a 3D map or tested in Unity.
+
 ## Development status
 
 The repository now contains a Unity 6 project configuration, an editor-driven Android APK build entry point, a temporary drivable coach/road prototype, independent multi-touch steering and pedal controls, and saved Économie/Équilibré/Élevé graphics presets. The APK pipeline is prepared but requires a Unity Personal license secret in GitHub Actions. The prototype has not yet been compiled, installed, or tested on a phone. It is not a finished realistic simulator and no downloadable APK is claimed yet.
