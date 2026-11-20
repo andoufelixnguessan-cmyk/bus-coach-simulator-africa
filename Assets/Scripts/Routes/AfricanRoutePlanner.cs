@@ -29,14 +29,16 @@ public static class AfricanRoutePlanner
         public string BorderName;
         public long BorderFeeXof;
         public int BorderMinutes;
+        public string[] IntermediateLocalities;
 
         public RoadSegment(string from, string to, int km, int minutes,
-            string borderId = null, string borderName = null, long fee = 0L, int borderMinutes = 0)
+            string borderId = null, string borderName = null, long fee = 0L, int borderMinutes = 0, params string[] intermediateLocalities)
         {
             FromCityId = from; ToCityId = to;
             DistanceKm = km; DrivingMinutes = minutes;
             BorderId = borderId; BorderName = borderName;
             BorderFeeXof = fee; BorderMinutes = borderMinutes;
+            IntermediateLocalities = intermediateLocalities ?? new string[0];
         }
     }
 
@@ -76,11 +78,11 @@ public static class AfricanRoutePlanner
     // Bidirectional road links. Game estimates only; road geometry and legal corridors need later validation.
     private static readonly RoadSegment[] Segments =
     {
-        new RoadSegment("abidjan","yamoussoukro",240,210),
-        new RoadSegment("yamoussoukro","bouake",110,100),
-        new RoadSegment("bouake","korhogo",285,250),
-        new RoadSegment("abidjan","san-pedro",350,330),
-        new RoadSegment("abidjan","man",570,510),
+        new RoadSegment("abidjan","yamoussoukro",240,210, null, null, 0L, 0, "Anyama", "Singrobo", "Tiassalé", "N’Douci", "Toumodi"),
+        new RoadSegment("yamoussoukro","bouake",110,100, null, null, 0L, 0, "Tiébissou", "Djébonoua"),
+        new RoadSegment("bouake","korhogo",285,250, null, null, 0L, 0, "Katiola", "Niakaramandougou", "Tafiré", "Ferkessédougou"),
+        new RoadSegment("abidjan","san-pedro",350,330, null, null, 0L, 0, "Dabou", "Grand-Lahou", "Sassandra"),
+        new RoadSegment("abidjan","man",570,510, null, null, 0L, 0, "Dabou", "Divo", "Gagnoa", "Daloa", "Duékoué"),
         new RoadSegment("man","nzerekore",260,240,"ci-gn-man","Corridor Man – N'Zérékoré",20000,90),
         new RoadSegment("nzerekore","conakry",700,660),
         new RoadSegment("abidjan","accra",500,420,"ci-gh-noe","Frontière Noé – Elubo",15000,60),
@@ -169,6 +171,22 @@ public static class AfricanRoutePlanner
 
             totalKm += segment.DistanceKm;
             totalMinutes += segment.DrivingMinutes;
+            // Only localities on the selected road segment are added. Reverse their order
+            // when the player travels in the opposite direction.
+            string[] localities = segment.IntermediateLocalities ?? new string[0];
+            bool forward = segment.FromCityId == selected[i].Id;
+            if (forward)
+            {
+                for (int localityIndex = 0; localityIndex < localities.Length; localityIndex++)
+                    stops.Add(new RouteStop("locality-" + selected[i].Id + "-" + selected[i + 1].Id + "-" + localityIndex,
+                        localities[localityIndex], selected[i].CountryCode, RouteStopType.PassengerStop, 5, true));
+            }
+            else
+            {
+                for (int localityIndex = localities.Length - 1; localityIndex >= 0; localityIndex--)
+                    stops.Add(new RouteStop("locality-" + selected[i].Id + "-" + selected[i + 1].Id + "-" + localityIndex,
+                        localities[localityIndex], selected[i].CountryCode, RouteStopType.PassengerStop, 5, true));
+            }
             if (!string.IsNullOrEmpty(segment.BorderId))
             {
                 stops.Add(new RouteStop("border-stop-" + segment.BorderId, segment.BorderName,
