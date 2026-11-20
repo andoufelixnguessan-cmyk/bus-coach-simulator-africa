@@ -1,6 +1,6 @@
 # BUS & COACH SIMULATOR AFRICA
 
-A realistic 3D long-distance coach driving and transport-company management simulator for Android, focused initially on West Africa.
+A realistic 3D long-distance coach driving and transport-company management simulator for Android, focused initially on West Africa. The playable vehicle catalogue is restricted to full-size passenger coaches with at least six wheels; four-wheel minicars are excluded.
 
 ## Product ambition
 
@@ -35,7 +35,7 @@ A single drivable coach, a polished third-person and cockpit camera, mobile cont
 ## Systems added in the repository
 
 The codebase now includes early C# foundations for:
-- the single-currency company economy and coach catalogue;
+- the single-currency company economy and a full-size coach catalogue (six wheels minimum, with a six-wheel starting coach);
 - optional onboard comfort equipment with compatibility checks;
 - passenger bookings, seat assignment, luggage limits, ticket revenue and boarding states;
 - trip preparation, mandatory safety checklist, departure-cost deduction and trip completion.
