@@ -23,6 +23,9 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     private CoachHudIcon doorIcon;
     private Image leftIndicatorImage, hazardImage, rightIndicatorImage, headlightImage, highBeamImage, engineImage;
     private Image seatbeltPanelImage, doorPanelImage, wiperImage, cabinLightImage, acImage, fuelImage, passengerImage;
+    private GameObject serviceMessagePanel;
+    private Text serviceMessageText;
+    private float serviceMessageExpiry;
     private int lastHudRefreshFrame;
     private CameraFollow cameraView;
     private Action openRoutePlanner;
@@ -74,6 +77,8 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         if (cabinLights != null) SetButtonState(cabinLightImage, cabinLights.IsOn);
         if (cabinComfort != null) SetButtonState(acImage, cabinComfort.AirConditioningOn);
         if (fuelImage != null) fuelImage.gameObject.SetActive(fuelSystem != null && fuelSystem.AtFuelStation);
+        if (serviceMessagePanel != null && serviceMessagePanel.activeSelf && Time.unscaledTime >= serviceMessageExpiry)
+            serviceMessagePanel.SetActive(false);
     }
 
     public void SetRouteDisplay(PlayerRouteTripSetup setup)
@@ -142,6 +147,11 @@ public sealed class PrototypeTouchControls : MonoBehaviour
             new Color(0.025f, 0.055f, 0.09f, 0.88f));
         routeStatusText = CreateText(routeStatusPanel.transform, "", 15, TextAnchor.MiddleCenter);
         routeStatusPanel.SetActive(false);
+        serviceMessagePanel = CreatePanel(safeRoot, "Service feedback", new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f), new Vector2(0f, -210f), new Vector2(560f, 46f),
+            new Color(0.025f, 0.055f, 0.09f, 0.94f));
+        serviceMessageText = CreateText(serviceMessagePanel.transform, "", 16, TextAnchor.MiddleCenter);
+        serviceMessagePanel.SetActive(false);
 
         GameObject qualityPanel = CreatePanel(safeRoot, "Graphics preset button", new Vector2(1f, 1f), new Vector2(1f, 1f),
             new Vector2(-28f, -24f), new Vector2(286f, 62f), new Color(0.025f, 0.055f, 0.09f, 0.9f));
@@ -231,6 +241,15 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     }
 
 
+    private void ShowServiceMessage(string message, bool error)
+    {
+        if (serviceMessagePanel == null || serviceMessageText == null) return;
+        serviceMessageText.text = message;
+        serviceMessageText.color = error ? new Color(1f, 0.58f, 0.48f) : new Color(0.65f, 0.95f, 0.75f);
+        serviceMessageExpiry = Time.unscaledTime + 4f;
+        serviceMessagePanel.SetActive(true);
+    }
+
     private void CreatePassengerManifestButton(Transform parent)
     {
         passengerImage = CreateUtilityButton(parent, "♟", new Vector2(0.5f, 1f),
@@ -251,6 +270,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         string reason;
         bool success = fuelSystem.TryRefuelToFull(out reason);
         Debug.Log(reason);
+        ShowServiceMessage(reason, !success);
         if (success) SetButtonState(fuelImage, false);
     }
 
