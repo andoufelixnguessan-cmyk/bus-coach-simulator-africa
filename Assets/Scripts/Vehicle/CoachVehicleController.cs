@@ -26,7 +26,10 @@ public sealed class CoachVehicleController : MonoBehaviour
     private float airPressureBar = 8.2f;
     private int engineUpgradeLevel;
     private Light leftHeadlight, rightHeadlight;
+    private Light[] indicatorLights = System.Array.Empty<Light>();
+    private float leftHeadlightBaseIntensity = 2.2f;
     public bool HeadlightsOn { get; private set; }
+    public bool HazardLightsOn { get; private set; }
 
     public float SpeedKph => body == null ? 0f : body.linearVelocity.magnitude * 3.6f;
     public float EngineRpm => engineRpm;
@@ -43,6 +46,7 @@ public sealed class CoachVehicleController : MonoBehaviour
     public bool LeftIndicatorOn { get; private set; }
     public bool RightIndicatorOn { get; private set; }
     public bool HighBeamOn { get; private set; }
+    public bool IndicatorsBlinking => HazardLightsOn || LeftIndicatorOn || RightIndicatorOn;
 
     private void Awake()
     {
@@ -61,6 +65,7 @@ public sealed class CoachVehicleController : MonoBehaviour
         coolantTemperatureC = Mathf.Lerp(coolantTemperatureC, 82f + throttleInput * 15f, Time.deltaTime * 0.025f);
         oilPressureBar = Mathf.Lerp(oilPressureBar, 1.5f + engineRpm / 1000f, Time.deltaTime * 0.5f);
         airPressureBar = Mathf.Lerp(airPressureBar, handbrake ? 8.0f : 8.3f, Time.deltaTime * 0.4f);
+        UpdateExteriorIndicators();
     }
 
     public void SetInputs(float steering, float throttle, float brake, bool applyHandbrake = false)
@@ -89,18 +94,63 @@ public sealed class CoachVehicleController : MonoBehaviour
         maxSpeedKph = 105f + engineUpgradeLevel * 2f;
     }
 
-    public void SetIndicators(bool left, bool right) { LeftIndicatorOn = left; RightIndicatorOn = right && !left; }
+    public void SetIndicators(bool left, bool right)
+    {
+        LeftIndicatorOn = left;
+        RightIndicatorOn = right && !left;
+        if (left || right) HazardLightsOn = false;
+    }
     public void ToggleLeftIndicator() { bool next = !LeftIndicatorOn; SetIndicators(next, false); }
     public void ToggleRightIndicator() { bool next = !RightIndicatorOn; SetIndicators(false, next); }
-    public void ConfigureHeadlights(Light left, Light right) { leftHeadlight = left; rightHeadlight = right; SetHeadlights(false); }
+    public void ToggleHazardLights()
+    {
+        HazardLightsOn = !HazardLightsOn;
+        if (HazardLightsOn) { LeftIndicatorOn = false; RightIndicatorOn = false; }
+    }
+    public void ConfigureIndicatorLights(params Light[] lights)
+    {
+        indicatorLights = lights ?? System.Array.Empty<Light>();
+        for (int i = 0; i < indicatorLights.Length; i++)
+            if (indicatorLights[i] != null) indicatorLights[i].enabled = false;
+    }
+    private void UpdateExteriorIndicators()
+    {
+        bool flash = IndicatorsBlinking && Mathf.Repeat(Time.time, 0.8f) < 0.4f;
+        for (int i = 0; i < indicatorLights.Length; i++)
+        {
+            Light lamp = indicatorLights[i];
+            if (lamp == null) continue;
+            bool isLeft = i == 0 || i == 2;
+            bool active = HazardLightsOn || (isLeft ? LeftIndicatorOn : RightIndicatorOn);
+            lamp.enabled = active && flash;
+        }
+    }
+    public void ConfigureHeadlights(Light left, Light right)
+    {
+        leftHeadlight = left; rightHeadlight = right;
+        if (leftHeadlight != null) leftHeadlightBaseIntensity = leftHeadlight.intensity;
+        SetHeadlights(false);
+    }
     public void ToggleHeadlights() { SetHeadlights(!HeadlightsOn); }
     private void SetHeadlights(bool enabled)
     {
         HeadlightsOn = enabled;
         if (leftHeadlight != null) leftHeadlight.enabled = enabled;
         if (rightHeadlight != null) rightHeadlight.enabled = enabled;
+        ApplyBeamIntensity();
     }
-    public void SetHighBeam(bool enabled) { HighBeamOn = enabled; }
+    public void ToggleHighBeam() { SetHighBeam(!HighBeamOn); }
+    public void SetHighBeam(bool enabled)
+    {
+        HighBeamOn = enabled;
+        ApplyBeamIntensity();
+    }
+    private void ApplyBeamIntensity()
+    {
+        float intensity = leftHeadlightBaseIntensity * (HighBeamOn ? 1.65f : 1f);
+        if (leftHeadlight != null) leftHeadlight.intensity = intensity;
+        if (rightHeadlight != null) rightHeadlight.intensity = intensity;
+    }
     public void SetSeatbelt(bool fastened) { SeatbeltFastened = fastened; }
     public float GetMaximumRpm() { return 2400f + engineUpgradeLevel * 100f; }
 
