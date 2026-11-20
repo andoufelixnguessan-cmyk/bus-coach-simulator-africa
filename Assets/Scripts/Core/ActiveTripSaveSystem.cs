@@ -30,6 +30,8 @@ public sealed class PlayerTripSaveData
     public long ChargedOperatingCostsXof;
     public long SafeDrivingBonusXof;
     public long InternationalProfitGuaranteeXof;
+    public bool IsRaining;
+    public bool IsNight;
     public long SavedAtUtcTicks;
 }
 
@@ -45,6 +47,11 @@ public static class ActiveTripSaveSystem
 
     public static bool Save(PlayerTripSession session)
     {
+        return Save(session, false, false);
+    }
+
+    public static bool Save(PlayerTripSession session, bool isRaining, bool isNight)
+    {
         if (session == null || session.Status != CoachTripStatus.OnRoad)
         {
             Clear();
@@ -55,11 +62,15 @@ public static class ActiveTripSaveSystem
         {
             PlayerTripSaveData data = new PlayerTripSaveData();
             session.CaptureSaveState(data);
+            data.IsRaining = isRaining;
+            data.IsNight = isNight;
             data.SavedAtUtcTicks = DateTime.UtcNow.Ticks;
             string json = JsonUtility.ToJson(data);
             if (string.IsNullOrEmpty(json)) return false;
             PlayerPrefs.SetString(SaveKey, json);
             PlayerPrefs.Save();
+            isRaining = data.IsRaining;
+            isNight = data.IsNight;
             return true;
         }
         catch (Exception exception)
@@ -71,6 +82,15 @@ public static class ActiveTripSaveSystem
 
     public static bool TryRestore(CompanyProfile company, out PlayerTripSession session, out string reason)
     {
+        bool ignoredRain, ignoredNight;
+        return TryRestore(company, out session, out reason, out ignoredRain, out ignoredNight);
+    }
+
+    public static bool TryRestore(CompanyProfile company, out PlayerTripSession session,
+        out string reason, out bool isRaining, out bool isNight)
+    {
+        isRaining = false;
+        isNight = false;
         session = null;
         reason = string.Empty;
         if (!HasActiveTripSave)
