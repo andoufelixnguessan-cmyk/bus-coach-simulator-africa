@@ -49,6 +49,13 @@ public sealed class GameBootstrap : MonoBehaviour
         BuildTouchControls();
     }
 
+    private void Update()
+    {
+        // Bridge simultaneous mobile touch input to the active coach physics controller.
+        if (coach != null && input != null)
+            coach.SetInputs(input.Steering, input.Throttle, input.Brake, input.Handbrake);
+    }
+
     private void BuildTestRoad()
     {
         RenderSettings.ambientLight = new Color(0.62f, 0.64f, 0.67f);
