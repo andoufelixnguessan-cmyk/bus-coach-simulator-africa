@@ -9,6 +9,7 @@ public sealed class CoachCockpit3D : MonoBehaviour
     private readonly List<Renderer> lamps = new List<Renderer>();
     private readonly List<Color> lampOn = new List<Color>();
     private TextMesh display;
+    private TextMesh gearDisplay;
     private Material dark, trim, face, needleMat, screenMat, white;
 
     public void Configure(Transform root, CoachVehicleController target, CoachDashboardProfile profile)
@@ -36,6 +37,17 @@ public sealed class CoachCockpit3D : MonoBehaviour
             tempNeedle=Gauge(root,"Coolant",new Vector3(.57f,1.38f,3.98f),.105f);
         }
         BuildLamps(root);
+        Part(root, "Gear indicator screen", new Vector3(.60f, 1.23f, 3.98f), new Vector3(.30f, .16f, .035f), screenMat);
+        GameObject gearObject = new GameObject("Transmission gear readout");
+        gearObject.transform.SetParent(root, false);
+        gearObject.transform.localPosition = new Vector3(.60f, 1.24f, 3.95f);
+        gearObject.transform.localRotation = Quaternion.Euler(0, 180, 0);
+        gearDisplay = gearObject.AddComponent<TextMesh>();
+        gearDisplay.anchor = TextAnchor.MiddleCenter;
+        gearDisplay.alignment = TextAlignment.Center;
+        gearDisplay.fontSize = 52;
+        gearDisplay.characterSize = .012f;
+        gearDisplay.color = new Color(.3f, .95f, .85f);
         Part(root,"Passenger glovebox",new Vector3(.78f,1.16f,4.12f),new Vector3(.82f,.3f,.42f),trim);
         Part(root,"Center console",new Vector3(.65f,.92f,3.72f),new Vector3(.5f,.16f,.65f),dark);
         Part(root,"Radio screen",new Vector3(.65f,1.12f,3.94f),new Vector3(.28f,.12f,.04f),screenMat);
@@ -115,6 +127,7 @@ public sealed class CoachCockpit3D : MonoBehaviour
         Needle(fuelNeedle,vehicle.FuelPercent/100f);
         Needle(tempNeedle,Mathf.InverseLerp(60,120,vehicle.CoolantTemperatureC));
         if(display!=null) display.text=Mathf.RoundToInt(vehicle.SpeedKph)+" km/h\n"+Mathf.RoundToInt(vehicle.EngineRpm)+" rpm   FUEL "+Mathf.RoundToInt(vehicle.FuelPercent)+"%";
+        if(gearDisplay!=null) gearDisplay.text=vehicle.CurrentGearLabel;
         bool flash=Mathf.Repeat(Time.time,.8f)<.4f;
         bool[] active={(vehicle.LeftIndicatorOn||vehicle.HazardLightsOn)&&flash,(vehicle.RightIndicatorOn||vehicle.HazardLightsOn)&&flash,vehicle.HighBeamOn&&vehicle.HeadlightsOn,vehicle.ParkingBrakeApplied,!vehicle.SeatbeltFastened,vehicle.AbsWarning,vehicle.EngineWarning};
         for(int i=0;i<lamps.Count;i++) lamps[i].sharedMaterial.color=active[i]?lampOn[i]:new Color(.06f,.07f,.08f);
