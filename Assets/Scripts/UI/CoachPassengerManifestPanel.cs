@@ -84,26 +84,10 @@ public sealed class CoachPassengerManifestPanel : MonoBehaviour
     private void BuildStopOptions()
     {
         passengerStops.Clear();
-        if (trip == null || trip.Route == null) return;
-        RouteItinerary itinerary = AfricanRouteNetwork.Find(trip.Route.RouteId);
-        if (itinerary == null) return;
-        for (int i = 0; i < itinerary.Stops.Count; i++)
-            if (itinerary.Stops[i].PassengersMayBoardOrAlight)
-                passengerStops.Add(itinerary.Stops[i]);
-
-        // Player-created itineraries are retained by the trip object; recover their stop IDs
-        // from the generated route's route data when it is a catalogue route.
-        if (passengerStops.Count == 0)
-        {
-            for (int i = 0; i < AfricanRouteNetwork.AllRoutes.Count; i++)
-            {
-                RouteItinerary candidate = AfricanRouteNetwork.AllRoutes[i];
-                if (candidate.RouteId != trip.Route.RouteId) continue;
-                for (int j = 0; j < candidate.Stops.Count; j++)
-                    if (candidate.Stops[j].PassengersMayBoardOrAlight) passengerStops.Add(candidate.Stops[j]);
-                break;
-            }
-        }
+        if (trip == null || trip.ItineraryStops == null) return;
+        for (int i = 0; i < trip.ItineraryStops.Count; i++)
+            if (trip.ItineraryStops[i].PassengersMayBoardOrAlight)
+                passengerStops.Add(trip.ItineraryStops[i]);
 
         List<string> names = new List<string>();
         for (int i = 0; i < passengerStops.Count; i++)
@@ -111,7 +95,8 @@ public sealed class CoachPassengerManifestPanel : MonoBehaviour
         SetOptions(originDropdown, names);
         SetOptions(destinationDropdown, names);
         SetOptions(currentStopDropdown, names);
-        if (destinationDropdown != null && names.Count > 1) destinationDropdown.value = names.Count - 1;
+        if (destinationDropdown != null && names.Count > 1)
+            destinationDropdown.value = names.Count - 1;
     }
 
     private void BookPassenger()
