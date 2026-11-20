@@ -49,6 +49,7 @@ public sealed class GameBootstrap : MonoBehaviour
         QualitySettings.antiAliasing = 0;
 
         AfricanRoadWorldBuilder.BuildStarterCorridor();
+        BuildTraffic();
         BuildCoach();
         BuildCamera();
         BuildRoutePlanning();
@@ -73,10 +74,17 @@ public sealed class GameBootstrap : MonoBehaviour
         if (ActiveCompany != null) CompanySaveSystem.Save(ActiveCompany);
     }
 
+    private void BuildTraffic()
+    {
+        GameObject trafficRoot = new GameObject("African road traffic");
+        trafficRoot.AddComponent<AfricanTrafficSystem>().BuildTraffic();
+    }
+
     private void BuildCoach()
     {
         var root = new GameObject("Intercity Coach - Fleet 01");
-        root.transform.position = new Vector3(0f, 0.15f, 3f);
+        root.transform.position = AfricanRoadWorldBuilder.GetLanePoint(3f, 2.15f) + Vector3.up * 0.15f;
+        root.transform.rotation = AfricanRoadWorldBuilder.GetRoadRotation(3f, true);
 
         var body = root.AddComponent<Rigidbody>();
         body.mass = 14000f;
