@@ -1,0 +1,32 @@
+# Unity generated folders
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+
+# IDE files
+.vs/
+.idea/
+.vscode/
+*.csproj
+*.sln
+*.user
+*.suo
+*.tmp
+*.pidb
+*.booproj
+*.svclog
+
+# Android / Gradle
+.gradle/
+local.properties
+*.keystore
+*.jks
+
+# Never commit Unity license files or secrets
+*.ulf
+*.alf
+.env
