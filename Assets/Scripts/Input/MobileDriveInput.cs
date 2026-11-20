@@ -22,4 +22,19 @@ public sealed class MobileDriveInput : MonoBehaviour
 
     public void PressHandbrake() => Handbrake = true;
     public void ReleaseHandbrake() => Handbrake = false;
+
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        if (!hasFocus) ResetInputs();
+    }
+
+    private void OnDisable() => ResetInputs();
+
+    private void ResetInputs()
+    {
+        Steering = 0f;
+        Throttle = 0f;
+        Brake = 0f;
+        Handbrake = false;
+    }
 }
