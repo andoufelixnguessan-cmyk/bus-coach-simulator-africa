@@ -629,6 +629,17 @@ public sealed class GameBootstrap : MonoBehaviour
         part.GetComponent<Renderer>().sharedMaterial = GetSharedMaterial(color);
     }
 
+    private static void CreatePart(Transform parent, string partName, Vector3 localPosition, Vector3 scale, Material material)
+    {
+        var part = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        part.name = partName;
+        part.transform.SetParent(parent, false);
+        part.transform.localPosition = localPosition;
+        part.transform.localScale = scale;
+        Object.Destroy(part.GetComponent<Collider>());
+        part.GetComponent<Renderer>().sharedMaterial = material;
+    }
+
     private void LateUpdate()
     {
         for (int i = 0; i < coachVisuals.Count; i++)
