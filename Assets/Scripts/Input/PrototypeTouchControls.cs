@@ -34,9 +34,9 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         if (graphics != null && qualityText != null)
             qualityText.text = "GRAPHISMES  " + graphics.PresetLabel;
         if (vehicle != null && seatbeltText != null)
-            seatbeltText.text = vehicle.SeatbeltFastened ? "CEINTURE  ATTACHÉE" : "CEINTURE  DÉTACHÉE";
+            seatbeltText.text = vehicle.SeatbeltFastened ? "▤" : "▥";
         if (vehicle != null && doorText != null)
-            doorText.text = vehicle.PassengerDoorOpen ? "PORTE  OUVERTE" : "PORTE  FERMÉE";
+            doorText.text = vehicle.PassengerDoorOpen ? "◧" : "▣";
     }
 
     private void BuildCanvas()
@@ -93,13 +93,13 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         qualityButton.onClick.AddListener(CycleGraphics);
         qualityText = CreateText(qualityPanel.transform, "GRAPHISMES  ÉCONOMIE", 19, TextAnchor.MiddleCenter);
 
-        CreateUtilityButton(safeRoot, "CLIGNO G", new Vector2(0.5f, 1f), new Vector2(-330f, -88f), () => vehicle.ToggleLeftIndicator());
-        CreateUtilityButton(safeRoot, "WARNING", new Vector2(0.5f, 1f), new Vector2(-198f, -88f), () => vehicle.ToggleHazardLights());
-        CreateUtilityButton(safeRoot, "CLIGNO D", new Vector2(0.5f, 1f), new Vector2(-66f, -88f), () => vehicle.ToggleRightIndicator());
-        CreateUtilityButton(safeRoot, "FEUX", new Vector2(0.5f, 1f), new Vector2(66f, -88f), () => vehicle.ToggleHeadlights());
-        CreateUtilityButton(safeRoot, "PLEINS PHARES", new Vector2(0.5f, 1f), new Vector2(198f, -88f), () => vehicle.ToggleHighBeam());
-        CreateUtilityButton(safeRoot, "CAMÉRA", new Vector2(0.5f, 1f), new Vector2(330f, -88f), ToggleCameraView);
-        CreateUtilityButton(safeRoot, "DÉMARRER / STOP", new Vector2(0.5f, 1f), new Vector2(0f, -150f), ToggleEngine);
+        CreateUtilityButton(safeRoot, "←", new Vector2(0.5f, 1f), new Vector2(-330f, -88f), () => vehicle.ToggleLeftIndicator());
+        CreateUtilityButton(safeRoot, "⚠", new Vector2(0.5f, 1f), new Vector2(-198f, -88f), () => vehicle.ToggleHazardLights());
+        CreateUtilityButton(safeRoot, "→", new Vector2(0.5f, 1f), new Vector2(-66f, -88f), () => vehicle.ToggleRightIndicator());
+        CreateUtilityButton(safeRoot, "☼", new Vector2(0.5f, 1f), new Vector2(66f, -88f), () => vehicle.ToggleHeadlights());
+        CreateUtilityButton(safeRoot, "✦", new Vector2(0.5f, 1f), new Vector2(198f, -88f), () => vehicle.ToggleHighBeam());
+        CreateUtilityButton(safeRoot, "◎", new Vector2(0.5f, 1f), new Vector2(330f, -88f), ToggleCameraView);
+        CreateUtilityButton(safeRoot, "⏻", new Vector2(0.5f, 1f), new Vector2(0f, -150f), ToggleEngine);
         CreateSeatbeltButton(safeRoot);
         CreatePassengerDoorButton(safeRoot);
     }
@@ -107,28 +107,28 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     private void CreateSeatbeltButton(Transform parent)
     {
         GameObject panel = CreatePanel(parent, "Seatbelt control", new Vector2(0.5f, 1f),
-            new Vector2(0.5f, 0.5f), new Vector2(0f, -205f), new Vector2(176f, 42f),
+            new Vector2(0.5f, 0.5f), new Vector2(-94f, -205f), new Vector2(74f, 48f),
             new Color(0.035f, 0.075f, 0.11f, 0.92f));
         Button button = panel.AddComponent<Button>();
         button.targetGraphic = panel.GetComponent<Image>();
         button.onClick.AddListener(ToggleSeatbelt);
-        seatbeltText = CreateText(panel.transform, "CEINTURE  ATTACHÉE", 14, TextAnchor.MiddleCenter);
-        seatbeltText.resizeTextMinSize = 10;
-        seatbeltText.resizeTextMaxSize = 14;
+        seatbeltText = CreateText(panel.transform, "▤", 26, TextAnchor.MiddleCenter);
+        seatbeltText.resizeTextMinSize = 20;
+        seatbeltText.resizeTextMaxSize = 26;
     }
 
 
     private void CreatePassengerDoorButton(Transform parent)
     {
         GameObject panel = CreatePanel(parent, "Passenger door control", new Vector2(0.5f, 1f),
-            new Vector2(0.5f, 0.5f), new Vector2(0f, -260f), new Vector2(190f, 42f),
+            new Vector2(0.5f, 0.5f), new Vector2(94f, -205f), new Vector2(74f, 48f),
             new Color(0.035f, 0.075f, 0.11f, 0.92f));
         Button button = panel.AddComponent<Button>();
         button.targetGraphic = panel.GetComponent<Image>();
         button.onClick.AddListener(TogglePassengerDoor);
-        doorText = CreateText(panel.transform, "PORTE  FERMÉE", 14, TextAnchor.MiddleCenter);
-        doorText.resizeTextMinSize = 10;
-        doorText.resizeTextMaxSize = 14;
+        doorText = CreateText(panel.transform, "▣", 26, TextAnchor.MiddleCenter);
+        doorText.resizeTextMinSize = 20;
+        doorText.resizeTextMaxSize = 26;
     }
 
     private void TogglePassengerDoor()
@@ -136,14 +136,14 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         if (vehicle != null && !vehicle.TogglePassengerDoor())
             Debug.Log("Porte passagers verrouillée : arrêtez complètement le car.");
         if (vehicle != null && doorText != null)
-            doorText.text = vehicle.PassengerDoorOpen ? "PORTE  OUVERTE" : "PORTE  FERMÉE";
+            doorText.text = vehicle.PassengerDoorOpen ? "◧" : "▣";
     }
 
     private void ToggleSeatbelt()
     {
         if (vehicle != null) vehicle.SetSeatbelt(!vehicle.SeatbeltFastened);
         if (vehicle != null && seatbeltText != null)
-            seatbeltText.text = vehicle.SeatbeltFastened ? "CEINTURE  ATTACHÉE" : "CEINTURE  DÉTACHÉE";
+            seatbeltText.text = vehicle.SeatbeltFastened ? "▤" : "▥";
     }
 
     private void ToggleEngine()
