@@ -20,12 +20,18 @@ public sealed class CoachWeatherSystem : MonoBehaviour
         main.loop = true;
         main.duration = 4f;
         main.startLifetime = 1.4f;
-        main.startSpeed = 17f;
-        main.startSize = 0.035f;
+        main.startSpeed = 0f;
+        main.startSize = 0.05f;
         main.startColor = new Color(0.72f, 0.82f, 0.92f, 0.62f);
         main.maxParticles = 700;
         main.simulationSpace = ParticleSystemSimulationSpace.World;
-        main.gravityModifier = 0.08f;
+        main.gravityModifier = 0f;
+        ParticleSystem.VelocityOverLifetimeModule fall = rainParticles.velocityOverLifetime;
+        fall.enabled = true;
+        fall.space = ParticleSystemSimulationSpace.World;
+        fall.x = new ParticleSystem.MinMaxCurve(0.25f);
+        fall.y = new ParticleSystem.MinMaxCurve(-17f);
+        fall.z = new ParticleSystem.MinMaxCurve(0f);
 
         rainEmission = rainParticles.emission;
         rainEmission.rateOverTime = 0f;
@@ -34,7 +40,9 @@ public sealed class CoachWeatherSystem : MonoBehaviour
         shape.scale = new Vector3(26f, 1f, 34f);
 
         ParticleSystemRenderer renderer = rainParticles.GetComponent<ParticleSystemRenderer>();
-        renderer.renderMode = ParticleSystemRenderMode.Billboard;
+        renderer.renderMode = ParticleSystemRenderMode.StretchedBillboard;
+        renderer.velocityScale = 0.18f;
+        renderer.lengthScale = 2.2f;
         Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit");
         if (shader == null) shader = Shader.Find("Particles/Standard Unlit");
         renderer.material = new Material(shader)
