@@ -40,7 +40,7 @@ public sealed class PassengerBooking
         DestinationStopId = destinationStopId;
         OriginStopIndex = originStopIndex;
         DestinationStopIndex = destinationStopIndex;
- = serviceClass;
+        ServiceClass = serviceClass;
         SeatNumber = seatNumber;
         LuggageWeightKg = luggageWeightKg;
         FarePaidXof = farePaidXof;
@@ -80,6 +80,7 @@ public sealed class PassengerTrip
     private readonly List<RouteStop> itineraryStops = new List<RouteStop>();
     private readonly List<PassengerBooking> bookings = new List<PassengerBooking>();
     private int nextTicketNumber = 1;
+    private int lastProcessedPassengerStopIndex = -1;
     private long ticketRevenueXof;
 
     public IReadOnlyList<PassengerBooking> Bookings => bookings;
@@ -158,6 +159,21 @@ public sealed class PassengerTrip
             originIndex, destinationIndex);
         bookings.Add(booking);
         ticketRevenueXof += fare;
+        return true;
+    }
+
+    /// <summary>Processes a selected itinerary stop: alighting first, then boarding.</summary>
+    public bool TryProcessPassengerStop(string stopId, out int alighted, out int boarded, out string reason)
+    {
+        alighted = 0; boarded = 0; reason = string.Empty;
+        int stopIndex = FindPassengerStopIndex(stopId);
+        if (stopIndex < 0)
+        { reason = "Cet arrêt ne permet pas l'échange de passagers sur cet itinéraire."; return false; }
+        if (stopIndex <= lastProcessedPassengerStopIndex)
+        { reason = "Cet arrêt a déjà été traité ou n'est pas dans le bon ordre."; return false; }
+        alighted = TryAlightPassengersAtStop(stopId);
+        boarded = TryBoardPassengersAtStop(stopId);
+        lastProcessedPassengerStopIndex = stopIndex;
         return true;
     }
 
