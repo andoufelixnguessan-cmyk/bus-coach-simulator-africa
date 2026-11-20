@@ -11,6 +11,8 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     private MobileGraphicsSettings graphics;
     private Text speedText;
     private Text qualityText;
+    private Text gearText;
+    private Image gearPanelImage;
     private CoachHudIcon seatbeltIcon;
     private CoachHudIcon doorIcon;
     private Image leftIndicatorImage, hazardImage, rightIndicatorImage, headlightImage, highBeamImage, engineImage;
@@ -37,6 +39,8 @@ public sealed class PrototypeTouchControls : MonoBehaviour
             speedText.text = "VITESSE  " + Mathf.RoundToInt(vehicle.SpeedKph) + " km/h";
         if (graphics != null && qualityText != null)
             qualityText.text = "GRAPHISMES  " + graphics.PresetLabel;
+        if (vehicle != null && gearText != null)
+            gearText.text = vehicle.CurrentGearLabel;
         if (vehicle != null && seatbeltIcon != null)
             seatbeltIcon.SetIcon(vehicle.SeatbeltFastened ? CoachHudIcon.IconType.SeatbeltOn : CoachHudIcon.IconType.SeatbeltOff);
         if (vehicle != null && doorIcon != null)
@@ -51,6 +55,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
             SetButtonState(engineImage, vehicle.EngineRunning);
             SetButtonState(seatbeltPanelImage, vehicle.SeatbeltFastened);
             SetButtonState(doorPanelImage, vehicle.PassengerDoorOpen);
+            SetButtonState(gearPanelImage, vehicle.SelectedGear == CoachVehicleController.GearSelection.Drive || vehicle.SelectedGear == CoachVehicleController.GearSelection.Reverse);
         }
         if (wipers != null) SetButtonState(wiperImage, wipers.IsEnabled);
     }
@@ -119,6 +124,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         CreateSeatbeltButton(safeRoot);
         CreateWiperButton(safeRoot);
         CreatePassengerDoorButton(safeRoot);
+        CreateGearSelectorButton(safeRoot);
     }
 
     private void CreateSeatbeltButton(Transform parent)
@@ -158,6 +164,28 @@ public sealed class PrototypeTouchControls : MonoBehaviour
     private void ToggleWipers()
     {
         if (wipers != null) wipers.Toggle();
+    }
+
+
+    private void CreateGearSelectorButton(Transform parent)
+    {
+        GameObject panel = CreatePanel(parent, "Gear selector", new Vector2(0.5f, 1f),
+            new Vector2(0.5f, 0.5f), new Vector2(0f, -270f), new Vector2(74f, 48f),
+            new Color(0.035f, 0.075f, 0.11f, 0.92f));
+        Button button = panel.AddComponent<Button>();
+        button.targetGraphic = panel.GetComponent<Image>();
+        button.transition = Selectable.Transition.None;
+        button.onClick.AddListener(CycleGearSelection);
+        gearPanelImage = panel.GetComponent<Image>();
+        gearText = CreateText(panel.transform, vehicle != null ? vehicle.CurrentGearLabel : "P", 25, TextAnchor.MiddleCenter);
+        gearText.resizeTextMinSize = 18;
+        gearText.resizeTextMaxSize = 28;
+    }
+
+    private void CycleGearSelection()
+    {
+        if (vehicle != null && !vehicle.CycleGearSelection())
+            Debug.Log("Boîte : sélectionnez P/R/N/D uniquement à l'arrêt.");
     }
 
     private void TogglePassengerDoor()
