@@ -288,6 +288,14 @@ public sealed class InternationalBorderManager
         return total;
     }
 
+    public long GetTotalFeesPaidXof()
+    {
+        long total = 0L;
+        for (int i = 0; i < records.Count; i++)
+            total += Math.Max(0L, records[i].FeePaidXof);
+        return total;
+    }
+
     public bool TryClearBorder(string checkpointId, bool passengerDocumentsValid, bool coachDocumentsValid,
         CompanyProfile company, out string reason)
     {
