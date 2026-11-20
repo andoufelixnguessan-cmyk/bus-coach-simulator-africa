@@ -57,28 +57,45 @@ public sealed class CoachPassengerManifestPanel : MonoBehaviour
         panelRect.offsetMin = Vector2.zero;
         panelRect.offsetMax = Vector2.zero;
         panel.AddComponent<MobileSafeAreaFitter>();
+        panel.AddComponent<RectMask2D>();
+        ScrollRect panelScroll = panel.AddComponent<ScrollRect>();
+        panelScroll.horizontal = false;
+        panelScroll.vertical = true;
+        panelScroll.movementType = ScrollRect.MovementType.Clamped;
+        panelScroll.scrollSensitivity = 34f;
 
-        AddText(panel.transform, "GESTION DES PASSAGERS", 24, 0, -10, 48, TextAnchor.MiddleCenter, Color.white);
-        summaryText = AddText(panel.transform, "", 16, 0, -62, 72, TextAnchor.MiddleCenter,
+        GameObject contentObject = CreateObject("Passenger manifest scroll content", panel.transform);
+        RectTransform contentRect = contentObject.GetComponent<RectTransform>();
+        contentRect.anchorMin = new Vector2(0f, 1f);
+        contentRect.anchorMax = new Vector2(1f, 1f);
+        contentRect.pivot = new Vector2(0.5f, 1f);
+        contentRect.anchoredPosition = Vector2.zero;
+        contentRect.sizeDelta = new Vector2(0f, 980f);
+        panelScroll.viewport = panelRect;
+        panelScroll.content = contentRect;
+
+        Transform content = contentObject.transform;
+        AddText(content, "GESTION DES PASSAGERS", 24, 0, -10, 48, TextAnchor.MiddleCenter, Color.white);
+        summaryText = AddText(content, "", 16, 0, -62, 72, TextAnchor.MiddleCenter,
             new Color(0.62f, 0.84f, 1f));
 
-        AddText(panel.transform, "NOUVELLE RÉSERVATION", 17, 0, -142, 34, TextAnchor.MiddleLeft, Color.white);
-        passengerNameInput = AddInput(panel.transform, "Nom du passager", 0, -188, 50);
-        luggageWeightInput = AddInput(panel.transform, "Poids du bagage (kg)", 0, -246, 50);
-        originDropdown = AddDropdown(panel.transform, "Départ", 0, -304, 48);
-        destinationDropdown = AddDropdown(panel.transform, "Destination", 0, -360, 48);
-        AddButton(panel.transform, "RÉSERVER ET ENCAISSER LE BILLET", 0, -418, 52, BookPassenger);
+        AddText(content, "NOUVELLE RÉSERVATION", 17, 0, -142, 34, TextAnchor.MiddleLeft, Color.white);
+        passengerNameInput = AddInput(content, "Nom du passager", 0, -188, 50);
+        luggageWeightInput = AddInput(content, "Poids du bagage (kg)", 0, -246, 50);
+        originDropdown = AddDropdown(content, "Départ", 0, -304, 48);
+        destinationDropdown = AddDropdown(content, "Destination", 0, -360, 48);
+        AddButton(content, "RÉSERVER ET ENCAISSER LE BILLET", 0, -418, 52, BookPassenger);
 
-        AddText(panel.transform, "EMBARQUEMENT / DESCENTE", 17, 0, -488, 36, TextAnchor.MiddleLeft, Color.white);
-        currentStopDropdown = AddDropdown(panel.transform, "Arrêt à traiter", 0, -532, 48);
-        AddButton(panel.transform, "TRAITER CET ARRÊT", 0, -588, 52, ProcessCurrentStop);
+        AddText(content, "EMBARQUEMENT / DESCENTE", 17, 0, -488, 36, TextAnchor.MiddleLeft, Color.white);
+        currentStopDropdown = AddDropdown(content, "Arrêt à traiter", 0, -532, 48);
+        AddButton(content, "TRAITER CET ARRÊT", 0, -588, 52, ProcessCurrentStop);
 
-        AddText(panel.transform, "MANIFESTE DES BILLETS", 16, 0, -656, 34, TextAnchor.MiddleLeft, Color.white);
-        bookingListText = AddText(panel.transform, "Aucune réservation.", 14, 0, -694, 150,
+        AddText(content, "MANIFESTE DES BILLETS", 16, 0, -656, 34, TextAnchor.MiddleLeft, Color.white);
+        bookingListText = AddText(content, "Aucune réservation.", 14, 0, -694, 150,
             TextAnchor.UpperLeft, new Color(0.88f, 0.91f, 0.95f));
-        feedbackText = AddText(panel.transform, "", 14, 0, -850, 54, TextAnchor.MiddleCenter,
+        feedbackText = AddText(content, "", 14, 0, -850, 54, TextAnchor.MiddleCenter,
             new Color(0.62f, 0.92f, 0.72f));
-        AddButton(panel.transform, "FERMER", 0, -910, 48, ClosePanel);
+        AddButton(content, "FERMER", 0, -910, 48, ClosePanel);
     }
 
     private void BuildStopOptions()
@@ -226,11 +243,12 @@ public sealed class CoachPassengerManifestPanel : MonoBehaviour
         Image image = root.AddComponent<Image>();
         image.color = new Color(0.10f, 0.15f, 0.22f, 1f);
         Dropdown dropdown = root.AddComponent<Dropdown>();
+        dropdown.targetGraphic = image;
         Text caption = CreateText(root.transform, label, 15, TextAnchor.MiddleLeft, Color.white);
         caption.rectTransform.offsetMin = new Vector2(12f, 2f);
         caption.rectTransform.offsetMax = new Vector2(-36f, -2f);
         dropdown.captionText = caption;
-        dropdown.targetGraphic = image;
+
         GameObject template = CreateObject("Template", root.transform);
         RectTransform templateRect = template.GetComponent<RectTransform>();
         templateRect.anchorMin = new Vector2(0f, 0f);
@@ -241,6 +259,7 @@ public sealed class CoachPassengerManifestPanel : MonoBehaviour
         Image templateImage = template.AddComponent<Image>();
         templateImage.color = new Color(0.07f, 0.10f, 0.15f, 1f);
         ScrollRect scroll = template.AddComponent<ScrollRect>();
+
         GameObject viewport = CreateObject("Viewport", template.transform);
         RectTransform viewportRect = viewport.GetComponent<RectTransform>();
         viewportRect.anchorMin = Vector2.zero;
@@ -248,23 +267,36 @@ public sealed class CoachPassengerManifestPanel : MonoBehaviour
         viewportRect.offsetMin = Vector2.zero;
         viewportRect.offsetMax = Vector2.zero;
         viewport.AddComponent<RectMask2D>();
+        Image viewportImage = viewport.AddComponent<Image>();
+        viewportImage.color = Color.white;
+
         GameObject content = CreateObject("Content", viewport.transform);
         RectTransform contentRect = content.GetComponent<RectTransform>();
         contentRect.anchorMin = new Vector2(0f, 1f);
-        contentRect.anchorMax = new Vector2(1f, 1f);
+        contentRect.anchorMax = Vector2.one;
         contentRect.pivot = new Vector2(0.5f, 1f);
-        contentRect.sizeDelta = new Vector2(0f, 32f);
-        scroll.viewport = viewportRect;
-        scroll.content = contentRect;
+        contentRect.sizeDelta = new Vector2(0f, 36f);
+        VerticalLayoutGroup layout = content.AddComponent<VerticalLayoutGroup>();
+        layout.childControlHeight = true;
+        layout.childForceExpandHeight = false;
+        ContentSizeFitter fitter = content.AddComponent<ContentSizeFitter>();
+        fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
         GameObject item = CreateObject("Item", content.transform);
-        item.AddComponent<Toggle>();
+        item.GetComponent<RectTransform>().sizeDelta = new Vector2(0f, 40f);
+        Toggle toggle = item.AddComponent<Toggle>();
+        Image itemImage = item.AddComponent<Image>();
+        itemImage.color = new Color(0.12f, 0.20f, 0.30f);
         Text itemText = CreateText(item.transform, "Option", 14, TextAnchor.MiddleLeft, Color.white);
         itemText.rectTransform.offsetMin = new Vector2(12f, 0f);
         itemText.rectTransform.offsetMax = new Vector2(-8f, 0f);
+        toggle.targetGraphic = itemImage;
+        toggle.graphic = itemText;
+        scroll.viewport = viewportRect;
+        scroll.content = contentRect;
         dropdown.template = templateRect;
         dropdown.itemText = itemText;
         template.SetActive(false);
-        dropdown.RefreshShownValue();
         return dropdown;
     }
 
