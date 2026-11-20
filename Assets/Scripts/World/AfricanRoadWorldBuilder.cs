@@ -13,8 +13,18 @@ public static class AfricanRoadWorldBuilder
     private const float RoadHalfWidth = 4.6f;
     private const float ShoulderWidth = 1.35f;
     private const float CorridorLength = SegmentCount * SegmentLength;
+    private static Material asphaltMaterial;
+    private static readonly Color DryAsphaltColor = new Color(0.105f, 0.115f, 0.125f);
 
     public static float BuiltCorridorLength => CorridorLength;
+
+    public static void SetRoadWet(bool wet)
+    {
+        if (asphaltMaterial == null) return;
+        asphaltMaterial.color = wet ? DryAsphaltColor * 0.62f : DryAsphaltColor;
+        if (asphaltMaterial.HasProperty("_Smoothness"))
+            asphaltMaterial.SetFloat("_Smoothness", wet ? 0.82f : 0.18f);
+    }
 
     public static Vector3 GetLanePoint(float z, float lateralOffset)
     {
@@ -109,9 +119,12 @@ public static class AfricanRoadWorldBuilder
         GameObject road = new GameObject("Curved asphalt road");
         road.AddComponent<MeshFilter>().sharedMesh = mesh;
         MeshRenderer renderer = road.AddComponent<MeshRenderer>();
+        asphaltMaterial = MaterialFor(DryAsphaltColor);
+        if (asphaltMaterial.HasProperty("_Smoothness"))
+            asphaltMaterial.SetFloat("_Smoothness", 0.18f);
         renderer.sharedMaterials = new[]
         {
-            MaterialFor(new Color(0.105f, 0.115f, 0.125f)),
+            asphaltMaterial,
             MaterialFor(new Color(0.40f, 0.37f, 0.29f))
         };
         road.AddComponent<MeshCollider>().sharedMesh = mesh;
