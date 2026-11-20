@@ -96,6 +96,13 @@ public sealed class CoachTripOperations
     public bool TryComplete(CompanyProfile company, PassengerTrip passengers, bool safeDriving,
         long safeDrivingBonusXof, InternationalBorderManager borderManager, out string reason)
     {
+        reason = string.Empty;
+        if (borderManager != null && !borderManager.AllBordersCleared)
+        {
+            reason = "Le voyage ne peut pas être clôturé : tous les contrôles frontaliers doivent être validés.";
+            return false;
+        }
+
         long borderCosts = borderManager == null ? 0L : borderManager.GetTotalFeesPaidXof();
         return TryComplete(company, passengers, safeDriving, safeDrivingBonusXof, borderCosts, out reason);
     }
