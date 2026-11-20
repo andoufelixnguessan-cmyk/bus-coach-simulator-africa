@@ -61,11 +61,20 @@ public static class CoachEconomy
 
     public static CompanyProfile CreateNewCompany()
     {
+        CompanySaveSystem.DeleteSave();
         var company = new CompanyProfile(StartingCapitalXof);
         CoachDefinition starter = FindCoach(StartingCoachId);
         if (starter != null && company.TryPurchaseCoach(starter.Id, 1))
             company.RecordStartingCoach(starter.Id);
+        CompanySaveSystem.Save(company);
         return company;
+    }
+
+    public static CompanyProfile LoadOrCreateCompany()
+    {
+        CompanyProfile saved;
+        if (CompanySaveSystem.TryLoad(out saved)) return saved;
+        return CreateNewCompany();
     }
 
     public static bool IsServiceAvailable(CoachDefinition coach, CoachServiceClass serviceClass)
