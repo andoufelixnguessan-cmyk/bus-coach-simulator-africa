@@ -64,3 +64,7 @@ Les clignotants commandent quatre sources lumineuses extérieures (avant/arrièr
 Le moteur du prototype démarre désormais à la demande depuis le bouton « DÉMARRER / STOP ». Il ne peut être arrêté ou démarré que lorsque le car est presque immobile ; un démarrage est refusé si le réservoir est vide. Moteur arrêté, le couple moteur est nul, le régime retombe à zéro et la boucle diesel synthétique est coupée. Le régime et le bruit reprennent après démarrage.
 
 Une vérification source a aussi corrigé deux références manquantes dans le cockpit : l'entrée de direction exposée par le contrôleur et le matériau clair utilisé pour les graduations. Cela ne vaut pas compilation Unity : le projet doit encore être ouvert et testé dans l'éditeur.
+
+## Ceinture de sécurité (commande mobile)
+
+Le HUD paysage propose désormais une commande de ceinture attachée/détachée. Son état est synchronisé avec `CoachVehicleController.SeatbeltFastened`, actualisé dans le libellé du bouton et repris par le témoin rouge du tableau de bord 3D. Cette commande simule l'état de la ceinture conducteur ; elle ne représente pas encore les ceintures individuelles des passagers.
