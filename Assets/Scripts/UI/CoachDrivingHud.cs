@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public sealed class CoachDrivingHud : MonoBehaviour
 {
     private CoachVehicleController vehicle;
+    private CompanyProfile company;
     private CoachWiperSystem wipers;
     private CoachCabinLightingSystem cabinLights;
     private CoachCabinComfortSystem cabinComfort;
@@ -19,6 +20,7 @@ public sealed class CoachDrivingHud : MonoBehaviour
     private Text qualityText;
     private Text gearText;
     private Text routeStatusText;
+    private Text companyBalanceText;
     private GameObject routeStatusPanel;
     private Image gearPanelImage;
     private CoachHudIcon seatbeltIcon;
@@ -33,10 +35,11 @@ public sealed class CoachDrivingHud : MonoBehaviour
     private Action openRoutePlanner;
     private Action openPassengerManifest;
 
-    public void Configure(CoachVehicleController target, MobileDriveInput driveInput,
+    public void Configure(CoachVehicleController target, CompanyProfile owner, MobileDriveInput driveInput,
         MobileGraphicsSettings graphicsSettings, CameraFollow camera, CoachWiperSystem wiperSystem, CoachCabinLightingSystem cabinLightingSystem, CoachCabinComfortSystem cabinComfortSystem, CoachFuelSystem coachFuelSystem, Action showRoutePlanner, Action showPassengerManifest)
     {
         vehicle = target;
+        company = owner;
         wipers = wiperSystem;
         cabinLights = cabinLightingSystem;
         cabinComfort = cabinComfortSystem;
@@ -59,6 +62,8 @@ public sealed class CoachDrivingHud : MonoBehaviour
             speedText.text = "VITESSE  " + Mathf.RoundToInt(vehicle.SpeedKph) + " km/h";
         if (graphics != null && qualityText != null)
             qualityText.text = "GRAPHISMES  " + graphics.PresetLabel;
+        if (company != null && companyBalanceText != null)
+            companyBalanceText.text = "SOLDE  " + company.BalanceXof.ToString("N0") + " FCFA";
         if (vehicle != null && gearText != null)
             gearText.text = vehicle.CurrentGearLabel;
         if (vehicle != null && seatbeltIcon != null)
@@ -143,6 +148,10 @@ public sealed class CoachDrivingHud : MonoBehaviour
         speedText = CreateText(speedPanel.transform, "VITESSE  0 km/h", 25, TextAnchor.MiddleLeft);
         speedText.rectTransform.offsetMin = new Vector2(16f, 0f);
         speedText.rectTransform.offsetMax = new Vector2(-8f, 0f);
+
+        GameObject balancePanel = CreatePanel(safeRoot, "Company balance", new Vector2(0f, 1f), new Vector2(0f, 1f),
+            new Vector2(28f, -94f), new Vector2(286f, 44f), new Color(0.025f, 0.055f, 0.09f, 0.88f));
+        companyBalanceText = CreateText(balancePanel.transform, "SOLDE  0 FCFA", 18, TextAnchor.MiddleCenter);
 
         GameObject titlePanel = CreatePanel(safeRoot, "Game title", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2(0f, -24f), new Vector2(430f, 48f), new Color(0.025f, 0.055f, 0.09f, 0.72f));
