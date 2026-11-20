@@ -36,8 +36,8 @@ public sealed class CoachDefinition
 /// <summary>Single-currency coach catalogue and company finance foundation. All amounts are FCFA (XOF).</summary>
 public static class CoachEconomy
 {
-    public const long StartingCapitalXof = 10000000L;
-    public const string StartingCoachId = "minicar-interurbain";
+    public const long StartingCapitalXof = 24000000L;
+    public const string StartingCoachId = "car-moyen";
 
     private static readonly CoachDefinition[] Definitions =
     {
@@ -145,9 +145,10 @@ public sealed class RouteFare
     public long EconomyXof;
     public long ComfortXof;
     public long VipXof;
+    public bool IsInternational;
 
-    public RouteFare(string id, string name, long economy, long comfort, long vip)
-    { RouteId = id; DisplayName = name; EconomyXof = economy; ComfortXof = comfort; VipXof = vip; }
+    public RouteFare(string id, string name, long economy, long comfort, long vip, bool isInternational = false)
+    { RouteId = id; DisplayName = name; EconomyXof = economy; ComfortXof = comfort; VipXof = vip; IsInternational = isInternational; }
 
     public long GetFare(CoachServiceClass serviceClass)
     {
@@ -183,12 +184,22 @@ public sealed class TripFinancialQuote
     public long TicketRevenueXof;
     public long OperatingCostsXof;
     public long EstimatedProfitXof;
+    public long InternationalGuaranteeTopUpXof;
     public bool IsProfitable { get { return EstimatedProfitXof >= 0L; } }
 }
 
 /// <summary>Calculates a transparent one-way estimate; actual ticket sales determine final revenue.</summary>
 public static class RouteEconomy
 {
+    public const long MinimumInternationalProfitXof = 500000L;
+
+    public static long CalculateInternationalGuaranteeTopUp(RouteFare route, long ticketRevenueXof, long operatingCostsXof)
+    {
+        if (route == null || !route.IsInternational || ticketRevenueXof <= 0L) return 0L;
+        long currentProfit = ticketRevenueXof - Math.Max(0L, operatingCostsXof);
+        return Math.Max(0L, MinimumInternationalProfitXof - currentProfit);
+    }
+
     private static readonly RouteFare[] Fares =
     {
         new RouteFare("abidjan-yamoussoukro", "Abidjan – Yamoussoukro", 5000, 7000, 10000),
@@ -196,13 +207,13 @@ public static class RouteEconomy
         new RouteFare("abidjan-korhogo", "Abidjan – Korhogo", 12000, 16000, 22000),
         new RouteFare("abidjan-san-pedro", "Abidjan – San Pedro", 10000, 14000, 18000),
         new RouteFare("abidjan-man", "Abidjan – Man", 12000, 17000, 23000),
-        new RouteFare("abidjan-accra", "Abidjan – Accra", 15000, 20000, 28000),
-        new RouteFare("abidjan-lome", "Abidjan – Lomé", 22000, 30000, 40000),
-        new RouteFare("abidjan-cotonou", "Abidjan – Cotonou", 28000, 38000, 50000),
-        new RouteFare("abidjan-ouagadougou", "Abidjan – Ouagadougou", 30000, 42000, 55000),
-        new RouteFare("abidjan-bamako", "Abidjan – Bamako", 35000, 48000, 65000),
-        new RouteFare("abidjan-conakry", "Abidjan – Conakry", 45000, 60000, 80000),
-        new RouteFare("accra-lagos", "Accra – Lagos", 30000, 42000, 55000)
+        new RouteFare("abidjan-accra", "Abidjan – Accra", 15000, 20000, 28000, true),
+        new RouteFare("abidjan-lome", "Abidjan – Lomé", 22000, 30000, 40000, true),
+        new RouteFare("abidjan-cotonou", "Abidjan – Cotonou", 28000, 38000, 50000, true),
+        new RouteFare("abidjan-ouagadougou", "Abidjan – Ouagadougou", 30000, 42000, 55000, true),
+        new RouteFare("abidjan-bamako", "Abidjan – Bamako", 35000, 48000, 65000, true),
+        new RouteFare("abidjan-conakry", "Abidjan – Conakry", 45000, 60000, 80000, true),
+        new RouteFare("accra-lagos", "Accra – Lagos", 30000, 42000, 55000, true)
     };
 
     public static IReadOnlyList<RouteFare> AllRoutes => Fares;
@@ -223,13 +234,15 @@ public static class RouteEconomy
         int passengers = (seats * percent + 50) / 100;
         long revenue = passengers * route.GetFare(serviceClass);
         long totalCosts = costs.TotalXof;
+        long topUp = CalculateInternationalGuaranteeTopUp(route, revenue, totalCosts);
         return new TripFinancialQuote
         {
             Seats = seats,
             ExpectedPassengers = passengers,
             TicketRevenueXof = revenue,
             OperatingCostsXof = totalCosts,
-            EstimatedProfitXof = revenue - totalCosts
+            InternationalGuaranteeTopUpXof = topUp,
+            EstimatedProfitXof = revenue + topUp - totalCosts
         };
     }
 }
