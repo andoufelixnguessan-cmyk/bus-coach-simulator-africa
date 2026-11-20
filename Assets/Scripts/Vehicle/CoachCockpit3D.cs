@@ -48,10 +48,19 @@ public sealed class CoachCockpit3D : MonoBehaviour
         GameObject f=GameObject.CreatePrimitive(PrimitiveType.Cylinder); f.name=name+" dial";
         f.transform.SetParent(root,false); f.transform.localPosition=pos; f.transform.localRotation=Quaternion.Euler(90,0,0);
         f.transform.localScale=new Vector3(radius*2,.035f,radius*2); Object.Destroy(f.GetComponent<Collider>()); f.GetComponent<Renderer>().sharedMaterial=face;
-        GameObject n=Part(root,name+" needle",pos+new Vector3(0,radius*.34f,-.045f),new Vector3(.012f,radius*.72f,.012f),needleMat);
+        GameObject pivot=new GameObject(name+" needle pivot");
+        pivot.transform.SetParent(root,false); pivot.transform.localPosition=pos+new Vector3(0,0,-.045f);
+        GameObject n=Part(pivot.transform,name+" needle",new Vector3(0,radius*.34f,0),new Vector3(.012f,radius*.72f,.012f),needleMat);
+        for(int i=0;i<=10;i++)
+        {
+            float a=Mathf.Lerp(-135f,135f,i/10f)*Mathf.Deg2Rad;
+            Vector3 tickPos=pos+new Vector3(Mathf.Sin(a)*radius*.82f,Mathf.Cos(a)*radius*.82f,-.045f);
+            GameObject tick=Part(root,name+" scale mark",tickPos,new Vector3(.012f,.035f,.012f),white);
+            tick.transform.localRotation=Quaternion.Euler(0,0,-a*Mathf.Rad2Deg);
+        }
         GameObject h=GameObject.CreatePrimitive(PrimitiveType.Sphere); h.transform.SetParent(root,false); h.transform.localPosition=pos+new Vector3(0,0,-.05f);
         h.transform.localScale=Vector3.one*.04f; Object.Destroy(h.GetComponent<Collider>()); h.GetComponent<Renderer>().sharedMaterial=trim;
-        return n.transform;
+        return pivot.transform;
     }
 
     private void BuildLamps(Transform root)
@@ -106,7 +115,8 @@ public sealed class CoachCockpit3D : MonoBehaviour
         Needle(fuelNeedle,vehicle.FuelPercent/100f);
         Needle(tempNeedle,Mathf.InverseLerp(60,120,vehicle.CoolantTemperatureC));
         if(display!=null) display.text=Mathf.RoundToInt(vehicle.SpeedKph)+" km/h\n"+Mathf.RoundToInt(vehicle.EngineRpm)+" rpm   FUEL "+Mathf.RoundToInt(vehicle.FuelPercent)+"%";
-        bool[] active={vehicle.LeftIndicatorOn,vehicle.RightIndicatorOn,vehicle.HighBeamOn,vehicle.ParkingBrakeApplied,!vehicle.SeatbeltFastened,vehicle.AbsWarning,vehicle.EngineWarning};
+        bool flash=Mathf.Repeat(Time.time,.8f)<.4f;
+        bool[] active={vehicle.LeftIndicatorOn&&flash,vehicle.RightIndicatorOn&&flash,vehicle.HighBeamOn,vehicle.ParkingBrakeApplied,!vehicle.SeatbeltFastened,vehicle.AbsWarning,vehicle.EngineWarning};
         for(int i=0;i<lamps.Count;i++) lamps[i].sharedMaterial.color=active[i]?lampOn[i]:new Color(.06f,.07f,.08f);
     }
 
