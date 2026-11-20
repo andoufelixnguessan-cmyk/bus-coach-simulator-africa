@@ -29,6 +29,8 @@ namespace ATP.Editor
 
             PlayerSettings.companyName = "BUS & COACH SIMULATOR AFRICA";
             PlayerSettings.productName = "BUS & COACH SIMULATOR AFRICA";
+            PlayerSettings.bundleVersion = "0.1.0";
+            PlayerSettings.Android.bundleVersionCode = 1;
             PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, "com.buscoachsimulator.africa");
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.LandscapeLeft;
             PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
