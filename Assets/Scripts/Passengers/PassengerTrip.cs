@@ -139,10 +139,11 @@ public sealed class PassengerTrip
         if (string.IsNullOrWhiteSpace(passengerName)) { reason = "Nom du passager obligatoire."; return false; }
         if (luggageWeightKg < 0f || luggageWeightKg > MaximumSingleBagKg)
         { reason = "Un bagage ne peut pas dépasser 32 kg."; return false; }
-        if (ReservedPassengerCount() >= seatCapacity)
-        { reason = "Le car est complet."; return false; }
-        if (CurrentLuggageWeightKg() + luggageWeightKg > luggageCapacityKg)
-        { reason = "La capacité totale des soutes est atteinte."; return false; }
+        int freeSeat = FindFreeSeat(originIndex, destinationIndex);
+        if (freeSeat <= 0)
+        { reason = "Aucune place libre sur cette portion du trajet."; return false; }
+        if (!CanFitLuggage(luggageWeightKg, originIndex, destinationIndex))
+        { reason = "La capacité des soutes est atteinte sur une portion du trajet."; return false; }
 
         long fare = CalculateStopToStopFare(originIndex, destinationIndex);
         if (fare <= 0L) { reason = "Impossible de calculer le prix de ce billet."; return false; }
@@ -154,7 +155,7 @@ public sealed class PassengerTrip
         nextTicketNumber++;
         booking = new PassengerBooking(ticketId, passengerName.Trim(),
             itineraryStops[originIndex].Name, itineraryStops[destinationIndex].Name,
-            serviceClass, FindFreeSeat(), luggageWeightKg, fare,
+            serviceClass, freeSeat, luggageWeightKg, fare,
             itineraryStops[originIndex].Id, itineraryStops[destinationIndex].Id,
             originIndex, destinationIndex);
         bookings.Add(booking);
@@ -311,34 +312,75 @@ public sealed class PassengerTrip
         };
     }
 
-    private int ReservedPassengerCount()
+    private bool CanFitLuggage(float additionalWeightKg, int originIndex, int destinationIndex)
     {
-        int count = 0;
-        for (int i = 0; i < bookings.Count; i++)
-            if (bookings[i].Status != PassengerTicketStatus.Cancelled &&
-                bookings[i].Status != PassengerTicketStatus.NoShow) count++;
-        return count;
+        if (itineraryStops.Count < 2)
+            return CurrentLuggageWeightKg() + additionalWeightKg <= luggageCapacityKg;
+
+        float peakWeight = 0f;
+        for (int leg = 0; leg < itineraryStops.Count - 1; leg++)
+        {
+            float weight = 0f;
+            for (int i = 0; i < bookings.Count; i++)
+            {
+                PassengerBooking existing = bookings[i];
+                if (existing.Status == PassengerTicketStatus.Cancelled ||
+                    existing.Status == PassengerTicketStatus.NoShow) continue;
+                if (existing.OriginStopIndex <= leg && existing.DestinationStopIndex > leg)
+                    weight += existing.LuggageWeightKg;
+            }
+            if (originIndex <= leg && destinationIndex > leg) weight += additionalWeightKg;
+            if (weight > peakWeight) peakWeight = weight;
+        }
+        return peakWeight <= luggageCapacityKg;
     }
 
     private float CurrentLuggageWeightKg()
     {
-        float total = 0f;
-        for (int i = 0; i < bookings.Count; i++)
-            if (bookings[i].Status != PassengerTicketStatus.Cancelled) total += bookings[i].LuggageWeightKg;
-        return total;
+        if (itineraryStops.Count < 2)
+        {
+            float total = 0f;
+            for (int i = 0; i < bookings.Count; i++)
+                if (bookings[i].Status != PassengerTicketStatus.Cancelled &&
+                    bookings[i].Status != PassengerTicketStatus.NoShow) total += bookings[i].LuggageWeightKg;
+            return total;
+        }
+
+        float peakWeight = 0f;
+        for (int leg = 0; leg < itineraryStops.Count - 1; leg++)
+        {
+            float weight = 0f;
+            for (int i = 0; i < bookings.Count; i++)
+            {
+                PassengerBooking booking = bookings[i];
+                if (booking.Status == PassengerTicketStatus.Cancelled ||
+                    booking.Status == PassengerTicketStatus.NoShow) continue;
+                if (booking.OriginStopIndex <= leg && booking.DestinationStopIndex > leg)
+                    weight += booking.LuggageWeightKg;
+            }
+            if (weight > peakWeight) peakWeight = weight;
+        }
+        return peakWeight;
     }
 
-    private int FindFreeSeat()
+    /// <summary>Reuses seats for non-overlapping passenger journeys along the same route.</summary>
+    private int FindFreeSeat(int originIndex, int destinationIndex)
     {
         for (int seat = 1; seat <= seatCapacity; seat++)
         {
-            bool used = false;
+            bool overlaps = false;
             for (int i = 0; i < bookings.Count; i++)
-                if (bookings[i].SeatNumber == seat &&
-                    bookings[i].Status != PassengerTicketStatus.Cancelled &&
-                    bookings[i].Status != PassengerTicketStatus.NoShow)
-                { used = true; break; }
-            if (!used) return seat;
+            {
+                PassengerBooking existing = bookings[i];
+                if (existing.SeatNumber != seat ||
+                    existing.Status == PassengerTicketStatus.Cancelled ||
+                    existing.Status == PassengerTicketStatus.NoShow) continue;
+
+                bool sameJourneyOverlap = originIndex < existing.DestinationStopIndex &&
+                    existing.OriginStopIndex < destinationIndex;
+                if (sameJourneyOverlap) { overlaps = true; break; }
+            }
+            if (!overlaps) return seat;
         }
         return -1;
     }
