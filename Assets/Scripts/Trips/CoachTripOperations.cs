@@ -69,6 +69,21 @@ public sealed class CoachTripOperations
         return true;
     }
 
+    /// <summary>Processes passenger exchange at a planned stop while the coach is on the road.</summary>
+    public bool TryProcessPassengerStop(PassengerTrip passengers, string stopId,
+        out int alighted, out int boarded, out string summary, out string reason)
+    {
+        alighted = 0; boarded = 0; summary = string.Empty; reason = string.Empty;
+        if (Status != CoachTripStatus.OnRoad)
+        { reason = "Le car doit être en route pour traiter un arrêt passagers."; return false; }
+        if (passengers == null || passengers.TripId != TripId || passengers.CoachId != CoachId)
+        { reason = "Le manifeste passagers ne correspond pas à ce trajet."; return false; }
+        if (!passengers.TryProcessPassengerStop(stopId, out alighted, out boarded, out reason)) return false;
+        summary = (alighted == 0 ? "Aucune descente" : alighted + " passager(s) descendu(s)") +
+            " · " + (boarded == 0 ? "aucune montée" : boarded + " passager(s) monté(s)");
+        return true;
+    }
+
     public bool TryDepart(CompanyProfile company, TripOperatingCosts costs, out string reason)
     {
         reason = string.Empty;
