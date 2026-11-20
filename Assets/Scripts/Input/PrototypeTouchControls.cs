@@ -8,6 +8,10 @@ public sealed class PrototypeTouchControls : MonoBehaviour
 {
     private CoachVehicleController vehicle;
     private MobileDriveInput input;
+    private GUIStyle buttonStyle;
+    private GUIStyle infoStyle;
+    private GUIStyle labelStyle;
+    private int cachedScreenHeight = -1;
 
     public void Configure(CoachVehicleController target, MobileDriveInput driveInput)
     {
@@ -26,16 +30,12 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         if (vehicle == null || input == null) return;
 
         float scale = Mathf.Clamp(Screen.height / 720f, 0.75f, 1.25f);
+        EnsureStyles(scale);
+
         int buttonWidth = Mathf.RoundToInt(88f * scale);
         int buttonHeight = Mathf.RoundToInt(72f * scale);
         int margin = Mathf.RoundToInt(28f * scale);
         int bottom = Screen.height - buttonHeight - Mathf.RoundToInt(74f * scale);
-
-        GUIStyle buttonStyle = new GUIStyle(GUI.skin.button)
-        {
-            fontSize = Mathf.RoundToInt(22f * scale),
-            fontStyle = FontStyle.Bold
-        };
 
         bool left = GUI.RepeatButton(new Rect(margin, bottom, buttonWidth, buttonHeight), "◀", buttonStyle);
         bool right = GUI.RepeatButton(new Rect(margin + buttonWidth + 12f, bottom, buttonWidth, buttonHeight), "▶", buttonStyle);
@@ -48,13 +48,27 @@ public sealed class PrototypeTouchControls : MonoBehaviour
         if (brake) input.PressBrake(); else input.ReleaseBrake();
         if (handbrake) input.PressHandbrake(); else input.ReleaseHandbrake();
 
-        GUIStyle infoStyle = new GUIStyle(GUI.skin.box)
-        {
-            fontSize = Mathf.RoundToInt(18f * scale),
-            alignment = TextAnchor.MiddleLeft,
-            padding = new RectOffset(14, 14, 8, 8)
-        };
         GUI.Box(new Rect(margin, margin, 190f * scale, 42f * scale), "VITESSE  " + Mathf.RoundToInt(vehicle.SpeedKph) + " km/h", infoStyle);
-        GUI.Label(new Rect(margin, margin + 46f * scale, 280f * scale, 32f * scale), "PROTOTYPE • MODE CONDUITE");
+        GUI.Label(new Rect(margin, margin + 46f * scale, 280f * scale, 32f * scale), "PROTOTYPE • MODE CONDUITE", labelStyle);
+    }
+
+    private void EnsureStyles(float scale)
+    {
+        if (buttonStyle == null)
+        {
+            buttonStyle = new GUIStyle(GUI.skin.button) { fontStyle = FontStyle.Bold };
+            infoStyle = new GUIStyle(GUI.skin.box)
+            {
+                alignment = TextAnchor.MiddleLeft,
+                padding = new RectOffset(14, 14, 8, 8)
+            };
+            labelStyle = new GUIStyle(GUI.skin.label);
+        }
+
+        if (cachedScreenHeight == Screen.height) return;
+        cachedScreenHeight = Screen.height;
+        buttonStyle.fontSize = Mathf.RoundToInt(22f * scale);
+        infoStyle.fontSize = Mathf.RoundToInt(18f * scale);
+        labelStyle.fontSize = Mathf.RoundToInt(14f * scale);
     }
 }
