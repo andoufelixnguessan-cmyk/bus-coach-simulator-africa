@@ -148,6 +148,8 @@ public sealed class GameBootstrap : MonoBehaviour
         block.transform.position = position;
         block.transform.localScale = scale;
         block.GetComponent<Renderer>().material.color = color;
+        if (objectName != "Terrain" && objectName != "Road")
+            Object.Destroy(block.GetComponent<Collider>());
         return block;
     }
 
