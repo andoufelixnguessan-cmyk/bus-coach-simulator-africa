@@ -21,12 +21,13 @@
 - Seven lightweight traffic vehicles follow the road curvature in both traffic directions, including an oncoming coach; the player starts in the correct right-hand lane.
 - Route planner connected to the saved company and icon-only HUD; a prepared itinerary and estimated distance appear in the driving HUD.
 - Passenger manifest panel for ticket reservations, seat assignment, luggage-weight checks, company ticket income, and manual stop-by-stop boarding/alighting processing.
+- Ordered route progression controller added: it processes the next itinerary stop only, delegates passenger exchange to the passenger manifest, blocks border passage until passenger/coach documents are confirmed and the announced XOF fee is paid, and refuses trip closure while planned stops or border checks remain. This is a source-level coordination layer; automatic arrival detection and driving-HUD integration are still pending.
 - Roadside diesel station with a trigger area; refuelling requires the engine off, a stationary coach and the parking brake, and charges the company account in XOF.
 
 ## Remaining implementation before release
 
 1. Replace the starter corridor with route-specific geometry for all selected cities, including accurate road lengths, junctions, towns, terminals, rest areas, fuel stations and border checkpoints. The current 4.32 km corridor is a playable starter environment, not a complete real-world intercity route.
-2. Connect trip progression to the actual road route, automatic stop arrival, and international border checks. The route planner and passenger manifest currently prepare bookings and allow manual stop processing; they do not yet simulate the complete itinerary.
+2. Connect the new ordered route progression controller to the actual road route, automatic stop arrival, driving HUD and trip-start flow. The controller now coordinates passenger exchanges and border clearance at source level, but the game does not yet trigger it from physical arrival at each stop.
 3. Add passenger 3D models, seat occupancy visuals, luggage loading animations and onboard service interactions.
 4. Expand traffic AI with lane changing, overtaking, junction rules, traffic lights, collision response and route events; add a continuous day/night clock, windshield water effects, variable rain intensity and weather transitions.
 5. Add original production-quality exterior/interior models for every coach category and the remaining coach-specific equipment.
