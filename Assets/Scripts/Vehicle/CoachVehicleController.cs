@@ -18,11 +18,16 @@ public sealed class CoachVehicleController : MonoBehaviour
     [SerializeField, Range(5f, 45f)] private float maxSteerAngle = 28f;
     [SerializeField, Min(0f)] private float maxSpeedKph = 110f;
     [SerializeField] private float downforce = 80f;
+    [SerializeField, Min(0.1f)] private float steeringResponse = 3.8f;
+    [SerializeField, Min(0f)] private float frontAntiRoll = 8500f;
+    [SerializeField, Min(0f)] private float rearAntiRoll = 12500f;
+    [SerializeField, Min(1f)] private float wheelbaseMeters = 6.1f;
     [Header("Center of mass")]
     [SerializeField] private Vector3 centerOfMassOffset = new Vector3(0f, -0.8f, 0.1f);
 
     private Rigidbody body;
     private float throttleInput, brakeInput, steeringInput;
+    private float smoothedSteering;
     private bool handbrake;
     private float engineRpm = 650f;
     private float fuelPercent = 86f;
@@ -311,8 +316,12 @@ public sealed class CoachVehicleController : MonoBehaviour
         torqueCurve *= 1f - accessoryLoad * 0.08f;
         float torque = EngineRunning && !safetyInterlock
             ? motorTorque * torqueCurve * throttleInput * speedFactor * ratio * direction : 0f;
-        frontLeft.steerAngle = steeringInput * maxSteerAngle;
-        frontRight.steerAngle = steeringInput * maxSteerAngle;
+        smoothedSteering = Mathf.MoveTowards(smoothedSteering, steeringInput, steeringResponse * Time.fixedDeltaTime);
+        float speedSteerFactor = Mathf.Lerp(1f, 0.42f, Mathf.InverseLerp(25f, maxSpeedKph, SpeedKph));
+        ApplyAckermannSteering(smoothedSteering * maxSteerAngle * speedSteerFactor);
+        ApplyAntiRoll(frontLeft, frontRight, frontAntiRoll);
+        ApplyAntiRoll(rearLeft, rearRight, rearAntiRoll);
+        ApplyAntiRoll(rearLeftInner, rearRightInner, rearAntiRoll * 0.55f);
         rearLeft.motorTorque = torque * 0.25f;
         rearRight.motorTorque = torque * 0.25f;
         rearLeftInner.motorTorque = torque * 0.25f;
@@ -338,6 +347,51 @@ public sealed class CoachVehicleController : MonoBehaviour
         body.AddForce(-transform.up * downforce * body.linearVelocity.magnitude);
     }
 
+
+
+    private void ApplyAckermannSteering(float angleDegrees)
+    {
+        if (Mathf.Abs(angleDegrees) < 0.05f)
+        {
+            frontLeft.steerAngle = 0f;
+            frontRight.steerAngle = 0f;
+            return;
+        }
+
+        float track = Mathf.Abs(frontRight.transform.localPosition.x - frontLeft.transform.localPosition.x);
+        float radius = wheelbaseMeters / Mathf.Tan(Mathf.Abs(angleDegrees) * Mathf.Deg2Rad);
+        float inner = Mathf.Atan(wheelbaseMeters / Mathf.Max(0.5f, radius - track * 0.5f)) * Mathf.Rad2Deg;
+        float outer = Mathf.Atan(wheelbaseMeters / (radius + track * 0.5f)) * Mathf.Rad2Deg;
+        if (angleDegrees > 0f)
+        {
+            frontRight.steerAngle = inner;
+            frontLeft.steerAngle = outer;
+        }
+        else
+        {
+            frontLeft.steerAngle = -inner;
+            frontRight.steerAngle = -outer;
+        }
+    }
+
+    private void ApplyAntiRoll(WheelCollider left, WheelCollider right, float force)
+    {
+        if (left == null || right == null) return;
+        WheelHit hit;
+        float leftTravel = 1f;
+        float rightTravel = 1f;
+        bool leftGrounded = left.GetGroundHit(out hit);
+        if (leftGrounded)
+            leftTravel = (-left.transform.InverseTransformPoint(hit.point).y - left.radius) / left.suspensionDistance;
+        bool rightGrounded = right.GetGroundHit(out hit);
+        if (rightGrounded)
+            rightTravel = (-right.transform.InverseTransformPoint(hit.point).y - right.radius) / right.suspensionDistance;
+        float antiRollForce = (leftTravel - rightTravel) * force;
+        if (leftGrounded)
+            body.AddForceAtPosition(left.transform.up * -antiRollForce, left.transform.position);
+        if (rightGrounded)
+            body.AddForceAtPosition(right.transform.up * antiRollForce, right.transform.position);
+    }
 
     private float ApplyAbs(WheelCollider wheel, float requestedTorque)
     {
