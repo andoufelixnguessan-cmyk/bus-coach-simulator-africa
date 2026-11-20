@@ -23,6 +23,7 @@ public sealed class GameBootstrap : MonoBehaviour
     private MobileDriveInput input;
     private CameraFollow cameraFollow;
     private MobileGraphicsSettings graphicsSettings;
+    private PrototypeTouchControls drivingHud;
     public CompanyProfile ActiveCompany { get; private set; }
     public PlayerRouteTripSetup CurrentTripSetup { get; private set; }
     private GameObject routePlannerCanvas;
@@ -458,6 +459,7 @@ public sealed class GameBootstrap : MonoBehaviour
     private void HandleTripPrepared(PlayerRouteTripSetup setup)
     {
         CurrentTripSetup = setup;
+        if (drivingHud != null) drivingHud.SetRouteDisplay(setup);
         CloseRoutePlanner();
         if (setup != null && setup.Itinerary != null)
             Debug.Log("Voyage prêt : " + setup.Itinerary.DisplayName + " | " +
@@ -471,8 +473,8 @@ public sealed class GameBootstrap : MonoBehaviour
         input = inputObject.AddComponent<MobileDriveInput>();
         graphicsSettings = inputObject.AddComponent<MobileGraphicsSettings>();
         graphicsSettings.ApplySavedPreset();
-        var touch = inputObject.AddComponent<PrototypeTouchControls>();
-        touch.Configure(coach, input, graphicsSettings, cameraFollow, coach.GetComponent<CoachWiperSystem>(), coach.GetComponent<CoachCabinLightingSystem>(), coach.GetComponent<CoachCabinComfortSystem>(), coach.GetComponent<CoachFuelSystem>(), ShowRoutePlanner);
+        drivingHud = inputObject.AddComponent<PrototypeTouchControls>();
+        drivingHud.Configure(coach, input, graphicsSettings, cameraFollow, coach.GetComponent<CoachWiperSystem>(), coach.GetComponent<CoachCabinLightingSystem>(), coach.GetComponent<CoachCabinComfortSystem>(), coach.GetComponent<CoachFuelSystem>(), ShowRoutePlanner);
     }
 
     private static GameObject CreateBlock(string objectName, Vector3 position, Vector3 scale, Color color)
