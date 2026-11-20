@@ -32,6 +32,16 @@ The target is a serious, immersive coach simulation experience. Bus Simulator: U
 
 A single drivable coach, a polished third-person and cockpit camera, mobile controls, a small test road, basic traffic, and a reliable Android development build.
 
+## Systems added in the repository
+
+The codebase now includes early C# foundations for:
+- the single-currency company economy and coach catalogue;
+- optional onboard comfort equipment with compatibility checks;
+- passenger bookings, seat assignment, luggage limits, ticket revenue and boarding states;
+- trip preparation, mandatory safety checklist, departure-cost deduction and trip completion.
+
+These are code foundations only. They are not yet connected to production menus, persistent save data, animated passenger models, route scenes or a complete playable journey. They have not been compiled or tested in Unity.
+
 ## Development status
 
 The repository now contains a Unity 6 project configuration, an editor-driven Android APK build entry point, a temporary drivable coach/road prototype, independent multi-touch steering and pedal controls, and saved Économie/Équilibré/Élevé graphics presets. The APK pipeline is prepared but requires a Unity Personal license secret in GitHub Actions. The prototype has not yet been compiled, installed, or tested on a phone. It is not a finished realistic simulator and no downloadable APK is claimed yet.
