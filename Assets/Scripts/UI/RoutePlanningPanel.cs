@@ -68,12 +68,15 @@ public sealed class RoutePlanningPanel : MonoBehaviour
 
         GameObject panel = CreateUIObject("Route planning panel", transform);
         Image panelImage = panel.AddComponent<Image>();
-        panelImage.color = new Color(0.035f, 0.075f, 0.13f, 0.97f);
+        panelImage.color = new Color(0.025f, 0.055f, 0.105f, 0.985f);
         RectTransform panelRect = panel.GetComponent<RectTransform>();
         panelRect.anchorMin = new Vector2(0.04f, 0.04f);
         panelRect.anchorMax = new Vector2(0.96f, 0.96f);
         panelRect.offsetMin = Vector2.zero;
         panelRect.offsetMax = Vector2.zero;
+        panel.AddComponent<MobileSafeAreaFitter>();
+        panelRect.offsetMin = new Vector2(10f, 10f);
+        panelRect.offsetMax = new Vector2(-10f, -10f);
 
         // The form is vertically scrollable so every control remains reachable on small phones.
         panel.AddComponent<RectMask2D>();
@@ -81,6 +84,8 @@ public sealed class RoutePlanningPanel : MonoBehaviour
         panelScroll.horizontal = false;
         panelScroll.vertical = true;
         panelScroll.movementType = ScrollRect.MovementType.Clamped;
+        panelScroll.scrollSensitivity = 34f;
+        panelScroll.inertia = true;
 
         GameObject contentObject = CreateUIObject("Scrollable content", panel.transform);
         RectTransform contentRect = contentObject.GetComponent<RectTransform>();
@@ -88,24 +93,25 @@ public sealed class RoutePlanningPanel : MonoBehaviour
         contentRect.anchorMax = new Vector2(1f, 1f);
         contentRect.pivot = new Vector2(0.5f, 1f);
         contentRect.anchoredPosition = Vector2.zero;
-        contentRect.sizeDelta = new Vector2(0f, 860f);
+        contentRect.sizeDelta = new Vector2(0f, 900f);
         panelScroll.viewport = panelRect;
         panelScroll.content = contentRect;
 
-        AddText(contentObject.transform, "PLANIFIER UN VOYAGE", 24, 0, -18, 54, TextAnchor.MiddleCenter, Color.white);
-        AddText(contentObject.transform, "Réseau routier africain • Cars de 6 roues minimum", 13, 0, -55, 54,
+        AddText(contentObject.transform, "BUS & COACH SIMULATOR AFRICA", 13, 0, -8, 28, TextAnchor.MiddleCenter, new Color(0.48f, 0.75f, 0.98f));
+        AddText(contentObject.transform, "PLANIFIER UN VOYAGE", 25, 0, -30, 54, TextAnchor.MiddleCenter, Color.white);
+        AddText(contentObject.transform, "Réseau africain • Cars longue distance uniquement", 13, 0, -72, 38,
             TextAnchor.MiddleCenter, new Color(0.68f, 0.82f, 0.95f));
 
-        AddText(contentObject.transform, "VILLE DE DÉPART / PROCHAINE ÉTAPE", 14, 0, -94, 44,
+        AddText(contentObject.transform, "VOTRE ITINÉRAIRE", 14, 0, -112, 38,
             TextAnchor.MiddleLeft, Color.white);
-        cityDropdown = AddDropdown(contentObject.transform, "Choisir une ville", 0, -128, 52);
+        cityDropdown = AddDropdown(contentObject.transform, "Choisir une ville", 0, -148, 52);
 
-        addCityButton = AddButton(contentObject.transform, "Ajouter cette ville au trajet", 0, -185, 52, AddSelectedCity);
-        AddText(contentObject.transform, "CAR DE VOTRE GARAGE", 14, 0, -245, 42, TextAnchor.MiddleLeft, Color.white);
-        coachDropdown = AddDropdown(contentObject.transform, "Choisir un car", 0, -278, 52);
+        addCityButton = AddButton(contentObject.transform, "+ AJOUTER CETTE VILLE", 0, -208, 52, AddSelectedCity);
+        AddText(contentObject.transform, "VOTRE CAR", 14, 0, -270, 38, TextAnchor.MiddleLeft, Color.white);
+        coachDropdown = AddDropdown(contentObject.transform, "Choisir un car", 0, -306, 52);
 
-        AddText(contentObject.transform, "CLASSE DE SERVICE", 14, 0, -338, 42, TextAnchor.MiddleLeft, Color.white);
-        serviceDropdown = AddDropdown(contentObject.transform, "Économique", 0, -371, 52);
+        AddText(contentObject.transform, "CLASSE DE SERVICE", 14, 0, -368, 38, TextAnchor.MiddleLeft, Color.white);
+        serviceDropdown = AddDropdown(contentObject.transform, "Économique", 0, -404, 52);
         serviceDropdown.options = new List<Dropdown.OptionData> {
             new Dropdown.OptionData("Économique"),
             new Dropdown.OptionData("Confort"),
@@ -113,11 +119,11 @@ public sealed class RoutePlanningPanel : MonoBehaviour
         };
         serviceDropdown.RefreshShownValue();
 
-        routeText = AddText(contentObject.transform, "", 15, 0, -448, 120, TextAnchor.UpperLeft, Color.white);
-        AddButton(contentObject.transform, "TRAJET CONSEILLÉ : ABIDJAN → YAMOUSSOUKRO", 0, -580, 50, UseRecommendedRoute);
-        AddButton(contentObject.transform, "Recommencer le trajet", 0, -638, 48, ResetRoute);
-        prepareButton = AddButton(contentObject.transform, "PRÉPARER LE VOYAGE", 0, -696, 56, PrepareTrip);
-        feedbackText = AddText(contentObject.transform, "", 14, 0, -758, 64, TextAnchor.MiddleCenter,
+        routeText = AddText(contentObject.transform, "", 15, 0, -478, 132, TextAnchor.UpperLeft, Color.white);
+        AddButton(contentObject.transform, "TRAJET CONSEILLÉ : ABIDJAN → YAMOUSSOUKRO", 0, -622, 50, UseRecommendedRoute);
+        AddButton(contentObject.transform, "RÉINITIALISER LE TRAJET", 0, -680, 48, ResetRoute);
+        prepareButton = AddButton(contentObject.transform, "PRÉPARER LE VOYAGE", 0, -736, 56, PrepareTrip);
+        feedbackText = AddText(contentObject.transform, "", 14, 0, -800, 64, TextAnchor.MiddleCenter,
             new Color(1f, 0.78f, 0.35f));
         RefreshCityOptions();
     }
@@ -292,6 +298,9 @@ public sealed class RoutePlanningPanel : MonoBehaviour
         text.fontSize = size;
         text.alignment = alignment;
         text.color = color;
+        text.resizeTextForBestFit = true;
+        text.resizeTextMinSize = 11;
+        text.resizeTextMaxSize = size;
         text.horizontalOverflow = HorizontalWrapMode.Wrap;
         text.verticalOverflow = VerticalWrapMode.Overflow;
         text.text = value;
@@ -308,7 +317,7 @@ public sealed class RoutePlanningPanel : MonoBehaviour
         rect.anchoredPosition = new Vector2(x, y);
         rect.sizeDelta = new Vector2(0f, height);
         Image image = go.AddComponent<Image>();
-        image.color = new Color(0.12f, 0.2f, 0.3f, 1f);
+        image.color = new Color(0.09f, 0.16f, 0.25f, 1f);
         Dropdown dropdown = go.AddComponent<Dropdown>();
         dropdown.targetGraphic = image;
         dropdown.options = new List<Dropdown.OptionData> { new Dropdown.OptionData(placeholder) };
@@ -372,9 +381,19 @@ public sealed class RoutePlanningPanel : MonoBehaviour
         rect.anchoredPosition = new Vector2(x, y);
         rect.sizeDelta = new Vector2(0f, height);
         Image image = go.AddComponent<Image>();
-        image.color = new Color(0.05f, 0.42f, 0.72f);
+        bool primary = label.Contains("PRÉPARER");
+        bool recommended = label.Contains("CONSEILLÉ");
+        image.color = primary ? new Color(0.88f, 0.57f, 0.16f) :
+            recommended ? new Color(0.08f, 0.43f, 0.36f) : new Color(0.08f, 0.32f, 0.55f);
         Button button = go.AddComponent<Button>();
         button.targetGraphic = image;
+        ColorBlock colors = button.colors;
+        colors.normalColor = image.color;
+        colors.highlightedColor = Color.Lerp(image.color, Color.white, 0.16f);
+        colors.pressedColor = Color.Lerp(image.color, Color.black, 0.18f);
+        colors.selectedColor = image.color;
+        colors.fadeDuration = 0.08f;
+        button.colors = colors;
         button.onClick.AddListener(action);
         Text text = AddText(go.transform, label, 16, 0, 0, height, TextAnchor.MiddleCenter, Color.white);
         text.fontStyle = FontStyle.Bold;
