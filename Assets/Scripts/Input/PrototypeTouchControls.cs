@@ -128,6 +128,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
             new Color(0.035f, 0.075f, 0.11f, 0.92f));
         Button button = panel.AddComponent<Button>();
         button.targetGraphic = panel.GetComponent<Image>();
+        button.transition = Selectable.Transition.None;
         button.onClick.AddListener(ToggleSeatbelt);
         seatbeltPanelImage = panel.GetComponent<Image>();
         seatbeltIcon = CreateIcon(panel.transform, CoachHudIcon.IconType.SeatbeltOn);
@@ -141,6 +142,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
             new Color(0.035f, 0.075f, 0.11f, 0.92f));
         Button button = panel.AddComponent<Button>();
         button.targetGraphic = panel.GetComponent<Image>();
+        button.transition = Selectable.Transition.None;
         button.onClick.AddListener(TogglePassengerDoor);
         doorPanelImage = panel.GetComponent<Image>();
         doorIcon = CreateIcon(panel.transform, CoachHudIcon.IconType.DoorClosed);
@@ -192,6 +194,7 @@ public sealed class PrototypeTouchControls : MonoBehaviour
             new Vector2(124f, 46f), new Color(0.035f, 0.075f, 0.11f, 0.92f));
         Button button = panel.AddComponent<Button>();
         button.targetGraphic = panel.GetComponent<Image>();
+        button.transition = Selectable.Transition.None;
         button.onClick.AddListener(action);
         CreateIcon(panel.transform, IconForSymbol(label));
         return panel.GetComponent<Image>();
