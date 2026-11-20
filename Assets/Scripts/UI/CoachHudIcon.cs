@@ -7,7 +7,7 @@ public sealed class CoachHudIcon : Graphic
     public enum IconType
     {
         ArrowLeft, ArrowRight, Warning, Headlights, HighBeam, Camera, Power,
-        SeatbeltOn, SeatbeltOff, DoorClosed, DoorOpen, PedalUp, PedalDown, Parking, Wipers, CabinLight, AirConditioning, RouteMap, FuelPump, Passengers
+        SeatbeltOn, SeatbeltOff, DoorClosed, DoorOpen, PedalUp, PedalDown, Parking, Wipers, CabinLight, AirConditioning, RouteMap, FuelPump, Passengers, Rain
     }
 
     [SerializeField] private IconType iconType;
@@ -134,6 +134,12 @@ public sealed class CoachHudIcon : Graphic
                 Polyline(vh, new[] { P(-.62f,-.48f), P(-.58f,-.18f), P(-.40f,-.02f), P(-.16f,-.02f), P(0f,-.20f) }, thickness);
                 Polyline(vh, new[] { P(0f,-.20f), P(.16f,-.02f), P(.40f,-.02f), P(.58f,-.18f), P(.62f,-.48f) }, thickness);
                 Line(vh, P(-.12f,-.02f), P(.12f,-.02f), thickness);
+                break;
+            case IconType.Rain:
+                Polyline(vh, new[] { P(-.48f,.12f), P(-.52f,.30f), P(-.38f,.48f), P(-.12f,.48f), P(.02f,.62f), P(.30f,.54f), P(.38f,.32f), P(.55f,.20f), P(.48f,.02f), P(-.48f,.02f) }, thickness);
+                Line(vh, P(-.30f,-.18f), P(-.40f,-.48f), thickness);
+                Line(vh, P(0f,-.18f), P(-.10f,-.48f), thickness);
+                Line(vh, P(.30f,-.18f), P(.20f,-.48f), thickness);
                 break;
         }
     }
