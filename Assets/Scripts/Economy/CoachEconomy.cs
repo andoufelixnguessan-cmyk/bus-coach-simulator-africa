@@ -1,0 +1,235 @@
+using System;
+using System.Collections.Generic;
+
+public enum CoachServiceClass
+{
+    Economy = 0,
+    Comfort = 1,
+    Vip = 2
+}
+
+[Serializable]
+public sealed class CoachDefinition
+{
+    public string Id;
+    public string DisplayName;
+    public int MinSeats;
+    public int MaxSeats;
+    public long PurchasePriceXof;
+    public int UnlockCompanyLevel;
+    public CoachServiceClass HighestServiceClass;
+
+    public CoachDefinition(string id, string displayName, int minSeats, int maxSeats, long price, int level, CoachServiceClass highestClass)
+    {
+        Id = id;
+        DisplayName = displayName;
+        MinSeats = minSeats;
+        MaxSeats = maxSeats;
+        PurchasePriceXof = price;
+        UnlockCompanyLevel = level;
+        HighestServiceClass = highestClass;
+    }
+}
+
+/// <summary>Single-currency coach catalogue and company finance foundation. All amounts are FCFA (XOF).</summary>
+public static class CoachEconomy
+{
+    public const long StartingCapitalXof = 10000000L;
+    public const string StartingCoachId = "minicar-interurbain";
+
+    private static readonly CoachDefinition[] Definitions =
+    {
+        new CoachDefinition("minicar-interurbain", "Minicar interurbain", 16, 22, 9000000L, 1, CoachServiceClass.Economy),
+        new CoachDefinition("minibus-petit-car", "Minibus / petit car", 23, 30, 14000000L, 1, CoachServiceClass.Comfort),
+        new CoachDefinition("car-moyen", "Car moyen", 31, 39, 22000000L, 2, CoachServiceClass.Comfort),
+        new CoachDefinition("autocar-standard", "Autocar standard", 40, 49, 32000000L, 3, CoachServiceClass.Comfort),
+        new CoachDefinition("autocar-confort", "Autocar confort", 45, 53, 42000000L, 4, CoachServiceClass.Vip),
+        new CoachDefinition("grand-tourisme", "Autocar grand tourisme", 49, 57, 58000000L, 5, CoachServiceClass.Vip),
+        new CoachDefinition("autocar-premium", "Autocar premium longue distance", 51, 59, 75000000L, 7, CoachServiceClass.Vip),
+        new CoachDefinition("double-etage-tourisme", "Autocar double étage tourisme", 70, 83, 95000000L, 9, CoachServiceClass.Vip)
+    };
+
+    public static IReadOnlyList<CoachDefinition> AllCoaches => Definitions;
+
+    public static CoachDefinition FindCoach(string coachId)
+    {
+        if (string.IsNullOrEmpty(coachId)) return null;
+        for (int i = 0; i < Definitions.Length; i++)
+            if (string.Equals(Definitions[i].Id, coachId, StringComparison.Ordinal)) return Definitions[i];
+        return null;
+    }
+
+    public static CompanyProfile CreateNewCompany()
+    {
+        var company = new CompanyProfile(StartingCapitalXof);
+        CoachDefinition starter = FindCoach(StartingCoachId);
+        if (starter != null && company.TryPurchaseCoach(starter.Id, 1))
+            company.RecordStartingCoach(starter.Id);
+        return company;
+    }
+
+    public static bool IsServiceAvailable(CoachDefinition coach, CoachServiceClass serviceClass)
+    {
+        return coach != null && serviceClass <= coach.HighestServiceClass;
+    }
+}
+
+[Serializable]
+public sealed class FinanceEntry
+{
+    public string Label;
+    public long AmountXof;
+    public long BalanceAfterXof;
+    public bool IsIncome;
+
+    public FinanceEntry(string label, long amount, long balance, bool income)
+    { Label = label; AmountXof = amount; BalanceAfterXof = balance; IsIncome = income; }
+}
+
+/// <summary>Runtime company data. Persist this object with the game's save system.</summary>
+[Serializable]
+public sealed class CompanyProfile
+{
+    public long BalanceXof { get; private set; }
+    public int CompanyLevel { get; private set; }
+    public List<string> OwnedCoachIds { get; private set; }
+    public List<FinanceEntry> FinanceHistory { get; private set; }
+    public string StartingCoachId { get; private set; }
+
+    public CompanyProfile(long startingBalanceXof)
+    {
+        BalanceXof = Math.Max(0L, startingBalanceXof);
+        CompanyLevel = 1;
+        OwnedCoachIds = new List<string>();
+        FinanceHistory = new List<FinanceEntry>();
+    }
+
+    public bool OwnsCoach(string coachId) { return OwnedCoachIds.Contains(coachId); }
+
+    public bool TryPurchaseCoach(string coachId, int companyLevel)
+    {
+        CoachDefinition coach = CoachEconomy.FindCoach(coachId);
+        if (coach == null || OwnsCoach(coachId) || companyLevel < coach.UnlockCompanyLevel || BalanceXof < coach.PurchasePriceXof)
+            return false;
+        BalanceXof -= coach.PurchasePriceXof;
+        OwnedCoachIds.Add(coachId);
+        FinanceHistory.Add(new FinanceEntry("Achat : " + coach.DisplayName, coach.PurchasePriceXof, BalanceXof, false));
+        return true;
+    }
+
+    public bool TrySpend(long amountXof, string reason)
+    {
+        if (amountXof <= 0L || BalanceXof < amountXof) return false;
+        BalanceXof -= amountXof;
+        FinanceHistory.Add(new FinanceEntry(reason ?? "Dépense", amountXof, BalanceXof, false));
+        return true;
+    }
+
+    public bool AddIncome(long amountXof, string reason)
+    {
+        if (amountXof <= 0L || BalanceXof > long.MaxValue - amountXof) return false;
+        BalanceXof += amountXof;
+        FinanceHistory.Add(new FinanceEntry(reason ?? "Recette", amountXof, BalanceXof, true));
+        return true;
+    }
+
+    public void SetCompanyLevel(int level) { CompanyLevel = Math.Max(1, level); }
+    internal void RecordStartingCoach(string coachId) { StartingCoachId = coachId; }
+}
+
+[Serializable]
+public sealed class RouteFare
+{
+    public string RouteId;
+    public string DisplayName;
+    public long EconomyXof;
+    public long ComfortXof;
+    public long VipXof;
+
+    public RouteFare(string id, string name, long economy, long comfort, long vip)
+    { RouteId = id; DisplayName = name; EconomyXof = economy; ComfortXof = comfort; VipXof = vip; }
+
+    public long GetFare(CoachServiceClass serviceClass)
+    {
+        switch (serviceClass)
+        {
+            case CoachServiceClass.Comfort: return ComfortXof;
+            case CoachServiceClass.Vip: return VipXof;
+            default: return EconomyXof;
+        }
+    }
+}
+
+[Serializable]
+public sealed class TripOperatingCosts
+{
+    public long FuelXof;
+    public long DriverAndStaffXof;
+    public long TollsAndBorderXof;
+    public long FoodAndDrinksXof;
+    public long MaintenanceReserveXof;
+
+    public long TotalXof
+    {
+        get { return FuelXof + DriverAndStaffXof + TollsAndBorderXof + FoodAndDrinksXof + MaintenanceReserveXof; }
+    }
+}
+
+[Serializable]
+public sealed class TripFinancialQuote
+{
+    public int Seats;
+    public int ExpectedPassengers;
+    public long TicketRevenueXof;
+    public long OperatingCostsXof;
+    public long EstimatedProfitXof;
+    public bool IsProfitable { get { return EstimatedProfitXof >= 0L; } }
+}
+
+/// <summary>Calculates a transparent one-way estimate; actual ticket sales determine final revenue.</summary>
+public static class RouteEconomy
+{
+    private static readonly RouteFare[] Fares =
+    {
+        new RouteFare("abidjan-yamoussoukro", "Abidjan – Yamoussoukro", 5000, 7000, 10000),
+        new RouteFare("abidjan-bouake", "Abidjan – Bouaké", 8000, 12000, 16000),
+        new RouteFare("abidjan-korhogo", "Abidjan – Korhogo", 12000, 16000, 22000),
+        new RouteFare("abidjan-san-pedro", "Abidjan – San Pedro", 10000, 14000, 18000),
+        new RouteFare("abidjan-man", "Abidjan – Man", 12000, 17000, 23000),
+        new RouteFare("abidjan-accra", "Abidjan – Accra", 15000, 20000, 28000),
+        new RouteFare("abidjan-lome", "Abidjan – Lomé", 22000, 30000, 40000),
+        new RouteFare("abidjan-cotonou", "Abidjan – Cotonou", 28000, 38000, 50000),
+        new RouteFare("abidjan-ouagadougou", "Abidjan – Ouagadougou", 30000, 42000, 55000),
+        new RouteFare("abidjan-bamako", "Abidjan – Bamako", 35000, 48000, 65000),
+        new RouteFare("abidjan-conakry", "Abidjan – Conakry", 45000, 60000, 80000),
+        new RouteFare("accra-lagos", "Accra – Lagos", 30000, 42000, 55000)
+    };
+
+    public static IReadOnlyList<RouteFare> AllRoutes => Fares;
+
+    public static RouteFare FindRoute(string routeId)
+    {
+        if (string.IsNullOrEmpty(routeId)) return null;
+        for (int i = 0; i < Fares.Length; i++)
+            if (string.Equals(Fares[i].RouteId, routeId, StringComparison.Ordinal)) return Fares[i];
+        return null;
+    }
+
+    public static TripFinancialQuote CreateQuote(CoachDefinition coach, RouteFare route, CoachServiceClass serviceClass, int occupancyPercent, TripOperatingCosts costs)
+    {
+        if (coach == null || route == null || costs == null || !CoachEconomy.IsServiceAvailable(coach, serviceClass)) return null;
+        int percent = Math.Max(0, Math.Min(100, occupancyPercent));
+        int seats = (coach.MinSeats + coach.MaxSeats) / 2;
+        int passengers = (seats * percent + 50) / 100;
+        long revenue = passengers * route.GetFare(serviceClass);
+        long totalCosts = costs.TotalXof;
+        return new TripFinancialQuote
+        {
+            Seats = seats,
+            ExpectedPassengers = passengers,
+            TicketRevenueXof = revenue,
+            OperatingCostsXof = totalCosts,
+            EstimatedProfitXof = revenue - totalCosts
+        };
+    }
+}
