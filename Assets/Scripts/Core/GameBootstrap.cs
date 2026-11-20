@@ -112,6 +112,7 @@ public sealed class GameBootstrap : MonoBehaviour
         coach = root.AddComponent<CoachVehicleController>();
         coach.Configure(fl, fr, rl, rr, rli, rri, 11000f, 21000f, 24f, 105f);
         coach.ApplyEngineUpgrade(0);
+        root.AddComponent<CoachFuelSystem>().Configure(coach, ActiveCompany);
         Light leftHeadlamp = CreateHeadlamp(root.transform, "Left headlamp", new Vector3(-0.72f, 0.92f, 4.98f));
         Light rightHeadlamp = CreateHeadlamp(root.transform, "Right headlamp", new Vector3(0.72f, 0.92f, 4.98f));
         coach.ConfigureHeadlights(leftHeadlamp, rightHeadlamp);
@@ -471,7 +472,7 @@ public sealed class GameBootstrap : MonoBehaviour
         graphicsSettings = inputObject.AddComponent<MobileGraphicsSettings>();
         graphicsSettings.ApplySavedPreset();
         var touch = inputObject.AddComponent<PrototypeTouchControls>();
-        touch.Configure(coach, input, graphicsSettings, cameraFollow, coach.GetComponent<CoachWiperSystem>(), coach.GetComponent<CoachCabinLightingSystem>(), coach.GetComponent<CoachCabinComfortSystem>(), ShowRoutePlanner);
+        touch.Configure(coach, input, graphicsSettings, cameraFollow, coach.GetComponent<CoachWiperSystem>(), coach.GetComponent<CoachCabinLightingSystem>(), coach.GetComponent<CoachCabinComfortSystem>(), coach.GetComponent<CoachFuelSystem>(), ShowRoutePlanner);
     }
 
     private static GameObject CreateBlock(string objectName, Vector3 position, Vector3 scale, Color color)
