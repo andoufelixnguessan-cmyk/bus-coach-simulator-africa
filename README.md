@@ -34,6 +34,6 @@ A single drivable coach, a polished third-person and cockpit camera, mobile cont
 
 ## Development status
 
-The repository now contains the first Unity project configuration, an editor-driven Android build entry point, and a temporary drivable-road prototype assembled from placeholder geometry. The Android APK pipeline is prepared but requires a Unity Personal license secret in GitHub Actions. The prototype has not yet been compiled, installed, or tested on a phone. It is not a finished realistic simulator and no downloadable APK is claimed yet.
+The repository now contains a Unity 6 project configuration, an editor-driven Android APK build entry point, a temporary drivable coach/road prototype, independent multi-touch steering and pedal controls, and saved Économie/Équilibré/Élevé graphics presets. The APK pipeline is prepared but requires a Unity Personal license secret in GitHub Actions. The prototype has not yet been compiled, installed, or tested on a phone. It is not a finished realistic simulator and no downloadable APK is claimed yet.
 
 Next gates: compile the Unity project, fix all build errors, replace placeholder coach/world geometry with original quality assets, add cockpit and production touch controls, then install and profile the first Android build on the Samsung Galaxy A07 (4 GB RAM).
