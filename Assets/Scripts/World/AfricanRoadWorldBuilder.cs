@@ -14,9 +14,25 @@ public static class AfricanRoadWorldBuilder
     private const float ShoulderWidth = 1.35f;
     private const float CorridorLength = SegmentCount * SegmentLength;
     private static Material asphaltMaterial;
+    private static Light sunLight;
     private static readonly Color DryAsphaltColor = new Color(0.105f, 0.115f, 0.125f);
 
     public static float BuiltCorridorLength => CorridorLength;
+
+    public static void SetNightLighting(bool night)
+    {
+        if (sunLight != null)
+        {
+            sunLight.intensity = night ? 0.12f : 1.05f;
+            sunLight.color = night ? new Color(0.52f, 0.62f, 0.88f) : Color.white;
+        }
+        RenderSettings.ambientLight = night
+            ? new Color(0.075f, 0.09f, 0.14f)
+            : new Color(0.62f, 0.64f, 0.67f);
+        RenderSettings.fog = night;
+        RenderSettings.fogColor = night ? new Color(0.035f, 0.045f, 0.075f) : new Color(0.62f, 0.64f, 0.67f);
+        RenderSettings.fogDensity = night ? 0.0015f : 0f;
+    }
 
     public static void SetRoadWet(bool wet)
     {
@@ -362,10 +378,10 @@ public static class AfricanRoadWorldBuilder
     private static void BuildSun()
     {
         GameObject sunObject = new GameObject("African daylight sun");
-        Light sun = sunObject.AddComponent<Light>();
-        sun.type = LightType.Directional;
-        sun.intensity = 1.05f;
-        sun.transform.rotation = Quaternion.Euler(48f, -32f, 0f);
+        sunLight = sunObject.AddComponent<Light>();
+        sunLight.type = LightType.Directional;
+        sunLight.intensity = 1.05f;
+        sunLight.transform.rotation = Quaternion.Euler(48f, -32f, 0f);
     }
 
     private static void AddQuad(List<int> triangles, int a, int b, int c, int d)
