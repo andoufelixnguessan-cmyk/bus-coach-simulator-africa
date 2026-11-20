@@ -41,8 +41,8 @@ public sealed class PlayerRouteTripSetup
 }
 
 /// <summary>
-/// Creates a complete data-level trip setup from the ordered city IDs chosen by the player.
-/// All route distances, fares and border costs remain provisional game values.
+/// Creates the validated trip session selected in the route planner, including fares,
+/// passenger manifest and border checks. Distances, fares and fees remain provisional game values.
 /// </summary>
 public static class PlayerRouteTripFactory
 {
