@@ -97,7 +97,8 @@ public static class AfricanRoutePlanner
         new City("thies", "Thiès", "SN"),
         new City("saint-louis", "Saint-Louis", "SN"),
         new City("garoua", "Garoua", "CM"),
-        new City("takoradi", "Takoradi", "GH") 
+        new City("takoradi", "Takoradi", "GH"),
+        new City("ouahigouya", "Ouahigouya", "BF")
     };
 
     // Bidirectional road links. Game estimates only; road geometry and legal corridors need later validation.
@@ -143,7 +144,8 @@ public static class AfricanRoutePlanner
         new RoadSegment("dakar","thies",70,65, null, null, 0L, 0, "Rufisque", "Diamniadio"),
         new RoadSegment("thies","saint-louis",190,180, null, null, 0L, 0, "Tivaouane", "Louga"),
         new RoadSegment("yaounde","garoua",720,660, null, null, 0L, 0, "Bafia", "Bafoussam", "Bamenda", "Wum", "Ngaoundéré"),
-        new RoadSegment("accra","takoradi",230,210, null, null, 0L, 0, "Kasoa", "Winneba", "Cape Coast", "Elmina") 
+        new RoadSegment("accra","takoradi",230,210, null, null, 0L, 0, "Kasoa", "Winneba", "Cape Coast", "Elmina"),
+        new RoadSegment("ouagadougou","ouahigouya",185,165, null, null, 0L, 0, "Yako")
     };
 
     public static IReadOnlyList<City> AllCities { get { return Cities; } }
